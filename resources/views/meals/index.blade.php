@@ -5,6 +5,7 @@
     <div class="row justify-content-between align-items-center mb-4">
         <div class="col">
             <h2 class="h2">Daily Meal Records</h2>
+            <small class="text-muted">{{ $activeMonth?->name ?? 'No Active Month' }}</small>
         </div>
         <div class="col-auto">
             @can('meals.create')

@@ -129,7 +129,7 @@
                 <button class="btn btn-primary" onclick="window.print()">
                     <i class="fa-solid fa-print"></i> Print Report
                 </button>
-                <a href="{{ route('months.show', $month) }}" class="btn btn-secondary">
+                <a href="{{ route('reports.all-months') }}" class="btn btn-secondary">
                     <i class="fa-solid fa-arrow-left"></i> Back
                 </a>
             </div>
@@ -153,7 +153,7 @@
             <strong>Access Denied!</strong> You don't have permission to view reports.
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <a href="{{ route('months.show', $month) }}" class="btn btn-secondary">Back</a>
+        <a href="{{ route('reports.all-months') }}" class="btn btn-secondary">Back</a>
     </div>
 @endcan
 @endsection

@@ -15,11 +15,14 @@ class MealController extends Controller
     {
         $this->authorize('viewAny', Meal::class);
         
+        $activeMonth = activeMonth();
+        
         $meals = Meal::with(['user', 'month'])
+            ->where('month_id', $activeMonth->id)
             ->latest('date')
             ->paginate(15);
 
-        return view('meals.index', compact('meals'));
+        return view('meals.index', compact('meals', 'activeMonth'));
     }
 
     /**

@@ -46,9 +46,6 @@ use App\Enums\MonthStatusEnum;
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm">
-                            @can('view', $month)
-                                <a href="{{ route('months.report', $month->id) }}" class="text-green-600 hover:text-green-900 mr-3">Report</a>
-                            @endcan
                             @can('update', $month)
                                 <a href="{{ route('months.edit', $month->id) }}" class="text-yellow-600 hover:text-yellow-900 mr-3">Edit</a>
                             @endcan

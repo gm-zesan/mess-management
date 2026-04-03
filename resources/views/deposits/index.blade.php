@@ -5,6 +5,7 @@
     <div class="row justify-content-between align-items-center mb-4">
         <div class="col-md-6">
             <h2>Deposits</h2>
+            <small class="text-muted">{{ $activeMonth?->name ?? 'No Active Month' }}</small>
         </div>
         <div class="col-md-6 text-end">
             @can('deposits.create')

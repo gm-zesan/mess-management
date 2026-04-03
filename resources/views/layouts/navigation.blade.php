@@ -15,43 +15,32 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
-                        {{ __('Meals') }}
-                    </x-nav-link>
+                    @can('meals.viewAny')
+                        <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
+                            {{ __('Meals') }}
+                        </x-nav-link>
+                    @endcan
                     <x-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
                         {{ __('Expenses') }}
                     </x-nav-link>
                     <x-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
                         {{ __('Deposits') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
-                        {{ __('Reports') }}
-                    </x-nav-link>
-
-                    <!-- Settings Dropdown -->
-                    <div class="relative inline-block">
-                        <x-dropdown align="left" width="48">
-                            <x-slot name="trigger">
-                                <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-600 hover:text-gray-900 focus:outline-none transition ease-in-out duration-150">
-                                    <div>{{ __('Settings') }}</div>
-                                    <div class="ms-1">
-                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                </button>
-                            </x-slot>
-
-                            <x-slot name="content">
-                                <x-dropdown-link :href="route('members.index')" :active="request()->routeIs('members.*')">
-                                    {{ __('Members') }}
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('months.index')" :active="request()->routeIs('months.*')">
-                                    {{ __('Months') }}
-                                </x-dropdown-link>
-                            </x-slot>
-                        </x-dropdown>
-                    </div>
+                    @can('reports.view')
+                        <x-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
+                            {{ __('Reports') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('members.view')
+                        <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
+                            {{ __('Members') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('months.view')
+                        <x-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
+                            {{ __('Months') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -115,29 +104,32 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
-                {{ __('Meals') }}
-            </x-responsive-nav-link>
+            @can('meals.viewAny')
+                <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
+                    {{ __('Meals') }}
+                </x-responsive-nav-link>
+            @endcan
             <x-responsive-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
                 {{ __('Expenses') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
                 {{ __('Deposits') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
-                {{ __('Reports') }}
-            </x-responsive-nav-link>
-
-            <!-- Settings Section -->
-            <div class="border-t border-gray-200 pt-4 mt-4">
-                <div class="px-4 py-2 text-sm font-medium text-gray-700">{{ __('Settings') }}</div>
+            @can('reports.view')
+                <x-responsive-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
+                    {{ __('Reports') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('members.view')
                 <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
                     {{ __('Members') }}
                 </x-responsive-nav-link>
+            @endcan
+            @can('months.view')
                 <x-responsive-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
                     {{ __('Months') }}
                 </x-responsive-nav-link>
-            </div>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

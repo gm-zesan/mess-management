@@ -12,9 +12,11 @@ use App\Enums\MonthStatusEnum;
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h2>📈 All Months Reports</h2>
-                <a href="{{ route('months.index') }}" class="btn btn-secondary">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Months
-                </a>
+                @can('months.view')
+                    <a href="{{ route('months.index') }}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Months
+                    </a>
+                @endcan
             </div>
             <hr>
         </div>
@@ -86,9 +88,11 @@ use App\Enums\MonthStatusEnum;
                                         <a href="{{ route('reports.monthly', $month) }}" class="btn btn-sm btn-primary" title="View Report">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('months.show', $month) }}" class="btn btn-sm btn-info" title="View Details">
-                                            <i class="fa-solid fa-circle-info"></i>
-                                        </a>
+                                        @if($month->status === MonthStatusEnum::CLOSED)
+                                            <a href="#" class="btn btn-sm btn-success" title="Download PDF" onclick="alert('PDF download feature coming soon')">
+                                                <i class="fa-solid fa-download"></i>
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

@@ -41,6 +41,7 @@ enum PermissionEnum: string
 
     // Reports
     case REPORTS_VIEW = 'reports.view';
+    case REPORTS_ALL_MONTHS = 'reports.all-months';
 
     public function label(): string
     {
@@ -69,6 +70,7 @@ enum PermissionEnum: string
             self::MONTHS_DELETE => 'Delete Months',
             self::MONTHS_CLOSE => 'Close Month',
             self::REPORTS_VIEW => 'View Reports',
+            self::REPORTS_ALL_MONTHS => 'View All Months Reports',
         };
     }
 }

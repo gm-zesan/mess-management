@@ -15,11 +15,14 @@ class DepositController extends Controller
     {
         $this->authorize('viewAny', Deposit::class);
         
+        $activeMonth = activeMonth();
+        
         $deposits = Deposit::with(['user', 'month'])
+            ->where('month_id', $activeMonth->id)
             ->latest('date')
             ->paginate(15);
 
-        return view('deposits.index', compact('deposits'));
+        return view('deposits.index', compact('deposits', 'activeMonth'));
     }
 
     /**

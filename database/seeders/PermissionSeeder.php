@@ -39,11 +39,11 @@ class PermissionSeeder extends Seeder
         // Member: limited permissions (read-only)
         $memberPermissions = Permission::whereIn('name', [
             PermissionEnum::DASHBOARD_VIEW->value,
-            PermissionEnum::MEALS_VIEW->value,
             PermissionEnum::MEMBERS_VIEW->value,
             PermissionEnum::EXPENSES_VIEW->value,
             PermissionEnum::DEPOSITS_VIEW->value,
             PermissionEnum::REPORTS_VIEW->value,
+            PermissionEnum::REPORTS_ALL_MONTHS->value,
         ])->get();
         $memberRole->syncPermissions($memberPermissions);
     }

@@ -16,11 +16,14 @@ class ExpenseController extends Controller
     {
         $this->authorize('viewAny', Expense::class);
         
+        $activeMonth = activeMonth();
+        
         $expenses = Expense::with('month', 'user')
+            ->where('month_id', $activeMonth->id)
             ->latest('date')
             ->paginate(15);
 
-        return view('expenses.index', compact('expenses'));
+        return view('expenses.index', compact('expenses', 'activeMonth'));
     }
 
     /**
