@@ -61,16 +61,6 @@ class DepositController extends Controller
     }
 
     /**
-     * Display the specified deposit.
-     */
-    public function show(Deposit $deposit)
-    {
-        $this->authorize('view', $deposit);
-        
-        return view('deposits.show', compact('deposit'));
-    }
-
-    /**
      * Show the form for editing the specified deposit.
      */
     public function edit(Deposit $deposit)

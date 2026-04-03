@@ -30,7 +30,9 @@
                             <th>Member</th>
                             <th>Month</th>
                             <th>Amount</th>
-                            <th>Actions</th>
+                            @canany(['deposits.update', 'deposits.delete'])
+                                <th>Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody>
@@ -40,21 +42,20 @@
                                 <td>{{ $deposit->user->name }}</td>
                                 <td>{{ $deposit->month->name }}</td>
                                 <td class="text-end">৳ {{ number_format($deposit->amount, 2) }}</td>
-                                <td>
-                                    @can('view', $deposit)
-                                        <a href="{{ route('deposits.show', $deposit) }}" class="btn btn-sm btn-info">View</a>
-                                    @endcan
-                                    @can('update', $deposit)
-                                        <a href="{{ route('deposits.edit', $deposit) }}" class="btn btn-sm btn-warning">Edit</a>
-                                    @endcan
-                                    @can('delete', $deposit)
-                                        <form action="{{ route('deposits.destroy', $deposit) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                                        </form>
-                                    @endcan
-                                </td>
+                                @canany(['deposits.update', 'deposits.delete'])
+                                    <td>
+                                        @can('update', $deposit)
+                                            <a href="{{ route('deposits.edit', $deposit) }}" class="btn btn-sm btn-warning">Edit</a>
+                                        @endcan
+                                        @can('delete', $deposit)
+                                            <form action="{{ route('deposits.destroy', $deposit) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        @endcan
+                                    </td>
+                                @endcanany
                             </tr>
                         @endforeach
                     </tbody>

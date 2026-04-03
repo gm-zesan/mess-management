@@ -33,7 +33,9 @@
                                 <th>Month</th>
                                 <th>Date</th>
                                 <th>Meal Count</th>
-                                <th>Actions</th>
+                                @canany(['meals.update', 'meals.delete'])
+                                    <th>Actions</th>
+                                @endcanany
                             </tr>
                         </thead>
                         <tbody>
@@ -49,32 +51,28 @@
                                     <td>
                                         <span class="badge bg-info">{{ $meal->meal_count }}</span>
                                     </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            @can('view', $meal)
-                                                <a href="{{ route('meals.show', $meal) }}" class="btn btn-info btn-sm" title="View">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            @endcan
+                                    @canany(['meals.update', 'meals.delete'])
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                @can('update', $meal)
+                                                    <a href="{{ route('meals.edit', $meal) }}" class="btn btn-warning btn-sm" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                @endcan
 
-                                            @can('update', $meal)
-                                                <a href="{{ route('meals.edit', $meal) }}" class="btn btn-warning btn-sm" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            @endcan
-
-                                            @can('delete', $meal)
-                                                <form action="{{ route('meals.destroy', $meal) }}" method="POST" style="display: inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete" 
-                                                            onclick="return confirm('Are you sure you want to delete this meal record?');">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
-                                        </div>
-                                    </td>
+                                                @can('delete', $meal)
+                                                    <form action="{{ route('meals.destroy', $meal) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete" 
+                                                                onclick="return confirm('Are you sure you want to delete this meal record?');">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    @endcanany
                                 </tr>
                             @empty
                                 <tr>

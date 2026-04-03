@@ -64,16 +64,6 @@ class MealController extends Controller
     }
 
     /**
-     * Display the specified meal.
-     */
-    public function show(Meal $meal)
-    {
-        $this->authorize('view', $meal);
-        
-        return view('meals.show', compact('meal'));
-    }
-
-    /**
      * Show the form for editing the specified meal.
      */
     public function edit(Meal $meal)

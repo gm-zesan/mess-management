@@ -49,16 +49,6 @@ class MemberController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(User $member)
-    {
-        $this->authorize('view', $member);
-        
-        return view('members.show', compact('member'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(User $member)

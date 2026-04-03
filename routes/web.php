@@ -24,16 +24,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
     // Resource routes with automatic policy authorization
-    Route::resource('members', MemberController::class);
+    Route::resource('members', MemberController::class)->except('show');
     Route::post('/members/{member}/change-manager', [MemberController::class, 'changeManager'])
         ->name('members.change-manager');
     Route::resource('months', MonthController::class);
     Route::post('/months/{month}/close', [MonthController::class, 'close'])->name('months.close');
     Route::get('/months/{month}/report', [MonthController::class, 'report'])->name('months.report');
     
-    Route::resource('meals', MealController::class);    
-    Route::resource('expenses', ExpenseController::class);
-    Route::resource('deposits', DepositController::class);
+    Route::resource('meals', MealController::class)->except('show');    
+    Route::resource('expenses', ExpenseController::class)->except('show');
+    Route::resource('deposits', DepositController::class)->except('show');
     
     // Reports
     Route::get('/reports/all-months', [ReportController::class, 'allMonths'])->name('reports.all-months');

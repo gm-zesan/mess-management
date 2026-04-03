@@ -32,7 +32,9 @@
                             <th>Who Spent</th>
                             <th>Amount</th>
                             <th>Note</th>
-                            <th>Actions</th>
+                            @canany(['expenses.update', 'expenses.delete'])
+                                <th>Actions</th>
+                            @endcanany
                         </tr>
                     </thead>
                     <tbody>
@@ -44,21 +46,20 @@
                                 <td>{{ $expense->user?->name ?? 'N/A' }}</td>
                                 <td class="text-end">৳ {{ number_format($expense->amount, 2) }}</td>
                                 <td>{{ Str::limit($expense->note, 30) }}</td>
-                                <td>
-                                    @can('view', $expense)
-                                        <a href="{{ route('expenses.show', $expense) }}" class="btn btn-sm btn-info">View</a>
-                                    @endcan
-                                    @can('update', $expense)
-                                        <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-sm btn-warning">Edit</a>
-                                    @endcan
-                                    @can('delete', $expense)
-                                        <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                                        </form>
-                                    @endcan
-                                </td>
+                                @canany(['expenses.update', 'expenses.delete'])
+                                    <td>
+                                        @can('update', $expense)
+                                            <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-sm btn-warning">Edit</a>
+                                        @endcan
+                                        @can('delete', $expense)
+                                            <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        @endcan
+                                    </td>
+                                @endcanany
                             </tr>
                         @endforeach
                     </tbody>

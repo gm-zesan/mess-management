@@ -81,16 +81,6 @@ class ExpenseController extends Controller
     }
 
     /**
-     * Display the specified expense.
-     */
-    public function show(Expense $expense)
-    {
-        $this->authorize('view', $expense);
-        
-        return view('expenses.show', compact('expense'));
-    }
-
-    /**
      * Show the form for editing the specified expense.
      */
     public function edit(Expense $expense)

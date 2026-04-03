@@ -39,7 +39,9 @@ use App\Models\User;
                                             <th>Email</th>
                                             <th>Role</th>
                                             <th>Created At</th>
-                                            <th>Actions</th>
+                                            @canany(['members.update', 'members.delete', 'members.manage-roles'])
+                                                <th>Actions</th>
+                                            @endcanany
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -58,44 +60,40 @@ use App\Models\User;
                                                     @endforelse
                                                 </td>
                                                 <td>{{ $member->created_at->format('Y-m-d H:i') }}</td>
-                                                <td>
-                                                    @can('view', $member)
-                                                        <a href="{{ route('members.show', $member) }}" class="btn btn-sm btn-info" title="View">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                    @endcan
+                                                @canany(['members.update', 'members.delete', 'members.manage-roles'])
+                                                    <td>
+                                                        @can('update', $member)
+                                                            <a href="{{ route('members.edit', $member) }}" class="btn btn-sm btn-warning" title="Edit">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                        @endcan
 
-                                                    @can('update', $member)
-                                                        <a href="{{ route('members.edit', $member) }}" class="btn btn-sm btn-warning" title="Edit">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                    @endcan
+                                                        @can('members.manage-roles')
+                                                            @if(!$member->hasRole('manager'))
+                                                                <form action="{{ route('members.change-manager', $member) }}" method="POST" style="display:inline;">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-sm btn-success" title="Make Manager" 
+                                                                            onclick="return confirm('Make {{ $member->name }} the manager?')">
+                                                                        <i class="fas fa-crown"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @else
+                                                                <span class="badge bg-warning">Current Manager</span>
+                                                            @endif
+                                                        @endcan
 
-                                                    @can('members.manage-roles')
-                                                        @if(!$member->hasRole('manager'))
-                                                            <form action="{{ route('members.change-manager', $member) }}" method="POST" style="display:inline;">
+                                                        @can('delete', $member)
+                                                            <form action="{{ route('members.destroy', $member) }}" method="POST" style="display:inline;">
                                                                 @csrf
-                                                                <button type="submit" class="btn btn-sm btn-success" title="Make Manager" 
-                                                                        onclick="return confirm('Make {{ $member->name }} the manager?')">
-                                                                    <i class="fas fa-crown"></i>
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete" 
+                                                                        onclick="return confirm('Are you sure?')">
+                                                                    <i class="fas fa-trash"></i>
                                                                 </button>
                                                             </form>
-                                                        @else
-                                                            <span class="badge bg-warning">Current Manager</span>
-                                                        @endif
-                                                    @endcan
-
-                                                    @can('delete', $member)
-                                                        <form action="{{ route('members.destroy', $member) }}" method="POST" style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete" 
-                                                                    onclick="return confirm('Are you sure?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    @endcan
-                                                </td>
+                                                        @endcan
+                                                    </td>
+                                                @endcanany
                                             </tr>
                                         @endforeach
                                     </tbody>
