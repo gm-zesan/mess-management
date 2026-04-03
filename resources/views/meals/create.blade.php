@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@can('meals.create')
 <div class="container mx-auto px-4 py-8">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -85,4 +86,13 @@
         </div>
     </div>
 </div>
+@else
+    <div class="container mx-auto px-4 py-8">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Access Denied!</strong> You don't have permission to create meals.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <a href="{{ route('meals.index') }}" class="btn btn-secondary">Back to Meals</a>
+    </div>
+@endcan
 @endsection

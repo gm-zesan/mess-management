@@ -13,6 +13,8 @@ class ReportController extends Controller
      */
     public function monthlyReport(Month $month, CalculationService $calculationService)
     {
+        $this->authorize('view', $month);
+        
         $summary = $calculationService->getMonthSummary($month);
         
         return view('reports.monthly', [
@@ -26,6 +28,9 @@ class ReportController extends Controller
      */
     public function allMonths(CalculationService $calculationService)
     {
+        // Members can view reports
+        $this->authorize('viewAny', Month::class);
+        
         $months = Month::all();
         
         $reports = [];
@@ -41,6 +46,8 @@ class ReportController extends Controller
      */
     public function exportPdf(Month $month, CalculationService $calculationService)
     {
+        $this->authorize('view', $month);
+        
         $summary = $calculationService->getMonthSummary($month);
         
         $html = view('reports.monthly-pdf', [

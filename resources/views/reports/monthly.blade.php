@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@can('reports.view')
 <div class="container-fluid px-4 py-8">
     <!-- Summary Card -->
     <div class="row mb-4">
@@ -146,4 +147,13 @@
         }
     }
 </style>
+@else
+    <div class="container-fluid px-4 py-8">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Access Denied!</strong> You don't have permission to view reports.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <a href="{{ route('months.show', $month) }}" class="btn btn-secondary">Back</a>
+    </div>
+@endcan
 @endsection

@@ -15,6 +15,8 @@ class MemberController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+        
         // Exclude superadmin from member list and load roles
         $members = User::whereDoesntHave('roles', function ($query) {
             $query->where('name', RoleEnum::SUPERADMIN->value);
@@ -30,6 +32,8 @@ class MemberController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+        
         return view('members.create');
     }
 
@@ -38,6 +42,8 @@ class MemberController extends Controller
      */
     public function store(StoreMemberRequest $request)
     {
+        $this->authorize('create', User::class);
+        
         User::create($request->validated());
         return redirect()->route('members.index')->with('success', 'Member created successfully.');
     }
@@ -47,6 +53,8 @@ class MemberController extends Controller
      */
     public function show(User $member)
     {
+        $this->authorize('view', $member);
+        
         return view('members.show', compact('member'));
     }
 
@@ -55,6 +63,8 @@ class MemberController extends Controller
      */
     public function edit(User $member)
     {
+        $this->authorize('update', $member);
+        
         return view('members.edit', compact('member'));
     }
 
@@ -63,6 +73,8 @@ class MemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, User $member)
     {
+        $this->authorize('update', $member);
+        
         $member->update($request->validated());
         return redirect()->route('members.show', $member)->with('success', 'Member updated successfully.');
     }
@@ -72,6 +84,8 @@ class MemberController extends Controller
      */
     public function destroy(User $member)
     {
+        $this->authorize('delete', $member);
+        
         $member->delete();
         return redirect()->route('members.index')->with('success', 'Member deleted successfully.');
     }
@@ -82,6 +96,8 @@ class MemberController extends Controller
     public function changeManager(User $member)
     {
         // Check permission
+        $this->authorize('update', $member);
+        
         if (!Auth::user()->can('members.manage-roles')) {
             abort(403);
         }

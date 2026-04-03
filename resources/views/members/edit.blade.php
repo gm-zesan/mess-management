@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@can('update', $member)
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -70,5 +71,14 @@
         </div>
     </div>
 </div>
+@else
+    <div class="container">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Access Denied!</strong> You don't have permission to edit this member.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <a href="{{ route('members.index') }}" class="btn btn-secondary">Back to Members</a>
+    </div>
+@endcan
 @endsection
 

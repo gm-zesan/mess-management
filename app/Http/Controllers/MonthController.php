@@ -19,6 +19,8 @@ class MonthController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Month::class);
+        
         $months = Month::all();
         return view('months.index', compact('months'));
     }
@@ -28,6 +30,8 @@ class MonthController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Month::class);
+        
         return view('months.create');
     }
 
@@ -36,6 +40,8 @@ class MonthController extends Controller
      */
     public function store(Request $request, MonthService $monthService)
     {
+        $this->authorize('create', Month::class);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:months',
             'start_date' => 'required|date',
@@ -58,6 +64,8 @@ class MonthController extends Controller
      */
     public function show(Month $month, CalculationService $calculationService)
     {
+        $this->authorize('view', $month);
+        
         $summary = $calculationService->getMonthSummary($month);
 
         return view('months.show', [
@@ -75,6 +83,8 @@ class MonthController extends Controller
      */
     public function report(Month $month, CalculationService $calculationService)
     {
+        $this->authorize('view', $month);
+        
         $summary = $calculationService->getMonthSummary($month);
         
         // Get detailed meal and deposit records for each member
@@ -127,6 +137,8 @@ class MonthController extends Controller
      */
     public function edit(Month $month)
     {
+        $this->authorize('update', $month);
+        
         return view('months.edit', compact('month'));
     }
 
@@ -135,6 +147,8 @@ class MonthController extends Controller
      */
     public function update(Request $request, Month $month, MonthService $monthService)
     {
+        $this->authorize('update', $month);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:months,name,' . $month->id,
             'start_date' => 'required|date',
@@ -157,6 +171,8 @@ class MonthController extends Controller
      */
     public function close(Month $month, MonthService $monthService)
     {
+        $this->authorize('update', $month);
+        
         $monthService->closeMonth($month);
         
         return redirect()->route('months.show', $month)
@@ -168,6 +184,8 @@ class MonthController extends Controller
      */
     public function destroy(Month $month)
     {
+        $this->authorize('delete', $month);
+        
         $month->delete();
         return redirect()->route('months.index')->with('success', 'Month deleted successfully.');
     }

@@ -13,6 +13,8 @@ class DepositController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Deposit::class);
+        
         $deposits = Deposit::with(['user', 'month'])
             ->latest('date')
             ->paginate(15);
@@ -25,6 +27,8 @@ class DepositController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Deposit::class);
+        
         $members = User::get();
         $activeMonth = activeMonth();
 
@@ -36,6 +40,8 @@ class DepositController extends Controller
      */
     public function store(StoreDepositRequest $request)
     {
+        $this->authorize('create', Deposit::class);
+        
         $data = $request->validated();
         
         // Auto-assign active month
@@ -59,6 +65,8 @@ class DepositController extends Controller
      */
     public function show(Deposit $deposit)
     {
+        $this->authorize('view', $deposit);
+        
         return view('deposits.show', compact('deposit'));
     }
 
@@ -67,6 +75,8 @@ class DepositController extends Controller
      */
     public function edit(Deposit $deposit)
     {
+        $this->authorize('update', $deposit);
+        
         $members = User::get();
         $activeMonth = activeMonth();
 
@@ -78,6 +88,8 @@ class DepositController extends Controller
      */
     public function update(StoreDepositRequest $request, Deposit $deposit)
     {
+        $this->authorize('update', $deposit);
+        
         // Check if month is closed
         if (isMonthClosed($deposit->month_id)) {
             return redirect()->back()
@@ -101,6 +113,8 @@ class DepositController extends Controller
      */
     public function destroy(Deposit $deposit)
     {
+        $this->authorize('delete', $deposit);
+        
         // Check if month is closed
         if (isMonthClosed($deposit->month_id)) {
             return redirect()->back()

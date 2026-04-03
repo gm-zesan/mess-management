@@ -9,15 +9,19 @@ use App\Enums\MonthStatusEnum;
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">{{ $month->name }} - Monthly Summary</h1>
         <div class="flex gap-2">
-            <a href="{{ route('months.report', $month->id) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Detailed Report</a>
+            @can('view', $month)
+                <a href="{{ route('months.report', $month->id) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Detailed Report</a>
+            @endcan
             @if (!$month->isClosed())
-                <a href="{{ route('months.edit', $month->id) }}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Edit</a>
-                <form action="{{ route('months.close', $month->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to close this month? This action cannot be undone.');">
-                    @csrf
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                        <i class="fa-solid fa-lock"></i> Close Month
-                    </button>
-                </form>
+                @can('update', $month)
+                    <a href="{{ route('months.edit', $month->id) }}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Edit</a>
+                    <form action="{{ route('months.close', $month->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to close this month? This action cannot be undone.');">
+                        @csrf
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            <i class="fa-solid fa-lock"></i> Close Month
+                        </button>
+                    </form>
+                @endcan
             @else
                 <div class="bg-gray-500 text-white font-bold py-2 px-4 rounded cursor-not-allowed">
                     <i class="fa-solid fa-lock"></i> Month Closed

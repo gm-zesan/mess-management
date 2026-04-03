@@ -35,12 +35,16 @@
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('deposits.index') }}" class="btn btn-secondary">Back</a>
                         <div>
-                            <a href="{{ route('deposits.edit', $deposit) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('deposits.destroy', $deposit) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
+                            @can('update', $deposit)
+                                <a href="{{ route('deposits.edit', $deposit) }}" class="btn btn-warning">Edit</a>
+                            @endcan
+                            @can('delete', $deposit)
+                                <form action="{{ route('deposits.destroy', $deposit) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            @endcan
                         </div>
                     </div>
                 </div>

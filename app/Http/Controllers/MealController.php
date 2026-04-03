@@ -13,6 +13,8 @@ class MealController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Meal::class);
+        
         $meals = Meal::with(['user', 'month'])
             ->latest('date')
             ->paginate(15);
@@ -25,6 +27,8 @@ class MealController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Meal::class);
+        
         $members = User::get();
         $activeMonth = activeMonth();
 
@@ -36,6 +40,8 @@ class MealController extends Controller
      */
     public function store(StoreMealRequest $request)
     {
+        $this->authorize('create', Meal::class);
+        
         // Get validated data
         $data = $request->validated();
 
@@ -62,6 +68,8 @@ class MealController extends Controller
      */
     public function show(Meal $meal)
     {
+        $this->authorize('view', $meal);
+        
         return view('meals.show', compact('meal'));
     }
 
@@ -70,6 +78,8 @@ class MealController extends Controller
      */
     public function edit(Meal $meal)
     {
+        $this->authorize('update', $meal);
+        
         $members = User::get();
         $activeMonth = activeMonth();
 
@@ -81,6 +91,8 @@ class MealController extends Controller
      */
     public function update(StoreMealRequest $request, Meal $meal)
     {
+        $this->authorize('update', $meal);
+        
         // Check if month is closed
         if ($meal->month->isClosed()) {
             return redirect()->back()
@@ -106,6 +118,8 @@ class MealController extends Controller
      */
     public function destroy(Meal $meal)
     {
+        $this->authorize('delete', $meal);
+        
         // Check if month is closed
         if (isMonthClosed($meal->month_id)) {
             return redirect()->back()

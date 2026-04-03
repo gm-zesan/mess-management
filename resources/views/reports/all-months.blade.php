@@ -5,6 +5,7 @@ use App\Enums\MonthStatusEnum;
 @endphp
 
 @section('content')
+@can('reports.view')
 <div class="container-fluid px-4 py-8">
     <!-- Page Header -->
     <div class="row mb-4">
@@ -104,4 +105,13 @@ use App\Enums\MonthStatusEnum;
         </div>
     </div>
 </div>
+@else
+    <div class="container-fluid px-4 py-8">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Access Denied!</strong> You don't have permission to view reports.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <a href="{{ route('months.index') }}" class="btn btn-secondary">Back to Months</a>
+    </div>
+@endcan
 @endsection

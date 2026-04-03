@@ -205,35 +205,106 @@ Resource routes automatically trigger these controller methods:
 
 ### Authorizing in Controllers
 
+This follows **[Spatie's official best practice](https://spatie.be/docs/laravel-permission/v7/best-practices/using-policies)**: using Laravel's Model Policies with `$this->authorize()` for backend enforcement.
+
+Every controller action that requires authorization should call `$this->authorize()`. This ensures **backend security** - members cannot bypass Blade directives by accessing URLs directly.
+
 ```php
-public function index()
+class MealController extends Controller
 {
-    $this->authorize('viewAny', Meal::class);
-    
-    $meals = Meal::paginate(15);
-    return view('meals.index', compact('meals'));
-}
+    // List view - check if user can view meals
+    public function index()
+    {
+        $this->authorize('viewAny', Meal::class);
+        
+        $meals = Meal::paginate(15);
+        return view('meals.index', compact('meals'));
+    }
 
-public function show(Meal $meal)
-{
-    $this->authorize('view', $meal);
-    
-    return view('meals.show', compact('meal'));
-}
+    // Show create form - check if user can create
+    public function create()
+    {
+        $this->authorize('create', Meal::class);
+        
+        return view('meals.create');
+    }
 
-public function delete(Meal $meal)
-{
-    $this->authorize('delete', $meal);
-    
-    $meal->delete();
-    return redirect()->back()->with('success', 'Deleted');
+    // Store to database - check if user can create
+    public function store(StoreMealRequest $request)
+    {
+        $this->authorize('create', Meal::class);
+        
+        Meal::create($request->validated());
+        return redirect()->route('meals.index')->with('success', 'Created');
+    }
+
+    // Show detail view - check if user can view
+    public function show(Meal $meal)
+    {
+        $this->authorize('view', $meal);
+        
+        return view('meals.show', compact('meal'));
+    }
+
+    // Show edit form - check if user can update
+    public function edit(Meal $meal)
+    {
+        $this->authorize('update', $meal);
+        
+        return view('meals.edit', compact('meal'));
+    }
+
+    // Update to database - check if user can update
+    public function update(StoreMealRequest $request, Meal $meal)
+    {
+        $this->authorize('update', $meal);
+        
+        $meal->update($request->validated());
+        return redirect()->route('meals.index')->with('success', 'Updated');
+    }
+
+    // Delete from database - check if user can delete
+    public function destroy(Meal $meal)
+    {
+        $this->authorize('delete', $meal);
+        
+        $meal->delete();
+        return redirect()->back()->with('success', 'Deleted');
+    }
 }
 ```
 
-**Automatic Authorization:**
-- Laravel automatically calls relevant policy method
+### How it Works
+
+1. **Controller calls `$this->authorize()`** with ability and optionally a model instance
+2. **Laravel passes to the corresponding Policy method** (create, update, delete, view, viewAny)
+3. **Policy method checks Spatie permission** via `$user->can('permission.name')`
+4. **Returns 403 Forbidden** if user doesn't have permission
+5. **Superadmin automatically bypasses** via `Gate::before()`
+
+**Key Points:**
+- Call `$this->authorize()` in **EVERY** controller method
+- Use `Model::class` for non-model-specific checks (create, viewAny)
+- Use `$model` instance for model-specific checks (update, delete, view)
 - Returns 403 Forbidden if unauthorized
-- Checks happen transparently in routes
+- Provides defense-in-depth: Blade directives hide UI + Controllers enforce access
+- **This is the official Spatie recommended approach** per their documentation
+
+### Alternative: Direct Middleware (Optional)
+
+Spatie also provides middleware if you prefer route-level protection:
+
+```php
+Route::middleware(['permission:meals.create'])->group(function () {
+    Route::post('/meals', [MealController::class, 'store']);
+});
+```
+
+However, **Policies with `$this->authorize()` is preferred** because they:
+- Keep authorization logic centralized in one place (Policy)
+- Allow complex logic mixing Spatie permissions with business rules
+- Are easier to test
+- Follow Laravel convention
 
 ## 5. Seeding
 
@@ -265,46 +336,192 @@ $user->assignRole(RoleEnum::MANAGER);  // Type-safe!
 
 ## 6. Blade Directives
 
-### Permission Checks
+### Create/View Action Buttons
 ```blade
 @can('expenses.create')
-    <a href="{{ route('expenses.create') }}">Add Expense</a>
+    <a href="{{ route('expenses.create') }}" class="btn btn-primary">
+        Add Expense
+    </a>
+@endcan
+```
+
+### Two-Level Permission Gating (View + Actions)
+```blade
+<!-- Wrap entire table in view permission -->
+@can('expenses.view')
+    <table class="table">
+        <tbody>
+            @foreach ($expenses as $expense)
+                <tr>
+                    <td>{{ $expense->amount }}</td>
+                    <td>
+                        <!-- Individual action permissions -->
+                        @can('view', $expense)
+                            <a href="{{ route('expenses.show', $expense) }}">View</a>
+                        @endcan
+                        
+                        @can('update', $expense)
+                            <a href="{{ route('expenses.edit', $expense) }}">Edit</a>
+                        @endcan
+                        
+                        @can('delete', $expense)
+                            <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display:inline;">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        @endcan
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@else
+    <div class="alert alert-warning">
+        You don't have permission to view expenses.
+    </div>
+@endcan
+```
+
+### Model-Specific Authorization
+```blade
+<!-- For individual resource actions -->
+@can('update', $expense)
+    <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-warning">
+        Edit Expense
+    </a>
 @endcan
 
-@cannot('members.delete')
-    <span>No permission to delete members</span>
-@endcannot
+@can('delete', $expense)
+    <form action="{{ route('expenses.destroy', $expense) }}" method="POST">
+        @csrf @method('DELETE')
+        <button type="submit" class="btn btn-danger" 
+                onclick="return confirm('Delete this expense?')">
+            Delete
+        </button>
+    </form>
+@endcan
 ```
 
-### Role Checks
+### Role-Based UI
 ```blade
-@role('manager')
-    <div>Manager only content</div>
+<!-- Role checks for superadmin-only features -->
+@role('superadmin')
+    <div class="admin-panel">
+        System administration tools
+    </div>
 @endrole
 
+<!-- Manager-specific features -->
 @role('manager|superadmin')
-    <div>Managers and superadmin only</div>
+    <button class="btn btn-primary">Manage Roles</button>
 @endrole
 ```
 
-### Conditional UI
+### Practical Module Examples
+
+#### Expenses List View
 ```blade
-<table>
-    <tr>
-        <td>{{ $expense->amount }}</td>
-        <td>
-            @can('expenses.edit')
-                <a href="{{ route('expenses.edit', $expense) }}">Edit</a>
-            @endcan
-            
-            @can('expenses.delete')
-                <form action="{{ route('expenses.destroy', $expense) }}" method="POST">
-                    <button type="submit">Delete</button>
-                </form>
-            @endcan
-        </td>
-    </tr>
-</table>
+@can('expenses.create')
+    <a href="{{ route('expenses.create') }}" class="btn btn-primary">Add Expense</a>
+@endcan
+
+@can('expenses.view')
+    <div class="table-responsive">
+        <table class="table">
+            @foreach ($expenses as $expense)
+                <tr>
+                    <td>{{ $expense->category }}</td>
+                    <td>${{ $expense->amount }}</td>
+                    <td>
+                        @can('view', $expense)
+                            <a href="{{ route('expenses.show', $expense) }}">View</a>
+                        @endcan
+                        @can('update', $expense)
+                            <a href="{{ route('expenses.edit', $expense) }}">Edit</a>
+                        @endcan
+                        @can('delete', $expense)
+                            <form action="{{ route('expenses.destroy', $expense) }}" method="POST">
+                                <button>Delete</button>
+                            </form>
+                        @endcan
+                    </td>
+                </tr>
+            @endforeach
+        </table>
+    </div>
+@else
+    <div class="alert alert-danger">You don't have permission to view expenses.</div>
+@endcan
+```
+
+#### Months Management
+```blade
+@can('months.create')
+    <a href="{{ route('months.create') }}" class="btn btn-primary">Create Month</a>
+@endcan
+
+@can('months.view')
+    <table>
+        @foreach ($months as $month)
+            <tr>
+                <td>
+                    {{ $month->month_name }}
+                    @if ($month->status === \App\Enums\MonthStatusEnum::ACTIVE)
+                        <span class="badge bg-success">Active</span>
+                    @else
+                        <span class="badge bg-danger">Closed</span>
+                    @endif
+                </td>
+                <td>
+                    @can('view', $month)
+                        <a href="{{ route('months.show', $month) }}">View Report</a>
+                    @endcan
+                    @can('update', $month)
+                        <a href="{{ route('months.edit', $month) }}">Edit</a>
+                        @if ($month->status === \App\Enums\MonthStatusEnum::ACTIVE)
+                            <form action="{{ route('months.close', $month) }}" method="POST">
+                                <button>Close Month</button>
+                            </form>
+                        @endif
+                    @endcan
+                </td>
+            </tr>
+        @endforeach
+    </table>
+@else
+    <div class="alert alert-warning">You don't have permission to view months.</div>
+@endcan
+```
+
+#### Member Role Management
+```blade
+@can('members.create')
+    <a href="{{ route('members.create') }}" class="btn btn-primary">Add Member</a>
+@endcan
+
+@can('members.view')
+    <table>
+        @foreach ($members as $member)
+            <tr>
+                <td>{{ $member->name }}</td>
+                <td>
+                    @foreach ($member->roles as $role)
+                        <span class="badge bg-info">{{ $role->name }}</span>
+                    @endforeach
+                </td>
+                <td>
+                    @can('members.manage-roles')
+                        <button class="btn btn-warning btn-sm" onclick="changeRole({{ $member->id }})">
+                            <i class="fas fa-crown"></i> Change Role
+                        </button>
+                    @endcan
+                </td>
+            </tr>
+        @endforeach
+    </table>
+@else
+    <div class="alert alert-warning">You don't have permission to view members.</div>
+@endcan
 ```
 
 ## 7. Usage Patterns

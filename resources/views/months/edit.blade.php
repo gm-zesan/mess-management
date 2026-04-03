@@ -5,6 +5,7 @@ use App\Enums\MonthStatusEnum;
 @endphp
 
 @section('content')
+@can('update', $month)
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Edit Month</h1>
 
@@ -62,4 +63,12 @@ use App\Enums\MonthStatusEnum;
         </form>
     </div>
 </div>
+@else
+    <div class="container mx-auto px-4 py-8">
+        <div class="alert alert-danger" role="alert">
+            <strong>Access Denied!</strong> You don't have permission to edit this month.
+        </div>
+        <a href="{{ route('months.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">Back to Months</a>
+    </div>
+@endcan
 @endsection

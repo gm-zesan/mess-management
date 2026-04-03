@@ -14,6 +14,8 @@ class ExpenseController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Expense::class);
+        
         $expenses = Expense::with('month', 'user')
             ->latest('date')
             ->paginate(15);
@@ -26,6 +28,8 @@ class ExpenseController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Expense::class);
+        
         $activeMonth = activeMonth();
         $members = User::get();
 
@@ -37,6 +41,8 @@ class ExpenseController extends Controller
      */
     public function store(StoreExpenseRequest $request)
     {
+        $this->authorize('create', Expense::class);
+        
         $data = $request->validated();
         
         // Auto-assign active month
@@ -79,6 +85,8 @@ class ExpenseController extends Controller
      */
     public function show(Expense $expense)
     {
+        $this->authorize('view', $expense);
+        
         return view('expenses.show', compact('expense'));
     }
 
@@ -87,6 +95,8 @@ class ExpenseController extends Controller
      */
     public function edit(Expense $expense)
     {
+        $this->authorize('update', $expense);
+        
         $activeMonth = activeMonth();
         $members = User::get();
 
@@ -98,6 +108,8 @@ class ExpenseController extends Controller
      */
     public function update(StoreExpenseRequest $request, Expense $expense)
     {
+        $this->authorize('update', $expense);
+        
         // Check if month is closed
         if (isMonthClosed($expense->month_id)) {
             return redirect()->back()
@@ -121,6 +133,8 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense)
     {
+        $this->authorize('delete', $expense);
+        
         // Check if month is closed
         if (isMonthClosed($expense->month_id)) {
             return redirect()->back()

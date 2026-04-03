@@ -7,7 +7,9 @@
             <h2>Expenses</h2>
         </div>
         <div class="col-md-6 text-end">
-            <a href="{{ route('expenses.create') }}" class="btn btn-primary">+ Add Expense</a>
+            @can('expenses.create')
+                <a href="{{ route('expenses.create') }}" class="btn btn-primary">+ Add Expense</a>
+            @endcan
         </div>
     </div>
 
@@ -18,51 +20,66 @@
         </div>
     @endif
 
-    @if ($expenses->count())
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Date</th>
-                        <th>Month</th>
-                        <th>Category</th>
-                        <th>Who Spent</th>
-                        <th>Amount</th>
-                        <th>Note</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($expenses as $expense)
+    @can('expenses.view')
+        @if ($expenses->count())
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ $expense->date->format('M d, Y') }}</td>
-                            <td>{{ $expense->month->name }}</td>
-                            <td>{{ $expense->category }}</td>
-                            <td>{{ $expense->user?->name ?? 'N/A' }}</td>
-                            <td class="text-end">৳ {{ number_format($expense->amount, 2) }}</td>
-                            <td>{{ Str::limit($expense->note, 30) }}</td>
-                            <td>
-                                <a href="{{ route('expenses.show', $expense) }}" class="btn btn-sm btn-info">View</a>
-                                <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
-                            </td>
+                            <th>Date</th>
+                            <th>Month</th>
+                            <th>Category</th>
+                            <th>Who Spent</th>
+                            <th>Amount</th>
+                            <th>Note</th>
+                            <th>Actions</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach ($expenses as $expense)
+                            <tr>
+                                <td>{{ $expense->date->format('M d, Y') }}</td>
+                                <td>{{ $expense->month->name }}</td>
+                                <td>{{ $expense->category }}</td>
+                                <td>{{ $expense->user?->name ?? 'N/A' }}</td>
+                                <td class="text-end">৳ {{ number_format($expense->amount, 2) }}</td>
+                                <td>{{ Str::limit($expense->note, 30) }}</td>
+                                <td>
+                                    @can('view', $expense)
+                                        <a href="{{ route('expenses.show', $expense) }}" class="btn btn-sm btn-info">View</a>
+                                    @endcan
+                                    @can('update', $expense)
+                                        <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    @endcan
+                                    @can('delete', $expense)
+                                        <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                        </form>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="d-flex justify-content-center">
-            {{ $expenses->links() }}
-        </div>
+            <div class="d-flex justify-content-center">
+                {{ $expenses->links() }}
+            </div>
+        @else
+            <div class="alert alert-info">
+                No expenses found.
+                @can('expenses.create')
+                    <a href="{{ route('expenses.create') }}">Create one</a>
+                @endcan
+            </div>
+        @endif
     @else
-        <div class="alert alert-info">
-            No expenses found. <a href="{{ route('expenses.create') }}">Create one</a>
+        <div class="alert alert-warning">
+            <i class="fas fa-lock"></i> You don't have permission to view expenses.
         </div>
-    @endif
+    @endcan
 </div>
 @endsection

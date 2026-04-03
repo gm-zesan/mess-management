@@ -45,12 +45,16 @@
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('expenses.index') }}" class="btn btn-secondary">Back</a>
                         <div>
-                            <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
+                            @can('update', $expense)
+                                <a href="{{ route('expenses.edit', $expense) }}" class="btn btn-warning">Edit</a>
+                            @endcan
+                            @can('delete', $expense)
+                                <form action="{{ route('expenses.destroy', $expense) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            @endcan
                         </div>
                     </div>
                 </div>
