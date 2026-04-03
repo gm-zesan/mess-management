@@ -26,6 +26,7 @@
                         <th>Date</th>
                         <th>Month</th>
                         <th>Category</th>
+                        <th>Who Spent</th>
                         <th>Amount</th>
                         <th>Note</th>
                         <th>Actions</th>
@@ -37,6 +38,7 @@
                             <td>{{ $expense->date->format('M d, Y') }}</td>
                             <td>{{ $expense->month->name }}</td>
                             <td>{{ $expense->category }}</td>
+                            <td>{{ $expense->user?->name ?? 'N/A' }}</td>
                             <td class="text-end">৳ {{ number_format($expense->amount, 2) }}</td>
                             <td>{{ Str::limit($expense->note, 30) }}</td>
                             <td>

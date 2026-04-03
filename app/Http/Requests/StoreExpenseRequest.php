@@ -24,6 +24,7 @@ class StoreExpenseRequest extends FormRequest
         $monthId = $this->input('month_id') ?? request()->route('month')?->id;
         
         return [
+            'user_id' => ['required', 'exists:users,id'],
             'category' => ['required', 'string', 'in:meal,utility'],
             'amount' => ['required', 'numeric', 'min:0'],
             'date' => ['required', 'date'],
@@ -38,6 +39,8 @@ class StoreExpenseRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'user_id.required' => 'Who is spending is required',
+            'user_id.exists' => 'Selected member does not exist',
             'month_id.required' => 'Month is required',
             'month_id.exists' => 'Selected month does not exist',
             'category.required' => 'Category is required',

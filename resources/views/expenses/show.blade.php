@@ -16,23 +16,26 @@
                             <p>{{ $expense->month->name }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label"><strong>Date:</strong></label>
-                            <p>{{ $expense->date->format('M d, Y') }}</p>
+                            <label class="form-label"><strong>Who Spent:</strong></label>
+                            <p>{{ $expense->user?->name ?? 'N/A' }}</p>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label"><strong>Category:</strong></label>
-                            <p>{{ $expense->category }}</p>
+                            <label class="form-label"><strong>Date:</strong></label>
+                            <p>{{ $expense->date->format('M d, Y') }}</p>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><strong>Amount:</strong></label>
                             <p>৳ {{ number_format($expense->amount, 2) }}</p>
                         </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label"><strong>Category:</strong></label>
+                            <p>{{ $expense->category }}</p>
+                        </div>
                     </div>
-
-                    @if ($expense->note)
                         <div class="mb-3">
                             <label class="form-label"><strong>Note:</strong></label>
                             <p>{{ $expense->note }}</p>

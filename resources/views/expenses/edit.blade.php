@@ -39,6 +39,21 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="user_id" class="form-label">Select Member <span class="text-danger">*</span></label>
+                            <select id="user_id" name="user_id" class="form-control @error('user_id') is-invalid @enderror" required>
+                                <option value="">-- Select Member --</option>
+                                @foreach ($members ?? [] as $member)
+                                    <option value="{{ $member->id }}" {{ old('user_id', $expense->user_id) == $member->id ? 'selected' : '' }}>
+                                        {{ $member->name }} ({{ $member->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
                             <select id="category" name="category" class="form-control @error('category') is-invalid @enderror" required>
                                 <option value="">-- Select Category --</option>

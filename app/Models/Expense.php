@@ -10,7 +10,7 @@ class Expense extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['month_id', 'category', 'amount', 'date', 'note'];
+    protected $fillable = ['month_id', 'user_id', 'category', 'amount', 'date', 'note'];
 
     protected $casts = [
         'date' => 'date',
@@ -20,5 +20,10 @@ class Expense extends Model
     public function month(): BelongsTo
     {
         return $this->belongsTo(Month::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

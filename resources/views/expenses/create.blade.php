@@ -38,6 +38,21 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="user_id" class="form-label">Select Member <span class="text-danger">*</span></label>
+                            <select id="user_id" name="user_id" class="form-control @error('user_id') is-invalid @enderror" required>
+                                <option value="">-- Select Member --</option>
+                                @foreach ($members ?? [] as $member)
+                                    <option value="{{ $member->id }}" {{ old('user_id') == $member->id ? 'selected' : '' }}>
+                                        {{ $member->name }} ({{ $member->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
                             <select id="category" name="category" class="form-control @error('category') is-invalid @enderror" required>
                                 <option value="">-- Select Category --</option>
@@ -76,7 +91,14 @@
                             @enderror
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                        <!-- Deposit Section (Optional) -->
+                        <hr class="my-4">
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" id="with_deposit" name="with_deposit" value="1" class="form-check-input">
+                            <label for="with_deposit" class="form-check-label">Also Create Deposit for Selected Member</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between gap-2">
                             <a href="{{ route('expenses.index') }}" class="btn btn-secondary">Cancel</a>
                             <button type="submit" class="btn btn-primary">Add Expense</button>
                         </div>

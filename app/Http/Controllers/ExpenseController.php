@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExpenseRequest;
 use App\Models\Expense;
+use App\Models\User;
+use App\Models\Deposit;
 
 class ExpenseController extends Controller
 {
@@ -12,7 +14,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $expenses = Expense::with('month')
+        $expenses = Expense::with('month', 'user')
             ->latest('date')
             ->paginate(15);
 
@@ -25,8 +27,9 @@ class ExpenseController extends Controller
     public function create()
     {
         $activeMonth = activeMonth();
+        $members = User::get();
 
-        return view('expenses.create', compact('activeMonth'));
+        return view('expenses.create', compact('activeMonth', 'members'));
     }
 
     /**
@@ -48,8 +51,27 @@ class ExpenseController extends Controller
         $data['month_id'] = $activeMonth->id;
         Expense::create($data);
 
+        // Check if also creating a deposit
+        if ($request->has('with_deposit') && $request->input('with_deposit') == 1) {
+            $user_id = $request->input('user_id');
+            
+            // Only create deposit if user_id is provided
+            if ($user_id) {
+                Deposit::create([
+                    'user_id' => $user_id,
+                    'month_id' => $activeMonth->id,
+                    'amount' => $data['amount'],
+                    'date' => $data['date'],
+                ]);
+            }
+        }
+
+        $message = ($request->has('with_deposit') && $request->input('with_deposit') == 1)
+            ? 'Expense and deposit created successfully.'
+            : 'Expense record created successfully.';
+
         return redirect()->route('expenses.index')
-            ->with('success', 'Expense record created successfully.');
+            ->with('success', $message);
     }
 
     /**
@@ -66,8 +88,9 @@ class ExpenseController extends Controller
     public function edit(Expense $expense)
     {
         $activeMonth = activeMonth();
+        $members = User::get();
 
-        return view('expenses.edit', compact('expense', 'activeMonth'));
+        return view('expenses.edit', compact('expense', 'activeMonth', 'members'));
     }
 
     /**
