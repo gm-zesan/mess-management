@@ -71,12 +71,4 @@
     </div>
 </div>
 @endsection
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
+

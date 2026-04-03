@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+use App\Enums\MonthStatusEnum;
+@endphp
+
 @section('content')
 <div class="container-fluid px-4 py-8">
     <!-- Page Header -->
@@ -71,10 +75,10 @@
                                         </strong>
                                     </td>
                                     <td class="text-center">
-                                        @if($month->status === 'active')
-                                            <span class="badge bg-success">Active</span>
+                                        @if($month->status === MonthStatusEnum::ACTIVE)
+                                            <span class="badge bg-success">{{ MonthStatusEnum::ACTIVE->label() }}</span>
                                         @else
-                                            <span class="badge bg-secondary">Closed</span>
+                                            <span class="badge bg-secondary">{{ MonthStatusEnum::CLOSED->label() }}</span>
                                         @endif
                                     </td>
                                     <td class="text-center">

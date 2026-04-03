@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MonthStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,6 +16,7 @@ class Month extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'status' => MonthStatusEnum::class,
         'closed_at' => 'datetime',
     ];
 

@@ -32,7 +32,6 @@
                             <div class="text-center p-3 bg-light rounded">
                                 <h5 class="text-muted mb-1">Meal Rate</h5>
                                 <h2 class="text-info mb-0">৳ {{ number_format($summary['meal_rate'], 2) }}</h2>
-                                <small class="text-muted">per meal</small>
                             </div>
                         </div>
                         <div class="col-md-3">

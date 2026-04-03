@@ -15,20 +15,27 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Resource routes with automatic policy authorization
     Route::resource('members', MemberController::class);
+    Route::post('/members/{member}/change-manager', [MemberController::class, 'changeManager'])
+        ->name('members.change-manager');
     Route::resource('months', MonthController::class);
-    Route::get('/months/{month}/report', [MonthController::class, 'report'])->name('months.report');
     Route::post('/months/{month}/close', [MonthController::class, 'close'])->name('months.close');
+    Route::get('/months/{month}/report', [MonthController::class, 'report'])->name('months.report');
+    
     Route::resource('meals', MealController::class);    
     Route::resource('expenses', ExpenseController::class);
     Route::resource('deposits', DepositController::class);
     
+    // Reports
     Route::get('/reports/all-months', [ReportController::class, 'allMonths'])->name('reports.all-months');
     Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyReport'])->name('reports.monthly');
     Route::get('/reports/monthly/{month}/pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');

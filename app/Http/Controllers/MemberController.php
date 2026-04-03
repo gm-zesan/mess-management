@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Enums\RoleEnum;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -13,7 +15,13 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $members = User::paginate(10);
+        // Exclude superadmin from member list and load roles
+        $members = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', RoleEnum::SUPERADMIN->value);
+        })
+        ->with('roles')
+        ->paginate(10);
+        
         return view('members.index', compact('members'));
     }
 
@@ -66,5 +74,27 @@ class MemberController extends Controller
     {
         $member->delete();
         return redirect()->route('members.index')->with('success', 'Member deleted successfully.');
+    }
+
+    /**
+     * Change manager - Assign manager role to selected user and remove from others
+     */
+    public function changeManager(User $member)
+    {
+        // Check permission
+        if (!Auth::user()->can('members.manage-roles')) {
+            abort(403);
+        }
+
+        // Get current managers and assign them the member role
+        User::role(RoleEnum::MANAGER->value)->get()->each(function ($user) {
+            $user->syncRoles([RoleEnum::MEMBER->value]);
+        });
+
+        // Assign manager role to selected user
+        $member->syncRoles([RoleEnum::MANAGER->value]);
+
+        return redirect()->route('members.index')->with('success', "{$member->name} is now the manager.");
+    
     }
 }

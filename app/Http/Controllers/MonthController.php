@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Month;
-use App\Models\Member;
+use App\Models\User;
 use App\Models\Meal;
 use App\Models\Deposit;
+use App\Enums\MonthStatusEnum;
+use App\Enums\RoleEnum;
 use App\Services\MonthService;
 use App\Services\CalculationService;
 use Illuminate\Http\Request;
@@ -38,13 +40,13 @@ class MonthController extends Controller
             'name' => 'required|string|max:255|unique:months',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'status' => 'required|in:active,closed',
+            'status' => 'required|in:' . MonthStatusEnum::ACTIVE->value . ',' . MonthStatusEnum::CLOSED->value,
         ]);
 
         $month = Month::create($validated);
 
         // If status is active, ensure only this month is active
-        if ($month->status === 'active') {
+        if ($month->status === MonthStatusEnum::ACTIVE) {
             $monthService->activateMonth($month);
         }
 
@@ -77,17 +79,19 @@ class MonthController extends Controller
         
         // Get detailed meal and deposit records for each member
         $memberDetails = [];
-        $members = Member::where('status', 'active')->get();
+        $members = User::whereDoesntHave('roles', function ($query) {
+            $query->where('name', RoleEnum::SUPERADMIN->value);
+        })->get();
         $mealRate = $summary['meal_rate'];
 
         foreach ($members as $member) {
             $meals = Meal::where('month_id', $month->id)
-                ->where('member_id', $member->id)
+                ->where('user_id', $member->id)
                 ->orderBy('date')
                 ->get();
 
             $deposits = Deposit::where('month_id', $month->id)
-                ->where('member_id', $member->id)
+                ->where('user_id', $member->id)
                 ->orderBy('date')
                 ->get();
 
@@ -135,13 +139,13 @@ class MonthController extends Controller
             'name' => 'required|string|max:255|unique:months,name,' . $month->id,
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'status' => 'required|in:active,closed',
+            'status' => 'required|in:' . MonthStatusEnum::ACTIVE->value . ',' . MonthStatusEnum::CLOSED->value,
         ]);
 
         $month->update($validated);
 
         // If status is being set to active, ensure only this month is active
-        if ($month->status === 'active') {
+        if ($month->status === MonthStatusEnum::ACTIVE) {
             $monthService->activateMonth($month);
         }
 

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+use App\Enums\MonthStatusEnum;
+@endphp
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
@@ -39,8 +43,8 @@
                 <p class="text-sm text-blue-700">Status</p>
                 <p class="text-lg font-semibold">
                     <span class="px-3 py-1 rounded-full text-sm font-semibold
-                        {{ $month->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                        {{ ucfirst($month->status) }}
+                        {{ $month->status === MonthStatusEnum::ACTIVE ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                        {{ $month->status->label() }}
                     </span>
                 </p>
             </div>

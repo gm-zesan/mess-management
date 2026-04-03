@@ -63,7 +63,6 @@
                         <div class="card-body">
                             <h6 class="card-title text-white-50">Meal Rate</h6>
                             <h2 class="card-text mb-0">৳ {{ number_format($summary['meal_rate'], 2) }}</h2>
-                            <small class="text-white-50">per meal</small>
                         </div>
                     </div>
                 </div>

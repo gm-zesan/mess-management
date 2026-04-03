@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@php
+use App\Enums\MonthStatusEnum;
+@endphp
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Edit Month</h1>
@@ -39,8 +43,12 @@
             <div class="mb-6">
                 <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
                 <select name="status" id="status" class="w-full px-4 py-2 border rounded-lg @error('status') border-red-500 @enderror" required>
-                    <option value="active" {{ old('status', $month->status) === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="closed" {{ old('status', $month->status) === 'closed' ? 'selected' : '' }}>Closed</option>
+                    <option value="{{ MonthStatusEnum::ACTIVE->value }}" {{ old('status', $month->status->value) === MonthStatusEnum::ACTIVE->value ? 'selected' : '' }}>
+                        {{ MonthStatusEnum::ACTIVE->label() }}
+                    </option>
+                    <option value="{{ MonthStatusEnum::CLOSED->value }}" {{ old('status', $month->status->value) === MonthStatusEnum::CLOSED->value ? 'selected' : '' }}>
+                        {{ MonthStatusEnum::CLOSED->label() }}
+                    </option>
                 </select>
                 @error('status')
                 <span class="text-red-500 text-sm mt-1">{{ $message }}</span>

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Month;
+use App\Enums\MonthStatusEnum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class MonthService
@@ -16,7 +17,7 @@ class MonthService
      */
     public function getActiveMonth(): Month
     {
-        return Month::where('status', 'active')->firstOrFail();
+        return Month::where('status', MonthStatusEnum::ACTIVE->value)->firstOrFail();
     }
 
     /**
@@ -26,7 +27,7 @@ class MonthService
      */
     public function getActiveMonthOrNull(): ?Month
     {
-        return Month::where('status', 'active')->first();
+        return Month::where('status', MonthStatusEnum::ACTIVE->value)->first();
     }
 
     /**
@@ -36,7 +37,7 @@ class MonthService
      */
     public function hasActiveMonth(): bool
     {
-        return Month::where('status', 'active')->exists();
+        return Month::where('status', MonthStatusEnum::ACTIVE->value)->exists();
     }
 
     /**
@@ -50,11 +51,11 @@ class MonthService
     {
         // Deactivate all other months
         Month::where('id', '!=', $month->id)
-            ->where('status', 'active')
-            ->update(['status' => 'closed']);
+            ->where('status', MonthStatusEnum::ACTIVE->value)
+            ->update(['status' => MonthStatusEnum::CLOSED->value]);
 
         // Activate this month
-        $month->update(['status' => 'active']);
+        $month->update(['status' => MonthStatusEnum::ACTIVE->value]);
 
         return $month;
     }
@@ -68,7 +69,7 @@ class MonthService
     public function closeMonth(Month $month): Month
     {
         $month->update([
-            'status' => 'closed',
+            'status' => MonthStatusEnum::CLOSED->value,
             'closed_at' => now(),
         ]);
 

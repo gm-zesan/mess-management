@@ -2,11 +2,17 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Daily Meal Records</h1>
-        <a href="{{ route('meals.create') }}" class="btn btn-primary">
-            Add Meal Record
-        </a>
+    <div class="row justify-content-between align-items-center mb-4">
+        <div class="col">
+            <h2 class="h2">Daily Meal Records</h2>
+        </div>
+        <div class="col-auto">
+            @can('meals.create')
+                <a href="{{ route('meals.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Meal Record
+                </a>
+            @endcan
+        </div>
     </div>
 
     @if (session('success'))
@@ -16,65 +22,83 @@
         </div>
     @endif
 
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Member Name</th>
-                            <th>Month</th>
-                            <th>Date</th>
-                            <th>Meal Count</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($meals as $meal)
+    @can('meals.view')
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
                             <tr>
-                                <td>
-                                    <span class="badge bg-primary">{{ $meal->user->name }}</span>
-                                </td>
-                                <td>{{ $meal->month->name }}</td>
-                                <td>
-                                    <small class="text-muted">{{ $meal->date->format('M d, Y') }}</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info">{{ $meal->meal_count }}</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{{ route('meals.show', $meal) }}" class="btn btn-info btn-sm" title="View">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('meals.edit', $meal) }}" class="btn btn-warning btn-sm" title="Edit">
-                                            <i class="fa-solid fa-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('meals.destroy', $meal) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                <th>Member Name</th>
+                                <th>Month</th>
+                                <th>Date</th>
+                                <th>Meal Count</th>
+                                <th>Actions</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    No meal records found. <a href="{{ route('meals.create') }}">Create one</a>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @forelse ($meals as $meal)
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary">{{ $meal->user->name }}</span>
+                                    </td>
+                                    <td>{{ $meal->month->name }}</td>
+                                    <td>
+                                        <small class="text-muted">{{ $meal->date->format('M d, Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ $meal->meal_count }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            @can('view', $meal)
+                                                <a href="{{ route('meals.show', $meal) }}" class="btn btn-info btn-sm" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            @endcan
 
-            <div class="d-flex justify-content-center mt-4">
-                {{ $meals->links() }}
+                                            @can('update', $meal)
+                                                <a href="{{ route('meals.edit', $meal) }}" class="btn btn-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            @endcan
+
+                                            @can('delete', $meal)
+                                                <form action="{{ route('meals.destroy', $meal) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete" 
+                                                            onclick="return confirm('Are you sure you want to delete this meal record?');">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        No meal records found. 
+                                        @can('meals.create')
+                                            <a href="{{ route('meals.create') }}">Create one</a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $meals->links() }}
+                </div>
             </div>
         </div>
-    </div>
+    @else
+        <div class="alert alert-warning">
+            <i class="fas fa-lock"></i> You don't have permission to view meals.
+        </div>
+    @endcan
 </div>
 @endsection
