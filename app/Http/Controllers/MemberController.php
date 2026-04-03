@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member;
+use App\Models\User;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 
@@ -13,7 +13,7 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $members = Member::paginate(10);
+        $members = User::paginate(10);
         return view('members.index', compact('members'));
     }
 
@@ -30,14 +30,14 @@ class MemberController extends Controller
      */
     public function store(StoreMemberRequest $request)
     {
-        Member::create($request->validated());
+        User::create($request->validated());
         return redirect()->route('members.index')->with('success', 'Member created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Member $member)
+    public function show(User $member)
     {
         return view('members.show', compact('member'));
     }
@@ -45,7 +45,7 @@ class MemberController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Member $member)
+    public function edit(User $member)
     {
         return view('members.edit', compact('member'));
     }
@@ -53,7 +53,7 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMemberRequest $request, Member $member)
+    public function update(UpdateMemberRequest $request, User $member)
     {
         $member->update($request->validated());
         return redirect()->route('members.show', $member)->with('success', 'Member updated successfully.');
@@ -62,7 +62,7 @@ class MemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Member $member)
+    public function destroy(User $member)
     {
         $member->delete();
         return redirect()->route('members.index')->with('success', 'Member deleted successfully.');

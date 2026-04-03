@@ -16,7 +16,7 @@ class Deposit extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'member_id',
+        'user_id',
         'month_id',
         'amount',
         'date',
@@ -27,9 +27,9 @@ class Deposit extends Model
         'amount' => 'decimal:2',
     ];
 
-    public function member(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(User::class);
     }
 
     public function month(): BelongsTo

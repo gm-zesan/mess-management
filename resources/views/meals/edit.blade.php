@@ -22,16 +22,16 @@
                         @method('PUT')
 
                         <div class="mb-3">
-                            <label for="member_id" class="form-label">Member <span class="text-danger">*</span></label>
-                            <select id="member_id" name="member_id" class="form-select @error('member_id') is-invalid @enderror">
+                            <label for="user_id" class="form-label">Member <span class="text-danger">*</span></label>
+                            <select id="user_id" name="user_id" class="form-select @error('user_id') is-invalid @enderror">
                                 <option value="">Select a member</option>
                                 @foreach ($members as $member)
-                                    <option value="{{ $member->id }}" {{ old('member_id', $meal->member_id) == $member->id ? 'selected' : '' }}>
+                                    <option value="{{ $member->id }}" {{ old('user_id', $meal->user_id) == $member->id ? 'selected' : '' }}>
                                         {{ $member->name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('member_id')
+                            @error('user_id')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>

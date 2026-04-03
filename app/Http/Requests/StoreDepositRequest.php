@@ -21,7 +21,7 @@ class StoreDepositRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'member_id' => ['required', 'integer', 'exists:members,id'],
+            'user_id' => ['required', 'integer', 'exists:users,id'],
             'amount' => ['required', 'numeric', 'min:0'],
             'date' => ['required', 'date'],
             // Check month closure through service in controller
@@ -34,8 +34,8 @@ class StoreDepositRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'member_id.required' => 'Member is required',
-            'member_id.exists' => 'Selected member does not exist',
+            'user_id.required' => 'Member is required',
+            'user_id.exists' => 'Selected member does not exist',
             'month_id.required' => 'Month is required',
             'month_id.exists' => 'Selected month does not exist',
             'amount.required' => 'Amount is required',

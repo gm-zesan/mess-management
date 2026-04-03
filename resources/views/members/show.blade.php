@@ -27,14 +27,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Status:</label>
-                        <p class="form-control-plaintext">
-                            @if ($member->status === 'active')
-                                <span class="badge bg-success">Active</span>
-                            @else
-                                <span class="badge bg-danger">Inactive</span>
-                            @endif
-                        </p>
+                        <label class="form-label fw-bold">Email:</label>
+                        <p class="form-control-plaintext">{{ $member->email }}</p>
                     </div>
 
                     <div class="mb-3">
@@ -48,6 +42,19 @@
                     </div>
 
                     <div class="d-flex gap-2">
+                        <a href="{{ route('members.edit', $member) }}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{{ route('members.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
                         <a href="{{ route('members.edit', $member) }}" class="btn btn-warning">
                             <i class="fas fa-edit"></i> Edit
                         </a>

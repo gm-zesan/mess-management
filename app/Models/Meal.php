@@ -11,7 +11,7 @@ class Meal extends Model
     use HasFactory;
 
     protected $fillable = [
-        'member_id',
+        'user_id',
         'month_id',
         'date',
         'meal_count',
@@ -23,11 +23,11 @@ class Meal extends Model
     ];
 
     /**
-     * Get the member that owns this meal.
+     * Get the user that owns this meal.
      */
-    public function member(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(User::class);
     }
 
     /**

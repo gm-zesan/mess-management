@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('meals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained('members')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('month_id')->constrained('months')->cascadeOnDelete();
             $table->date('date');
             $table->integer('meal_count');
             $table->timestamps();
-            $table->unique(['member_id', 'date', 'month_id']);
+            $table->unique(['user_id', 'date', 'month_id']);
         });
     }
 

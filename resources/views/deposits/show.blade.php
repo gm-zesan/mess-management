@@ -13,7 +13,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label"><strong>Member:</strong></label>
-                            <p>{{ $deposit->member->name }}</p>
+                            <p>{{ $deposit->user->name }}</p>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><strong>Month:</strong></label>

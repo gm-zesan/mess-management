@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMealRequest;
 use App\Models\Meal;
-use App\Models\Member;
+use App\Models\User;
 
 class MealController extends Controller
 {
@@ -13,7 +13,7 @@ class MealController extends Controller
      */
     public function index()
     {
-        $meals = Meal::with(['member', 'month'])
+        $meals = Meal::with(['user', 'month'])
             ->latest('date')
             ->paginate(15);
 
@@ -25,7 +25,7 @@ class MealController extends Controller
      */
     public function create()
     {
-        $members = Member::where('status', 'active')->get();
+        $members = User::get();
         $activeMonth = activeMonth();
 
         return view('meals.create', compact('members', 'activeMonth'));
@@ -70,7 +70,7 @@ class MealController extends Controller
      */
     public function edit(Meal $meal)
     {
-        $members = Member::where('status', 'active')->get();
+        $members = User::get();
         $activeMonth = activeMonth();
 
         return view('meals.edit', compact('meal', 'members', 'activeMonth'));

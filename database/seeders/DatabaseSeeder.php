@@ -23,28 +23,26 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
-        $this->call(RoleSeeder::class);
-
-        // Seed test members with authentication credentials
-        Member::factory()->create([
+        User::factory()->create([
             'name' => 'Ashraf Ahmed',
-            'status' => 'active',
             'email' => 'ashraf@example.com',
             'password' => bcrypt('password'),
         ]);
 
-        Member::factory()->create([
+        User::factory()->create([
             'name' => 'Karim Khan',
-            'status' => 'active',
             'email' => 'karim@example.com',
             'password' => bcrypt('password'),
         ]);
 
-        Member::factory()->create([
+        User::factory()->create([
             'name' => 'Fatima Hassan',
-            'status' => 'active',
             'email' => 'fatima@example.com',
             'password' => bcrypt('password'),
         ]);
+        $this->call(RoleSeeder::class);
+
+        // Seed test members with authentication credentials
+        
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDepositRequest;
 use App\Models\Deposit;
-use App\Models\Member;
+use App\Models\User;
 
 class DepositController extends Controller
 {
@@ -13,7 +13,7 @@ class DepositController extends Controller
      */
     public function index()
     {
-        $deposits = Deposit::with(['member', 'month'])
+        $deposits = Deposit::with(['user', 'month'])
             ->latest('date')
             ->paginate(15);
 
@@ -25,7 +25,7 @@ class DepositController extends Controller
      */
     public function create()
     {
-        $members = Member::where('status', 'active')->get();
+        $members = User::get();
         $activeMonth = activeMonth();
 
         return view('deposits.create', compact('members', 'activeMonth'));
@@ -67,7 +67,7 @@ class DepositController extends Controller
      */
     public function edit(Deposit $deposit)
     {
-        $members = Member::where('status', 'active')->get();
+        $members = User::get();
         $activeMonth = activeMonth();
 
         return view('deposits.edit', compact('deposit', 'members', 'activeMonth'));

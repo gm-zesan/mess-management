@@ -20,8 +20,9 @@ class StoreMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:members',
-            'status' => 'required|in:active,inactive',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ];
     }
 
@@ -32,9 +33,12 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             'name.required' => 'Member name is required.',
-            'name.unique' => 'This member name already exists.',
-            'status.required' => 'Status is required.',
-            'status.in' => 'Status must be either active or inactive.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email already exists.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Passwords do not match.',
         ];
     }
 }

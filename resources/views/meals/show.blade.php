@@ -15,7 +15,7 @@
                             <div class="mb-3">
                                 <label class="form-label text-muted">Member</label>
                                 <p class="form-control-plaintext">
-                                    <span class="badge bg-primary">{{ $meal->member->name }}</span>
+                                    <span class="badge bg-primary">{{ $meal->user->name }}</span>
                                 </p>
                             </div>
                         </div>

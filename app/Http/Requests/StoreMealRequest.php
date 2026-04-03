@@ -22,13 +22,13 @@ class StoreMealRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'member_id' => ['required', 'exists:members,id'],
+            'user_id' => ['required', 'exists:users,id'],
             'month_id' => ['required', 'exists:months,id', new MonthNotClosed()],
             'date' => [
                 'required',
                 'date',
                 Rule::unique('meals')
-                    ->where('member_id', $this->member_id)
+                    ->where('user_id', $this->user_id)
                     ->where('month_id', $this->month_id)
                     ->ignore($this->meal ?? null),
             ],
@@ -42,8 +42,8 @@ class StoreMealRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'member_id.required' => 'Please select a member.',
-            'member_id.exists' => 'The selected member does not exist.',
+            'user_id.required' => 'Please select a member.',
+            'user_id.exists' => 'The selected member does not exist.',
             'month_id.required' => 'Please select a month.',
             'month_id.exists' => 'The selected month does not exist.',
             'date.required' => 'Please enter a date.',

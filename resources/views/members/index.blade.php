@@ -29,7 +29,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Status</th>
+                                        <th>Email</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
                                     </tr>
@@ -39,13 +39,7 @@
                                         <tr>
                                             <td>{{ $member->id }}</td>
                                             <td>{{ $member->name }}</td>
-                                            <td>
-                                                @if ($member->status === 'active')
-                                                    <span class="badge bg-success">Active</span>
-                                                @else
-                                                    <span class="badge bg-danger">Inactive</span>
-                                                @endif
-                                            </td>
+                                            <td>{{ $member->email }}</td>
                                             <td>{{ $member->created_at->format('Y-m-d H:i') }}</td>
                                             <td>
                                                 <a href="{{ route('members.show', $member) }}" class="btn btn-sm btn-info" title="View">

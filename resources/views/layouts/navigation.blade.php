@@ -93,9 +93,6 @@
                         <a href="{{ route('login') }}" class="btn btn-sm btn-primary">
                             {{ __('Login') }}
                         </a>
-                        <a href="{{ route('member.login') }}" class="btn btn-sm btn-secondary">
-                            {{ __('Member Login') }}
-                        </a>
                     </div>
                 @endauth
             </div>
@@ -175,9 +172,7 @@
                     <x-responsive-nav-link :href="route('login')">
                         {{ __('Login') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('member.login')">
-                        {{ __('Member Login') }}
-                    </x-responsive-nav-link>
+
                 </div>
             @endauth
         </div>

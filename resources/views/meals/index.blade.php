@@ -33,7 +33,7 @@
                         @forelse ($meals as $meal)
                             <tr>
                                 <td>
-                                    <span class="badge bg-primary">{{ $meal->member->name }}</span>
+                                    <span class="badge bg-primary">{{ $meal->user->name }}</span>
                                 </td>
                                 <td>{{ $meal->month->name }}</td>
                                 <td>

@@ -34,7 +34,7 @@
                     @foreach ($deposits as $deposit)
                         <tr>
                             <td>{{ $deposit->date->format('M d, Y') }}</td>
-                            <td>{{ $deposit->member->name }}</td>
+                            <td>{{ $deposit->user->name }}</td>
                             <td>{{ $deposit->month->name }}</td>
                             <td class="text-end">৳ {{ number_format($deposit->amount, 2) }}</td>
                             <td>
