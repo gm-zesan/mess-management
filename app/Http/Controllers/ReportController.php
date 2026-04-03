@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Month;
+use App\Models\User;
 use App\Services\CalculationService;
 use Illuminate\Support\Facades\Auth;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -14,7 +15,8 @@ class ReportController extends Controller
      */
     public function monthlyReport(Month $month, CalculationService $calculationService)
     {
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
         
         // Members can only view current month report
         if ($user->hasRole('member')) {
@@ -40,6 +42,7 @@ class ReportController extends Controller
      */
     public function allMonths(CalculationService $calculationService)
     {
+        /** @var User $user */
         $user = Auth::user();
         
         // Check if user has permission to view all months reports
@@ -67,7 +70,8 @@ class ReportController extends Controller
      */
     public function exportPdf(Month $month, CalculationService $calculationService)
     {
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
         
         // Members can only export current month report
         if ($user->hasRole('member')) {
@@ -87,7 +91,7 @@ class ReportController extends Controller
             'summary' => $summary,
         ])->render();
         
-        $pdf = PDF::loadHTML($html);
+        $pdf = Pdf::loadHTML($html);
         $pdf->setPaper('A4', 'portrait');
         
         return $pdf->download('Monthly-Report-' . $month->name . '.pdf');

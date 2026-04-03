@@ -41,6 +41,11 @@
                             {{ __('Months') }}
                         </x-nav-link>
                     @endcan
+                    @if(auth()->user() && auth()->user()->hasRole('superadmin'))
+                        <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
+                            {{ __('Permissions') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -130,6 +135,11 @@
                     {{ __('Months') }}
                 </x-responsive-nav-link>
             @endcan
+            @if(auth()->user() && auth()->user()->hasRole('superadmin'))
+                <x-responsive-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
+                    {{ __('Permissions') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

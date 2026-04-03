@@ -3,13 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @method bool hasRole($roles) Check if user has a specific role
+ * @method bool can($abilities, $arguments = []) Check if user has a specific permission
+ * @method \Illuminate\Database\Eloquent\Collection getRoleNames() Get all roles assigned to user
+ * @method \Illuminate\Database\Eloquent\Collection getPermissionNames() Get all permissions assigned to user
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */

@@ -54,10 +54,11 @@ class MonthPolicy
 
     /**
      * Determine whether the user can delete the month.
+     * Only superadmin can delete months.
      */
     public function delete(User $user, Month $month): bool
     {
-        return $user->can(PermissionEnum::MONTHS_DELETE->value);
+        return $user->hasRole('superadmin');
     }
 
     /**

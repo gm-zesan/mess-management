@@ -30,7 +30,10 @@ use App\Enums\MonthStatusEnum;
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Start Date</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">End Date</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                        @canany(['months.update', 'months.delete'])
+                            
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                        @endcanany
                     </tr>
                 </thead>
                 <tbody>
@@ -45,18 +48,21 @@ use App\Enums\MonthStatusEnum;
                                 {{ $month->status->label() }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-sm">
-                            @can('update', $month)
-                                <a href="{{ route('months.edit', $month->id) }}" class="text-yellow-600 hover:text-yellow-900 mr-3">Edit</a>
-                            @endcan
-                            @can('delete', $month)
-                                <form action="{{ route('months.destroy', $month->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
-                            @endcan
-                        </td>
+                        @canany(['months.update', 'months.delete'])
+                            <td class="px-6 py-4 text-sm">
+                                @can('update', $month)
+                                    <a href="{{ route('months.edit', $month->id) }}" class="text-yellow-600 hover:text-yellow-900 mr-3">Edit</a>
+                                @endcan
+                                @can('delete', $month)
+                                    <form action="{{ route('months.destroy', $month->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                @endcan
+                            </td>
+                        @endcanany
+                        
                     </tr>
                     @empty
                     <tr>

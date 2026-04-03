@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PermissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,6 +39,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/all-months', [ReportController::class, 'allMonths'])->name('reports.all-months');
     Route::get('/reports/monthly/{month}', [ReportController::class, 'monthlyReport'])->name('reports.monthly');
     Route::get('/reports/monthly/{month}/pdf', [ReportController::class, 'exportPdf'])->name('reports.export-pdf');
+    
+    // Permissions (Superadmin only)
+    Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
+    Route::post('/permissions/assign', [PermissionController::class, 'assignPermission'])->name('permissions.assign');
+    Route::post('/permissions/revoke', [PermissionController::class, 'revokePermission'])->name('permissions.revoke');
 });
 
 require __DIR__.'/auth.php';

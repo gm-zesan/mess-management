@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -32,8 +31,10 @@ class PermissionSeeder extends Seeder
         // Superadmin: has all permissions
         $superAdminRole->syncPermissions(Permission::all());
 
-        // Manager: can do everything except superadmin management
-        $managerPermissions = Permission::whereNotIn('name', [])->get();
+        // Manager: can do everything except delete months and superadmin management
+        $managerPermissions = Permission::whereNotIn('name', [
+            PermissionEnum::MONTHS_DELETE->value,
+        ])->get();
         $managerRole->syncPermissions($managerPermissions);
 
         // Member: limited permissions (read-only)
@@ -42,8 +43,9 @@ class PermissionSeeder extends Seeder
             PermissionEnum::MEMBERS_VIEW->value,
             PermissionEnum::EXPENSES_VIEW->value,
             PermissionEnum::DEPOSITS_VIEW->value,
-            PermissionEnum::REPORTS_VIEW->value,
+            PermissionEnum::MONTHS_VIEW->value,
             PermissionEnum::REPORTS_ALL_MONTHS->value,
+            PermissionEnum::REPORTS_VIEW->value,
         ])->get();
         $memberRole->syncPermissions($memberPermissions);
     }

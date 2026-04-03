@@ -88,7 +88,9 @@ class MemberController extends Controller
         // Check permission
         $this->authorize('update', $member);
         
-        if (!Auth::user()->can('members.manage-roles')) {
+        /** @var User $user */
+        $user = Auth::user();
+        if (!$user->can('members.manage-roles')) {
             abort(403);
         }
 
