@@ -132,27 +132,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Quick Actions -->
-            <div class="row mt-6">
-                <div class="col-md-12">
-                    <h5 class="mb-3">Quick Actions</h5>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a href="{{ route('meals.create') }}" class="btn btn-primary">
-                            <i class="fa-solid fa-plus"></i> Add Meal
-                        </a>
-                        <a href="{{ route('expenses.create') }}" class="btn btn-danger">
-                            <i class="fa-solid fa-plus"></i> Add Expense
-                        </a>
-                        <a href="{{ route('deposits.create') }}" class="btn btn-success">
-                            <i class="fa-solid fa-plus"></i> Add Deposit
-                        </a>
-                        <a href="{{ route('reports.monthly', $activeMonth) }}" class="btn btn-info">
-                            <i class="fa-solid fa-chart-bar"></i> View Report
-                        </a>
-                    </div>
-                </div>
-            </div>
         @else
             <div class="alert alert-warning" role="alert">
                 <i class="fa-solid fa-exclamation-triangle"></i> 
