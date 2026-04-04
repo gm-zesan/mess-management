@@ -40,14 +40,12 @@
                         <div class="mb-3">
                             <label for="month_id" class="form-label">Month <span class="text-danger">*</span></label>
                             @if ($activeMonth)
-                                <div class="alert alert-info mb-3">Current active month: <strong>{{ $activeMonth->name }}</strong></div>
-                                <input type="hidden" name="month_id" value="{{ $activeMonth->id }}">
+                                <div class="alert alert-info mb-3">Current month: <strong>{{ $meal->month->name }}</strong></div>
                                 <div class="form-control bg-light" disabled>
-                                    {{ $activeMonth->name }}
+                                    {{ $meal->month->name }}
                                 </div>
                             @else
-                                <div class="alert alert-warning mb-3">No active month found. Please create one first.</div>
-                                <input type="hidden" name="month_id" value="">
+                                <div class="alert alert-warning mb-3">No active month found.</div>
                             @endif
                             @error('month_id')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -63,18 +61,54 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
-                            <label for="meal_count" class="form-label">Meal Count <span class="text-danger">*</span></label>
-                            <select id="meal_count" name="meal_count" class="form-select @error('meal_count') is-invalid @enderror">
-                                <option value="">Select meal count</option>
-                                <option value="0" {{ old('meal_count', $meal->meal_count) == '0' ? 'selected' : '' }}>0 (No meal)</option>
-                                <option value="1" {{ old('meal_count', $meal->meal_count) == '1' ? 'selected' : '' }}>1 (Half day)</option>
-                                <option value="2" {{ old('meal_count', $meal->meal_count) == '2' ? 'selected' : '' }}>2 (Full day)</option>
-                                <option value="3" {{ old('meal_count', $meal->meal_count) == '3' ? 'selected' : '' }}>3 (Full day + extra)</option>
-                            </select>
-                            @error('meal_count')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="breakfast_count" class="form-label">Breakfast <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                           id="breakfast_count" 
+                                           name="breakfast_count" 
+                                           class="form-control @error('breakfast_count') is-invalid @enderror"
+                                           value="{{ old('breakfast_count', $meal->breakfast_count) }}"
+                                           step="0.5"
+                                           min="0">
+                                    @error('breakfast_count')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="lunch_count" class="form-label">Lunch <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                           id="lunch_count" 
+                                           name="lunch_count" 
+                                           class="form-control @error('lunch_count') is-invalid @enderror"
+                                           value="{{ old('lunch_count', $meal->lunch_count) }}"
+                                           step="0.5"
+                                           min="0">
+                                    @error('lunch_count')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dinner_count" class="form-label">Dinner <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                           id="dinner_count" 
+                                           name="dinner_count" 
+                                           class="form-control @error('dinner_count') is-invalid @enderror"
+                                           value="{{ old('dinner_count', $meal->dinner_count) }}"
+                                           step="0.5"
+                                           min="0">
+                                    @error('dinner_count')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between">

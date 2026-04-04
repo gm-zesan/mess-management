@@ -28,7 +28,6 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Date</th>
-                            <th>Month</th>
                             <th>Category</th>
                             <th>Who Spent</th>
                             <th>Amount</th>
@@ -42,7 +41,6 @@
                         @foreach ($expenses as $expense)
                             <tr>
                                 <td>{{ $expense->date->format('M d, Y') }}</td>
-                                <td>{{ $expense->month->name }}</td>
                                 <td>{{ $expense->category }}</td>
                                 <td>{{ $expense->user?->name ?? 'N/A' }}</td>
                                 <td class="text-end">৳ {{ number_format($expense->amount, 2) }}</td>

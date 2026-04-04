@@ -22,17 +22,11 @@ class StoreMealRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
-            'month_id' => ['required', 'exists:months,id', new MonthNotClosed()],
-            'date' => [
-                'required',
-                'date',
-                Rule::unique('meals')
-                    ->where('user_id', $this->user_id)
-                    ->where('month_id', $this->month_id)
-                    ->ignore($this->meal ?? null),
-            ],
-            'meal_count' => ['required', 'integer', 'min:0', 'max:3'],
+            'date' => ['required', 'date'],
+            'meals' => ['required', 'array'],
+            'meals.*.breakfast_count' => ['nullable', 'numeric', 'min:0'],
+            'meals.*.lunch_count' => ['nullable', 'numeric', 'min:0'],
+            'meals.*.dinner_count' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -42,17 +36,16 @@ class StoreMealRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => 'Please select a member.',
-            'user_id.exists' => 'The selected member does not exist.',
-            'month_id.required' => 'Please select a month.',
-            'month_id.exists' => 'The selected month does not exist.',
-            'date.required' => 'Please enter a date.',
+            'date.required' => 'Please select a date.',
             'date.date' => 'Please enter a valid date.',
-            'date.unique' => 'This member already has a meal entry for this date.',
-            'meal_count.required' => 'Please enter the meal count.',
-            'meal_count.integer' => 'Meal count must be a whole number.',
-            'meal_count.min' => 'Meal count must be at least 0.',
-            'meal_count.max' => 'Meal count cannot exceed 3.',
+            'meals.required' => 'Please select at least one member with meals.',
+            'meals.array' => 'Invalid meal data format.',
+            'meals.*.breakfast_count.numeric' => 'Breakfast count must be a number.',
+            'meals.*.breakfast_count.min' => 'Breakfast count must be 0 or greater.',
+            'meals.*.lunch_count.numeric' => 'Lunch count must be a number.',
+            'meals.*.lunch_count.min' => 'Lunch count must be 0 or greater.',
+            'meals.*.dinner_count.numeric' => 'Dinner count must be a number.',
+            'meals.*.dinner_count.min' => 'Dinner count must be 0 or greater.',
         ];
     }
 }

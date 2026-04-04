@@ -29,7 +29,6 @@
                         <tr>
                             <th>Date</th>
                             <th>Member</th>
-                            <th>Month</th>
                             <th>Amount</th>
                             @canany(['deposits.update', 'deposits.delete'])
                                 <th>Actions</th>
@@ -41,7 +40,6 @@
                             <tr>
                                 <td>{{ $deposit->date->format('M d, Y') }}</td>
                                 <td>{{ $deposit->user->name }}</td>
-                                <td>{{ $deposit->month->name }}</td>
                                 <td class="text-end">৳ {{ number_format($deposit->amount, 2) }}</td>
                                 @canany(['deposits.update', 'deposits.delete'])
                                     <td>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMealRequest;
+use App\Http\Requests\UpdateMealRequest;
 use App\Models\Meal;
 use App\Models\User;
 
@@ -17,12 +18,30 @@ class MealController extends Controller
         
         $activeMonth = activeMonth();
         
-        $meals = Meal::with(['user', 'month'])
-            ->where('month_id', $activeMonth->id)
-            ->latest('date')
-            ->paginate(15);
-
-        return view('meals.index', compact('meals', 'activeMonth'));
+        // Get filter parameters
+        $filterDate = request('filter_date');
+        $filterMember = request('filter_member');
+        
+        // Base query
+        $query = Meal::with(['user', 'month'])
+            ->where('month_id', $activeMonth->id);
+        
+        // Apply date filter
+        if ($filterDate) {
+            $query->where('date', $filterDate);
+        }
+        
+        // Apply member filter
+        if ($filterMember) {
+            $query->where('user_id', $filterMember);
+        }
+        
+        $meals = $query->latest('date')->paginate(15);
+        
+        // Get all members for filter dropdown
+        $members = User::orderBy('name')->get();
+        
+        return view('meals.index', compact('meals', 'activeMonth', 'members', 'filterDate', 'filterMember'));
     }
 
     /**
@@ -57,13 +76,50 @@ class MealController extends Controller
                 ->with('error', 'This month is closed. No further modifications are allowed.');
         }
 
-        $data['month_id'] = $activeMonth->id;
+        // Prepare meals array for bulk creation
+        $mealsToCreate = [];
+        $date = $data['date'];
 
-        // Create the meal record
-        Meal::create($data);
+        // Create meal records for each member that has at least one meal
+        foreach ($data['meals'] as $userId => $mealData) {
+            // Skip if no meals selected for this user
+            if (!isset($mealData['breakfast_count']) && !isset($mealData['lunch_count']) && !isset($mealData['dinner_count'])) {
+                continue;
+            }
+
+            // Check if meal record already exists for this user on this date
+            $existingMeal = Meal::where('user_id', $userId)
+                ->where('month_id', $activeMonth->id)
+                ->where('date', $date)
+                ->first();
+
+            if ($existingMeal) {
+                return redirect()->back()
+                    ->with('error', "A meal record already exists for this user on {$date}. Please delete the existing record first.");
+            }
+
+            $mealsToCreate[] = [
+                'user_id' => $userId,
+                'month_id' => $activeMonth->id,
+                'date' => $date,
+                'breakfast_count' => isset($mealData['breakfast_count']) ? intval($mealData['breakfast_count']) : 0,
+                'lunch_count' => isset($mealData['lunch_count']) ? intval($mealData['lunch_count']) : 0,
+                'dinner_count' => isset($mealData['dinner_count']) ? intval($mealData['dinner_count']) : 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        if (empty($mealsToCreate)) {
+            return redirect()->back()
+                ->with('error', 'Please select at least one meal for at least one member.');
+        }
+
+        // Bulk insert all meal records
+        Meal::insert($mealsToCreate);
 
         return redirect()->route('meals.index')
-            ->with('success', 'Meal record created successfully.');
+            ->with('success', 'Meal records created successfully (' . count($mealsToCreate) . ' members).');
     }
 
     /**
@@ -82,7 +138,7 @@ class MealController extends Controller
     /**
      * Update the specified meal in storage.
      */
-    public function update(StoreMealRequest $request, Meal $meal)
+    public function update(UpdateMealRequest $request, Meal $meal)
     {
         $this->authorize('update', $meal);
         
@@ -94,10 +150,6 @@ class MealController extends Controller
         
         // Get validated data
         $data = $request->validated();
-
-        // Ensure month_id is the active month
-        $activeMonth = activeMonth();
-        $data['month_id'] = $activeMonth->id;
 
         // Update the meal record
         $meal->update($data);

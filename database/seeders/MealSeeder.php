@@ -23,37 +23,47 @@ class MealSeeder extends Seeder
             return;
         }
 
-        // Create sample meals for April
+        // Create sample meals for April with breakfast, lunch, dinner counts
         $meals = [
             [
                 'month_id' => $month->id,
                 'user_id' => 2, // Test User (Manager)
                 'date' => Carbon::createFromDate(2026, 4, 1),
-                'meal_count' => 3,
+                'breakfast_count' => 1,
+                'lunch_count' => 1,
+                'dinner_count' => 1,
             ],
             [
                 'month_id' => $month->id,
                 'user_id' => 3, // Ashraf Ahmed
                 'date' => Carbon::createFromDate(2026, 4, 2),
-                'meal_count' => 3,
+                'breakfast_count' => 1,
+                'lunch_count' => 1,
+                'dinner_count' => 1,
             ],
             [
                 'month_id' => $month->id,
                 'user_id' => 4, // Karim Khan
                 'date' => Carbon::createFromDate(2026, 4, 3),
-                'meal_count' => 2,
+                'breakfast_count' => 1,
+                'lunch_count' => 1,
+                'dinner_count' => 0,
             ],
             [
                 'month_id' => $month->id,
                 'user_id' => 5, // Fatima Hassan
                 'date' => Carbon::createFromDate(2026, 4, 4),
-                'meal_count' => 3,
+                'breakfast_count' => 0.5,
+                'lunch_count' => 1,
+                'dinner_count' => 1,
             ],
             [
                 'month_id' => $month->id,
                 'user_id' => 2, // Test User (Manager)
                 'date' => Carbon::createFromDate(2026, 4, 5),
-                'meal_count' => 3,
+                'breakfast_count' => 1,
+                'lunch_count' => 0.5,
+                'dinner_count' => 1,
             ],
         ];
 

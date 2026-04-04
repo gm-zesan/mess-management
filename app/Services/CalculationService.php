@@ -12,14 +12,20 @@ class CalculationService
 {
     /**
      * Calculate total meals for a given month.
+     * Sums breakfast_count + lunch_count + dinner_count for all meals.
      *
      * @param int|Month $month
-     * @return int
+     * @return float
      */
-    public function getTotalMeals($month): int
+    public function getTotalMeals($month): float
     {
         $monthId = $month instanceof Month ? $month->id : $month;
-        return Meal::where('month_id', $monthId)->sum('meal_count');
+        
+        $result = Meal::where('month_id', $monthId)
+            ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
+            ->first();
+        
+        return (float) ($result->total_meals ?? 0);
     }
 
     /**
@@ -94,10 +100,13 @@ class CalculationService
         $balances = [];
         
         foreach ($users as $user) {
-            // Calculate user's total meals
-            $userMeals = Meal::where('month_id', $monthId)
+            // Calculate user's total meals (breakfast + lunch + dinner)
+            $userMealResult = Meal::where('month_id', $monthId)
                 ->where('user_id', $user->id)
-                ->sum('meal_count');
+                ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
+                ->first();
+            
+            $userMeals = (float) ($userMealResult->total_meals ?? 0);
             
             // Calculate user's meal cost
             $mealCost = $userMeals * $mealRate;
@@ -140,10 +149,13 @@ class CalculationService
         // Calculate meal rate for this month
         $mealRate = $this->getMealRate($month);
         
-        // Calculate user's total meals
-        $mealCount = (int) Meal::where('month_id', $monthId)
+        // Calculate user's total meals (breakfast + lunch + dinner)
+        $mealResult = Meal::where('month_id', $monthId)
             ->where('user_id', $user->id)
-            ->sum('meal_count');
+            ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
+            ->first();
+        
+        $mealCount = (float) ($mealResult->total_meals ?? 0);
         
         // Calculate user's meal cost
         $mealCost = $mealCount * $mealRate;

@@ -14,12 +14,16 @@ class Meal extends Model
         'user_id',
         'month_id',
         'date',
-        'meal_count',
+        'breakfast_count',
+        'lunch_count',
+        'dinner_count',
     ];
 
     protected $casts = [
         'date' => 'date',
-        'meal_count' => 'integer',
+        'breakfast_count' => 'float',
+        'lunch_count' => 'float',
+        'dinner_count' => 'float',
     ];
 
     /**
@@ -37,5 +41,13 @@ class Meal extends Model
     {
         return $this->belongsTo(Month::class);
     }
-}
 
+    /**
+     * Get the total meal count (breakfast + lunch + dinner).
+     */
+    public function getTotalMealCountAttribute(): float
+    {
+        return $this->breakfast_count + $this->lunch_count + $this->dinner_count;
+    }
+
+}
