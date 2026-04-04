@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -61,7 +62,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Meal::class);
     }
+    public function messes(): BelongsToMany
+    {
+        return $this->belongsToMany(Mess::class, 'mess_user')
+            ->withPivot(['status'])
+            ->withTimestamps();
+    }
 
+    public function messUsers(): HasMany
+    {
+        return $this->hasMany(MessUser::class);
+    }
     /**
      * Get the deposits for this user.
      */

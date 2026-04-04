@@ -16,6 +16,7 @@ class Deposit extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'mess_id',
         'user_id',
         'month_id',
         'amount',
@@ -26,6 +27,11 @@ class Deposit extends Model
         'date' => 'date',
         'amount' => 'decimal:2',
     ];
+
+    public function mess(): BelongsTo
+    {
+        return $this->belongsTo(Mess::class);
+    }
 
     public function user(): BelongsTo
     {

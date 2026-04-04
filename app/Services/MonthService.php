@@ -15,9 +15,15 @@ class MonthService
      * @return Month
      * @throws ModelNotFoundException
      */
-    public function getActiveMonth(): Month
+    public function getActiveMonth($messId = null): Month
     {
-        return Month::where('status', MonthStatusEnum::ACTIVE->value)->firstOrFail();
+        $query = Month::where('status', MonthStatusEnum::ACTIVE->value);
+        
+        if ($messId) {
+            $query->where('mess_id', $messId);
+        }
+        
+        return $query->firstOrFail();
     }
 
     /**

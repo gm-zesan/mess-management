@@ -10,12 +10,17 @@ class Expense extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['month_id', 'user_id', 'category', 'amount', 'date', 'note'];
+    protected $fillable = ['mess_id', 'month_id', 'user_id', 'category', 'amount', 'date', 'note'];
 
     protected $casts = [
         'date' => 'date',
         'amount' => 'decimal:2',
     ];
+
+    public function mess(): BelongsTo
+    {
+        return $this->belongsTo(Mess::class);
+    }
 
     public function month(): BelongsTo
     {

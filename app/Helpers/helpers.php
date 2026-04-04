@@ -1,5 +1,37 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use App\Models\Mess;
+
+/**
+ * Get the active mess for the current user.
+ * 
+ * @return \App\Models\Mess|null
+ */
+function activeMess(): ?Mess
+{
+    if (!Auth::check()) {
+        return null;
+    }
+
+    $user = Auth::user();
+    
+    // Get the user's first approved mess
+    return $user->messes()
+        ->where('status', 'approved')
+        ->first();
+}
+
+/**
+ * Get the active mess ID for the current user.
+ * 
+ * @return int|null
+ */
+function activeMessId(): ?int
+{
+    return activeMess()?->id;
+}
+
 /**
  * Get the active month ID.
  * 

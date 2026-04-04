@@ -11,64 +11,87 @@ use App\Models\Deposit;
 class CalculationService
 {
     /**
-     * Calculate total meals for a given month.
+     * Calculate total meals for a given month and mess.
      * Sums breakfast_count + lunch_count + dinner_count for all meals.
      *
      * @param int|Month $month
+     * @param int $messId
      * @return float
      */
-    public function getTotalMeals($month): float
+    public function getTotalMeals($month, $messId = null): float
     {
         $monthId = $month instanceof Month ? $month->id : $month;
         
-        $result = Meal::where('month_id', $monthId)
-            ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
+        $query = Meal::where('month_id', $monthId);
+        
+        if ($messId) {
+            $query->where('mess_id', $messId);
+        }
+        
+        $result = $query->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
             ->first();
         
         return (float) ($result->total_meals ?? 0);
     }
 
     /**
-     * Calculate total expenses for a given month.
+     * Calculate total expenses for a given month and mess.
      *
      * @param int|Month $month
+     * @param int $messId
      * @return float
      */
-    public function getTotalExpenses($month): float
+    public function getTotalExpenses($month, $messId = null): float
     {
         $monthId = $month instanceof Month ? $month->id : $month;
-        return (float) Expense::where('month_id', $monthId)->sum('amount');
+        
+        $query = Expense::where('month_id', $monthId);
+        
+        if ($messId) {
+            $query->where('mess_id', $messId);
+        }
+        
+        return (float) $query->sum('amount');
     }
 
     /**
-     * Calculate meal rate (cost per meal) for a given month.
+     * Calculate meal rate (cost per meal) for a given month and mess.
      * Returns 0 if no meals exist.
      *
      * @param int|Month $month
+     * @param int $messId
      * @return float
      */
-    public function getMealRate($month): float
+    public function getMealRate($month, $messId = null): float
     {
-        $totalMeals = $this->getTotalMeals($month);
+        $totalMeals = $this->getTotalMeals($month, $messId);
         
         if ($totalMeals == 0) {
             return 0;
         }
 
-        $totalExpenses = $this->getTotalExpenses($month);
+        $totalExpenses = $this->getTotalExpenses($month, $messId);
         return round($totalExpenses / $totalMeals, 2);
     }
 
     /**
-     * Calculate total deposits for a given month.
+     * Calculate total deposits for a given month and mess.
      *
      * @param int|Month $month
+     * @param int $messId
      * @return float
      */
-    public function getTotalDeposits($month): float
+    public function getTotalDeposits($month, $messId = null): float
     {
         $monthId = $month instanceof Month ? $month->id : $month;
-        return (float) Deposit::where('month_id', $monthId)->sum('amount');
+        
+        $query = Deposit::where('month_id', $monthId);
+        
+        if ($messId) {
+            $query->where('mess_id', $messId);
+        }
+        
+        return (float) $query->sum('amount');
     }
 
     /**

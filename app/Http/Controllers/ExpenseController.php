@@ -16,14 +16,20 @@ class ExpenseController extends Controller
     {
         $this->authorize('viewAny', Expense::class);
         
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
         
-        $expenses = Expense::with('month', 'user')
+        if (!$activeMess || !$activeMonth) {
+            return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
+        }
+        
+        $expenses = Expense::with('month', 'user', 'mess')
+            ->where('mess_id', $activeMess->id)
             ->where('month_id', $activeMonth->id)
             ->latest('date')
             ->paginate(15);
 
-        return view('expenses.index', compact('expenses', 'activeMonth'));
+        return view('expenses.index', compact('expenses', 'activeMess', 'activeMonth'));
     }
 
     /**
@@ -48,8 +54,14 @@ class ExpenseController extends Controller
         
         $data = $request->validated();
         
-        // Auto-assign active month
+        // Auto-assign active mess and month
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        if (!$activeMess || !$activeMonth) {
+            return redirect()->back()
+                ->with('error', 'No active mess or month found.');
+        }
         
         // Check if month is closed
         if (isMonthClosed($activeMonth)) {
@@ -57,6 +69,7 @@ class ExpenseController extends Controller
                 ->with('error', 'This month is closed. No further modifications are allowed.');
         }
         
+        $data['mess_id'] = $activeMess->id;
         $data['month_id'] = $activeMonth->id;
         Expense::create($data);
 
@@ -67,6 +80,7 @@ class ExpenseController extends Controller
             // Only create deposit if user_id is provided
             if ($user_id) {
                 Deposit::create([
+                    'mess_id' => $activeMess->id,
                     'user_id' => $user_id,
                     'month_id' => $activeMonth->id,
                     'amount' => $data['amount'],

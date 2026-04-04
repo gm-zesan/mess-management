@@ -11,6 +11,7 @@ class Meal extends Model
     use HasFactory;
 
     protected $fillable = [
+        'mess_id',
         'user_id',
         'month_id',
         'date',
@@ -25,6 +26,14 @@ class Meal extends Model
         'lunch_count' => 'float',
         'dinner_count' => 'float',
     ];
+
+    /**
+     * Get the mess that owns this meal.
+     */
+    public function mess(): BelongsTo
+    {
+        return $this->belongsTo(Mess::class);
+    }
 
     /**
      * Get the user that owns this meal.

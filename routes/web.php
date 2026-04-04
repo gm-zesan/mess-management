@@ -3,6 +3,8 @@
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\MealController;
+use App\Http\Controllers\MessInviteController;
+use App\Http\Controllers\MessSelectionController;
 use App\Http\Controllers\MonthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MemberController;
@@ -16,6 +18,19 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // Mess Selection (after registration)
+    Route::get('/mess/selection', [MessSelectionController::class, 'show'])->name('mess.selection');
+    Route::post('/mess/create', [MessSelectionController::class, 'create'])->name('mess.create');
+    Route::post('/mess/{mess}/join', [MessSelectionController::class, 'join'])->name('mess.join');
+    
+    // Mess Invitations & Member Management
+    Route::get('/mess/{mess}/invite', [MessInviteController::class, 'create'])->name('mess.invite');
+    Route::post('/mess/{mess}/invite', [MessInviteController::class, 'store'])->name('mess.invite.store');
+    Route::get('/mess/{mess}/members/pending', [MessInviteController::class, 'pending'])->name('mess.pending');
+    Route::post('/mess/{mess}/members/{messUser}/approve', [MessInviteController::class, 'approve'])->name('mess.approve');
+    Route::post('/mess/{mess}/members/{messUser}/reject', [MessInviteController::class, 'reject'])->name('mess.reject');
+    Route::get('/mess/{mess}/members', [MessInviteController::class, 'members'])->name('mess.members');
+    
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     

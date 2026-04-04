@@ -16,14 +16,20 @@ class MealController extends Controller
     {
         $this->authorize('viewAny', Meal::class);
         
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        if (!$activeMess || !$activeMonth) {
+            return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
+        }
         
         // Get filter parameters
         $filterDate = request('filter_date');
         $filterMember = request('filter_member');
         
-        // Base query
-        $query = Meal::with(['user', 'month'])
+        // Base query filtered by mess_id
+        $query = Meal::with(['user', 'month', 'mess'])
+            ->where('mess_id', $activeMess->id)
             ->where('month_id', $activeMonth->id);
         
         // Apply date filter
@@ -41,7 +47,7 @@ class MealController extends Controller
         // Get all members for filter dropdown
         $members = User::orderBy('name')->get();
         
-        return view('meals.index', compact('meals', 'activeMonth', 'members', 'filterDate', 'filterMember'));
+        return view('meals.index', compact('meals', 'activeMess', 'activeMonth', 'members', 'filterDate', 'filterMember'));
     }
 
     /**
@@ -67,8 +73,14 @@ class MealController extends Controller
         // Get validated data
         $data = $request->validated();
 
-        // Ensure month_id is the active month
+        // Ensure mess and month exist
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        if (!$activeMess || !$activeMonth) {
+            return redirect()->back()
+                ->with('error', 'No active mess or month found.');
+        }
         
         // Check if month is closed
         if ($activeMonth->isClosed()) {
@@ -89,6 +101,7 @@ class MealController extends Controller
 
             // Check if meal record already exists for this user on this date
             $existingMeal = Meal::where('user_id', $userId)
+                ->where('mess_id', $activeMess->id)
                 ->where('month_id', $activeMonth->id)
                 ->where('date', $date)
                 ->first();
@@ -99,6 +112,7 @@ class MealController extends Controller
             }
 
             $mealsToCreate[] = [
+                'mess_id' => $activeMess->id,
                 'user_id' => $userId,
                 'month_id' => $activeMonth->id,
                 'date' => $date,

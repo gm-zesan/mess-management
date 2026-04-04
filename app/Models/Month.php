@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Enums\MonthStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Month extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'start_date', 'end_date', 'status', 'closed_at'];
+    protected $fillable = ['mess_id', 'name', 'start_date', 'end_date', 'status', 'closed_at'];
 
     protected $casts = [
         'start_date' => 'date',
@@ -19,6 +20,14 @@ class Month extends Model
         'status' => MonthStatusEnum::class,
         'closed_at' => 'datetime',
     ];
+
+    /**
+     * Get the mess that owns this month.
+     */
+    public function mess(): BelongsTo
+    {
+        return $this->belongsTo(Mess::class);
+    }
 
     /**
      * Get the meals for this month.
