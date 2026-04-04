@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         try {
             $activeMess = activeMess();
-            $activeMonth = $activeMess ? $activeMess->activeMonth : null;
+            $activeMonth = activeMonth();
             
             if (!$activeMess) {
                 return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');

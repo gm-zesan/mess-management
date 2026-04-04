@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/mess/selection', [MessSelectionController::class, 'show'])->name('mess.selection');
     Route::post('/mess/create', [MessSelectionController::class, 'create'])->name('mess.create');
     Route::post('/mess/{mess}/join', [MessSelectionController::class, 'join'])->name('mess.join');
+    Route::post('/mess/{mess}/enter', [MessSelectionController::class, 'enterMess'])->name('mess.enter');
+    Route::post('/mess/exit', [MessSelectionController::class, 'exitMess'])->name('mess.exit');
     Route::get('/mess/pending-invitations', [MessSelectionController::class, 'pendingInvitations'])->name('mess.pending-invitations');
     Route::post('/mess/pending-invitations/{messUser}/approve', [MessSelectionController::class, 'approveUser'])->name('mess.approve-user');
     Route::post('/mess/pending-invitations/{messUser}/reject', [MessSelectionController::class, 'rejectUser'])->name('mess.reject-user');

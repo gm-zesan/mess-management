@@ -1,4 +1,5 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+    @use('App\Enums\RoleEnum')
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -16,10 +17,7 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('mess.profile', activeMess())" :active="request()->routeIs('mess.profile')">
-                            <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
-                        </x-nav-link>
-                        @can('meals.viewAny')
+                        @can('meals.view')
                             <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
                                 {{ __('Meals') }}
                             </x-nav-link>
@@ -45,7 +43,7 @@
                                 {{ __('Months') }}
                             </x-nav-link>
                         @endcan
-                        @if(auth()->user() && auth()->user()->hasRole('superadmin'))
+                        @if(auth()->user() && auth()->user()->hasRole(RoleEnum::SUPERADMIN->value))
                             <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
                                 {{ __('Permissions') }}
                             </x-nav-link>
@@ -88,9 +86,33 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            <!-- Exit Mess for Superadmin -->
+                            @if(isSuperAdminInMess())
+                                <div class="px-4 py-2 bg-yellow-50 border-b border-yellow-200">
+                                    <p class="text-xs font-semibold text-yellow-700 mb-2">
+                                        <i class="fa-solid fa-crown me-1"></i> Superadmin Mode
+                                    </p>
+                                    <p class="text-xs text-yellow-600 mb-3">Viewing: <strong>{{ activeMess()->name }}</strong></p>
+                                    <form method="POST" action="{{ route('mess.exit') }}" class="mb-0">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded transition">
+                                            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Exit Mess
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="border-t border-gray-100"></div>
+                            @endif
+
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Profile') }}
                             </x-dropdown-link>
+
+                            @if(activeMess())
+                                <x-dropdown-link :href="route('mess.profile', activeMess())">
+                                    <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
+                                </x-dropdown-link>
+                                <div class="border-t border-gray-100"></div>
+                            @endif
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
@@ -132,9 +154,6 @@
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('mess.profile', activeMess())" :active="request()->routeIs('mess.profile')">
-                    <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
-                </x-responsive-nav-link>
                 @can('meals.viewAny')
                     <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
                         {{ __('Meals') }}
@@ -161,7 +180,7 @@
                         {{ __('Months') }}
                     </x-responsive-nav-link>
                 @endcan
-                @if(auth()->user() && auth()->user()->hasRole('superadmin'))
+                @if(auth()->user() && auth()->user()->hasRole(RoleEnum::SUPERADMIN->value))
                     <x-responsive-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
                         {{ __('Permissions') }}
                     </x-responsive-nav-link>
@@ -182,9 +201,32 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
+                    <!-- Exit Mess for Superadmin -->
+                    @if(isSuperAdminInMess())
+                        <div class="px-4 py-3 bg-yellow-50 border border-yellow-200 rounded">
+                            <p class="text-xs font-semibold text-yellow-700 mb-2">
+                                <i class="fa-solid fa-crown me-1"></i> Superadmin Mode
+                            </p>
+                            <p class="text-xs text-yellow-600 mb-3">Viewing: <strong>{{ activeMess()->name }}</strong></p>
+                            <form method="POST" action="{{ route('mess.exit') }}" class="mb-0">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded transition font-medium">
+                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Exit Mess
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                    
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
+
+                    @if(activeMess())
+                        <x-responsive-nav-link :href="route('mess.profile', activeMess())">
+                            <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
+                        </x-responsive-nav-link>
+                        <div class="border-t border-gray-200"></div>
+                    @endif
 
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">

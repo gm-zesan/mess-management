@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@use('App\Enums\RoleEnum')
+
 @section('content')
 <div class="py-12">
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
@@ -45,14 +47,14 @@
                                     id="name" 
                                     name="name" 
                                     value="{{ old('name', $mess->name) }}"
-                                    @if(!Auth::user()->hasRole('SUPERADMIN')) disabled @endif
-                                    class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 {{ !Auth::user()->hasRole('SUPERADMIN') ? 'bg-gray-100 text-gray-600' : '' }}"
+                                    @if(!Auth::user()->hasRole(RoleEnum::SUPERADMIN->value)) disabled @endif
+                                    class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 {{ !Auth::user()->hasRole(RoleEnum::SUPERADMIN->value) ? 'bg-gray-100 text-gray-600' : '' }}"
                                     placeholder="Mess name"
                                 />
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                @if(!Auth::user()->hasRole('SUPERADMIN'))
+                                @if(!Auth::user()->hasRole(RoleEnum::SUPERADMIN->value))
                                     <p class="mt-1 text-xs text-gray-500">Only superadmin can edit the mess name</p>
                                 @endif
                             </div>
@@ -157,26 +159,6 @@
                                 </a>
                             @endif
                         </div>
-                    </div>
-                </div>
-
-                <!-- Permissions Info -->
-                <div class="bg-blue-50 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-blue-50 border border-blue-200 rounded">
-                        <h3 class="text-lg font-semibold text-blue-900 mb-3">Your Permissions</h3>
-                        
-                        @if(Auth::user()->hasRole('SUPERADMIN'))
-                            <div class="text-sm text-blue-800">
-                                <p class="mb-2"><i class="fa-solid fa-check text-green-600 me-2"></i> <strong>Edit name</strong></p>
-                                <p class="mb-2"><i class="fa-solid fa-check text-green-600 me-2"></i> <strong>Edit description</strong></p>
-                                <p><i class="fa-solid fa-check text-green-600 me-2"></i> <strong>Full control</strong></p>
-                            </div>
-                        @else
-                            <div class="text-sm text-blue-800">
-                                <p class="mb-2"><i class="fa-solid fa-times text-red-600 me-2"></i> <strong>Edit name</strong></p>
-                                <p><i class="fa-solid fa-check text-green-600 me-2"></i> <strong>Edit description</strong></p>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>

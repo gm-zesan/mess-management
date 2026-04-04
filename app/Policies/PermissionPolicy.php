@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
 
@@ -12,7 +13,7 @@ class PermissionPolicy
      */
     public function view(User $user): bool
     {
-        return $user->hasRole('superadmin');
+        return $user->hasRole(RoleEnum::SUPERADMIN->value);
     }
 
     /**
@@ -20,6 +21,6 @@ class PermissionPolicy
      */
     public function manage(User $user): bool
     {
-        return $user->hasRole('superadmin');
+        return $user->hasRole(RoleEnum::SUPERADMIN->value);
     }
 }

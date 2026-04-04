@@ -10,6 +10,28 @@
         </div>
     </div>
 
+    <!-- Superadmin Mode Banner -->
+    @if(isSuperAdminInMess())
+        <div class="alert alert-warning alert-dismissible fade show mb-6" role="alert">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="alert-heading mb-2">
+                        <i class="fa-solid fa-crown text-warning me-2"></i> Superadmin Mode
+                    </h5>
+                    <p class="mb-0">
+                        You are currently browsing as superadmin in: <strong>{{ $activeMess->name }}</strong>
+                    </p>
+                </div>
+                <form method="POST" action="{{ route('mess.exit') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-warning btn-sm">
+                        <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Exit Mess
+                    </button>
+                </form>
+            </div>
+        </div>
+    @endif
+
     @if ($activeMonth)
         <!-- Active Month Alert -->
         <div class="alert alert-info mb-4" role="alert">

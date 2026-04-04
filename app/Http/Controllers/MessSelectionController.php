@@ -20,6 +20,15 @@ class MessSelectionController extends Controller
     {
         $user = Auth::user();
         
+        // If superadmin, show all messes without joining requirement
+        if ($user->hasRole(RoleEnum::SUPERADMIN->value)) {
+            $allMesses = Mess::orderBy('created_at', 'desc')->get();
+            return view('mess.selection', [
+                'availableMesses' => $allMesses,
+                'isSuperAdmin' => true,
+            ]);
+        }
+        
         // If user already has an approved mess, redirect to dashboard
         if ($user->activeMess()) {
             return redirect(route('dashboard'));
@@ -30,6 +39,7 @@ class MessSelectionController extends Controller
 
         return view('mess.selection', [
             'availableMesses' => $availableMesses,
+            'isSuperAdmin' => false,
         ]);
     }
 
@@ -125,7 +135,7 @@ class MessSelectionController extends Controller
     /**
      * Show pending users waiting for approval in the current mess
      */
-    public function pendingInvitations(): View
+    public function pendingInvitations(): View|RedirectResponse
     {
         $user = Auth::user();
         $activeMess = $user->activeMess();
@@ -194,5 +204,33 @@ class MessSelectionController extends Controller
         $messUser->delete();
 
         return redirect(route('mess.pending-invitations'))->with('success', 'User request has been rejected.');
+    }
+
+    /**
+     * Superadmin enter a mess without joining
+     */
+    public function enterMess(Mess $mess)
+    {
+        $user = Auth::user();
+
+        // Only superadmin can use this
+        if (!$user->hasRole(RoleEnum::SUPERADMIN->value)) {
+            abort(403, 'Only superadmin can access this feature');
+        }
+
+        // Store mess in session for superadmin access
+        session(['superadmin_mess_id' => $mess->id]);
+
+        return redirect(route('dashboard'))->with('success', "Entered mess: {$mess->name}");
+    }
+
+    /**
+     * Exit mess for superadmin
+     */
+    public function exitMess()
+    {
+        session()->forget('superadmin_mess_id');
+
+        return redirect(route('mess.selection'))->with('success', 'Exited mess');
     }
 }

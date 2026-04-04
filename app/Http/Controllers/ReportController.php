@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RoleEnum;
 use App\Models\Month;
 use App\Models\User;
 use App\Services\CalculationService;
@@ -29,7 +30,7 @@ class ReportController extends Controller
         }
         
         // Members can only view current month report
-        if ($user->hasRole('member')) {
+        if ($user->hasRole(RoleEnum::MEMBER->value)) {
             if ($month->id !== activeMonth()->id) {
                 abort(403, 'You can only view the current month report.');
             }
@@ -66,7 +67,7 @@ class ReportController extends Controller
         }
         
         // Get all months for the active mess (or current month for members)
-        if ($user->hasRole('member')) {
+        if ($user->hasRole(RoleEnum::MEMBER->value)) {
             $months = [activeMonth()];
         } else {
             // Managers and superadmins see all months for their mess
@@ -100,7 +101,7 @@ class ReportController extends Controller
         }
         
         // Members can only export current month report
-        if ($user->hasRole('member')) {
+        if ($user->hasRole(RoleEnum::MEMBER->value)) {
             if ($month->id !== activeMonth()->id) {
                 abort(403, 'You can only export the current month report.');
             }

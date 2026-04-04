@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@use('App\Enums\RoleEnum')
+
 @php
 use App\Models\MessUser;
 @endphp
@@ -78,7 +80,7 @@ use App\Models\MessUser;
                                                         @endcan
 
                                                         @can('members.manage-roles')
-                                                            @if(!$member->hasRole('manager') && $activeMess->manager_id !== $member->id)
+                                                            @if(!$member->hasRole(RoleEnum::MANAGER->value) && $activeMess->manager_id !== $member->id)
                                                                 <form action="{{ route('members.change-manager', $member) }}" method="POST" style="display:inline;">
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-sm btn-success" title="Make Manager" 

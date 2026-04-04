@@ -29,21 +29,35 @@ class MonthService
     /**
      * Get the active month or return null if not found.
      *
+     * @param int|null $messId Filter by mess ID
      * @return Month|null
      */
-    public function getActiveMonthOrNull(): ?Month
+    public function getActiveMonthOrNull($messId = null): ?Month
     {
-        return Month::where('status', MonthStatusEnum::ACTIVE->value)->first();
+        $query = Month::where('status', MonthStatusEnum::ACTIVE->value);
+        
+        if ($messId) {
+            $query->where('mess_id', $messId);
+        }
+        
+        return $query->first();
     }
 
     /**
      * Check if an active month exists.
      *
+     * @param int|null $messId Filter by mess ID
      * @return bool
      */
-    public function hasActiveMonth(): bool
+    public function hasActiveMonth($messId = null): bool
     {
-        return Month::where('status', MonthStatusEnum::ACTIVE->value)->exists();
+        $query = Month::where('status', MonthStatusEnum::ACTIVE->value);
+        
+        if ($messId) {
+            $query->where('mess_id', $messId);
+        }
+        
+        return $query->exists();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RoleEnum;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class PermissionController extends Controller
         $user = Auth::user();
         
         // Only superadmin can manage permissions
-        if (!$user->hasRole('superadmin')) {
+        if (!$user->hasRole(RoleEnum::SUPERADMIN->value)) {
             abort(403, 'Only superadmins can manage permissions.');
         }
 
@@ -39,7 +40,7 @@ class PermissionController extends Controller
         /** @var User $user */
         $user = Auth::user();
         
-        if (!$user->hasRole('superadmin')) {
+        if (!$user->hasRole(RoleEnum::SUPERADMIN->value)) {
             abort(403, 'Only superadmins can manage permissions.');
         }
 
@@ -66,7 +67,7 @@ class PermissionController extends Controller
         /** @var User $user */
         $user = Auth::user();
         
-        if (!$user->hasRole('superadmin')) {
+        if (!$user->hasRole(RoleEnum::SUPERADMIN->value)) {
             abort(403, 'Only superadmins can manage permissions.');
         }
 

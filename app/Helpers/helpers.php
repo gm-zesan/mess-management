@@ -2,9 +2,12 @@
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Mess;
+use App\Enums\RoleEnum;
 
 /**
  * Get the active mess for the current user.
+ * For superadmin: returns the mess from session
+ * For regular user: returns their approved mess
  * 
  * @return \App\Models\Mess|null
  */
@@ -15,6 +18,15 @@ function activeMess(): ?Mess
     }
 
     $user = Auth::user();
+    
+    // If superadmin, check session for entered mess
+    if ($user->hasRole(RoleEnum::SUPERADMIN->value)) {
+        $messId = session('superadmin_mess_id');
+        if ($messId) {
+            return Mess::find($messId);
+        }
+        return null;
+    }
     
     // Get the user's first approved mess
     return $user->messes()
@@ -33,28 +45,36 @@ function activeMessId(): ?int
 }
 
 /**
- * Get the active month ID.
+ * Get the active month ID for the current active mess.
  * 
  * @return int|null
  */
-function activeMonthId()
+function activeMonthId(): ?int
 {
     try {
-        return app(App\Services\MonthService::class)->getActiveMonth()->id;
+        $activeMess = activeMess();
+        if (!$activeMess) {
+            return null;
+        }
+        return app(App\Services\MonthService::class)->getActiveMonth($activeMess->id)->id;
     } catch (\Exception $e) {
         return null;
     }
 }
 
 /**
- * Get the active month.
+ * Get the active month for the current active mess.
  * 
  * @return \App\Models\Month|null
  */
 function activeMonth()
 {
     try {
-        return app(App\Services\MonthService::class)->getActiveMonth();
+        $activeMess = activeMess();
+        if (!$activeMess) {
+            return null;
+        }
+        return app(App\Services\MonthService::class)->getActiveMonth($activeMess->id);
     } catch (\Exception $e) {
         return null;
     }
@@ -102,4 +122,25 @@ function getPendingInvitations()
         ->where('status', 'pending')
         ->with('mess')
         ->get();
+}
+
+/**
+ * Check if superadmin is currently in a mess (via session).
+ * 
+ * @return bool
+ */
+function isSuperAdminInMess(): bool
+{
+    if (!Auth::check()) {
+        return false;
+    }
+
+    $user = Auth::user();
+    
+    // Check if user is superadmin and has a mess in session
+    if ($user->hasRole(RoleEnum::SUPERADMIN->value)) {
+        return session()->has('superadmin_mess_id');
+    }
+    
+    return false;
 }

@@ -24,38 +24,17 @@
 
                         <div class="mb-3">
                             <label for="user_id" class="form-label">Member <span class="text-danger">*</span></label>
-                            <select id="user_id" name="user_id" class="form-select @error('user_id') is-invalid @enderror">
-                                <option value="">Select a member</option>
-                                @foreach ($members as $member)
-                                    <option value="{{ $member->id }}" {{ old('user_id', $meal->user_id) == $member->id ? 'selected' : '' }}>
-                                        {{ $member->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('user_id')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="month_id" class="form-label">Month <span class="text-danger">*</span></label>
-                            @if ($activeMonth)
-                                <div class="alert alert-info mb-3">Current month: <strong>{{ $meal->month->name }}</strong></div>
-                                <div class="form-control bg-light" disabled>
-                                    {{ $meal->month->name }}
-                                </div>
-                            @else
-                                <div class="alert alert-warning mb-3">No active month found.</div>
-                            @endif
-                            @error('month_id')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                            <div class="form-control bg-light" disabled>
+                                {{ $meal->user->name }}
+                            </div>
+                            <input type="hidden" name="user_id" value="{{ $meal->user_id }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
                             <input type="date" id="date" name="date" class="form-control @error('date') is-invalid @enderror" 
-                                   value="{{ old('date', $meal->date->format('Y-m-d')) }}" required>
+                                   value="{{ old('date', $meal->date->format('Y-m-d')) }}" disabled>
+                            <input type="hidden" name="date" value="{{ old('date', $meal->date->format('Y-m-d')) }}">
                             @error('date')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror

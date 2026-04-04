@@ -103,7 +103,7 @@ class MessInviteController extends Controller
         $user = Auth::user();
 
         // Superadmin can edit everything, manager can only edit description
-        if ($user->hasRole('SUPERADMIN')) {
+        if ($user->hasRole(RoleEnum::SUPERADMIN->value)) {
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:messes,name,' . $mess->id,
                 'description' => 'nullable|string|max:1000',
