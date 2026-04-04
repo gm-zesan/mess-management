@@ -85,14 +85,24 @@
                         <div class="space-y-3 max-h-96 overflow-y-auto">
                             @foreach ($availableMesses as $mess)
                                 <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                                    <h4 class="font-semibold text-gray-900">{{ $mess->name }}</h4>
-                                    @if ($mess->description)
-                                        <p class="text-sm text-gray-600 mt-1">{{ $mess->description }}</p>
-                                    @endif
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">{{ $mess->name }}</h4>
+                                            @if ($mess->description)
+                                                <p class="text-sm text-gray-600 mt-1">{{ $mess->description }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Join Code Display -->
+                                    <div class="bg-gray-50 p-2 rounded my-2 text-center">
+                                        <p class="text-xs text-gray-500 mb-1">Join Code:</p>
+                                        <p class="text-sm font-mono font-bold text-gray-800">{{ $mess->join_code }}</p>
+                                    </div>
                                     
                                     <div class="flex items-center justify-between mt-3">
                                         <span class="text-xs text-gray-500">
-                                            👥 {{ $mess->members()->count() }} members
+                                            👥 {{ $mess->messUsers()->where('status', 'approved')->count() }} members
                                         </span>
                                         <form action="{{ route('mess.join', $mess) }}" method="POST" style="display: inline;">
                                             @csrf
@@ -100,7 +110,7 @@
                                                 type="submit" 
                                                 class="bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700 transition"
                                             >
-                                                Join
+                                                Request to Join
                                             </button>
                                         </form>
                                     </div>

@@ -95,37 +95,51 @@ class CalculationService
     }
 
     /**
-     * Get per-user balance details for a given month.
+     * Get per-user balance details for a given month and mess.
      * Filters only users with 'manager' or 'member' role.
      *
      * @param int|Month $month
+     * @param int $messId
      * @return array
      */
-    public function getPerMemberBalance($month): array
+    public function getPerMemberBalance($month, $messId = null): array
     {
         $monthId = $month instanceof Month ? $month->id : $month;
         
-        // Get total calculations
-        $totalMeals = $this->getTotalMeals($month);
-        $mealRate = $this->getMealRate($month);
+        // Get total calculations with mess filter
+        $totalMeals = $this->getTotalMeals($month, $messId);
+        $mealRate = $this->getMealRate($month, $messId);
         
         // Get all users with 'manager' or 'member' role who have meals or deposits
-        $users = User::role(['manager', 'member'])
-            ->where(function($q) use ($monthId) {
-                $q->whereHas('meals', function($subQuery) use ($monthId) {
+        $query = User::role(['manager', 'member'])
+            ->where(function($q) use ($monthId, $messId) {
+                $q->whereHas('meals', function($subQuery) use ($monthId, $messId) {
                     $subQuery->where('month_id', $monthId);
-                })->orWhereHas('deposits', function($subQuery) use ($monthId) {
+                    if ($messId) {
+                        $subQuery->where('mess_id', $messId);
+                    }
+                })->orWhereHas('deposits', function($subQuery) use ($monthId, $messId) {
                     $subQuery->where('month_id', $monthId);
+                    if ($messId) {
+                        $subQuery->where('mess_id', $messId);
+                    }
                 });
-            })
-            ->get();
+            });
+        
+        $users = $query->get();
         
         $balances = [];
         
         foreach ($users as $user) {
             // Calculate user's total meals (breakfast + lunch + dinner)
-            $userMealResult = Meal::where('month_id', $monthId)
-                ->where('user_id', $user->id)
+            $mealQuery = Meal::where('month_id', $monthId)
+                ->where('user_id', $user->id);
+            
+            if ($messId) {
+                $mealQuery->where('mess_id', $messId);
+            }
+            
+            $userMealResult = $mealQuery
                 ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
                 ->first();
             
@@ -135,9 +149,14 @@ class CalculationService
             $mealCost = $userMeals * $mealRate;
             
             // Calculate user's total deposit
-            $userDeposit = (float) Deposit::where('month_id', $monthId)
-                ->where('user_id', $user->id)
-                ->sum('amount');
+            $depositQuery = Deposit::where('month_id', $monthId)
+                ->where('user_id', $user->id);
+            
+            if ($messId) {
+                $depositQuery->where('mess_id', $messId);
+            }
+            
+            $userDeposit = (float) $depositQuery->sum('amount');
             
             // Calculate balance (deposit - cost)
             $balance = $userDeposit - $mealCost;
@@ -159,22 +178,29 @@ class CalculationService
     }
 
     /**
-     * Get user-specific summary for a given month.
+     * Get user-specific summary for a given month and mess.
      *
      * @param User $user
      * @param int|Month $month
+     * @param int $messId
      * @return array
      */
-    public function getMemberMonthSummary(User $user, $month): array
+    public function getMemberMonthSummary(User $user, $month, $messId = null): array
     {
         $monthId = $month instanceof Month ? $month->id : $month;
         
-        // Calculate meal rate for this month
-        $mealRate = $this->getMealRate($month);
+        // Calculate meal rate for this month and mess
+        $mealRate = $this->getMealRate($month, $messId);
         
         // Calculate user's total meals (breakfast + lunch + dinner)
-        $mealResult = Meal::where('month_id', $monthId)
-            ->where('user_id', $user->id)
+        $mealQuery = Meal::where('month_id', $monthId)
+            ->where('user_id', $user->id);
+        
+        if ($messId) {
+            $mealQuery->where('mess_id', $messId);
+        }
+        
+        $mealResult = $mealQuery
             ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
             ->first();
         
@@ -184,9 +210,14 @@ class CalculationService
         $mealCost = $mealCount * $mealRate;
         
         // Calculate user's total deposits
-        $deposits = (float) Deposit::where('month_id', $monthId)
-            ->where('user_id', $user->id)
-            ->sum('amount');
+        $depositQuery = Deposit::where('month_id', $monthId)
+            ->where('user_id', $user->id);
+        
+        if ($messId) {
+            $depositQuery->where('mess_id', $messId);
+        }
+        
+        $deposits = (float) $depositQuery->sum('amount');
         
         // Calculate balance (deposit - cost)
         $balance = $deposits - $mealCost;
@@ -203,21 +234,22 @@ class CalculationService
     }
 
     /**
-     * Get complete summary for a given month.
+     * Get complete summary for a given month and mess.
      *
      * @param int|Month $month
+     * @param int $messId
      * @return array
      */
-    public function getMonthSummary($month): array
+    public function getMonthSummary($month, $messId = null): array
     {
         $monthId = $month instanceof Month ? $month->id : $month;
         $monthObject = $month instanceof Month ? $month : Month::find($monthId);
         
-        $totalMeals = $this->getTotalMeals($month);
-        $totalExpenses = $this->getTotalExpenses($month);
-        $totalDeposits = $this->getTotalDeposits($month);
-        $mealRate = $this->getMealRate($month);
-        $memberBalances = $this->getPerMemberBalance($month);
+        $totalMeals = $this->getTotalMeals($month, $messId);
+        $totalExpenses = $this->getTotalExpenses($month, $messId);
+        $totalDeposits = $this->getTotalDeposits($month, $messId);
+        $mealRate = $this->getMealRate($month, $messId);
+        $memberBalances = $this->getPerMemberBalance($month, $messId);
         
         return [
             'month_id' => $monthId,

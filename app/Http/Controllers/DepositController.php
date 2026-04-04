@@ -38,10 +38,17 @@ class DepositController extends Controller
     {
         $this->authorize('create', Deposit::class);
         
-        $members = User::get();
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        if (!$activeMess || !$activeMonth) {
+            return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
+        }
+        
+        // Get only approved members of the active mess
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('deposits.create', compact('members', 'activeMonth'));
+        return view('deposits.create', compact('members', 'activeMonth', 'activeMess'));
     }
 
     /**
@@ -83,10 +90,18 @@ class DepositController extends Controller
     {
         $this->authorize('update', $deposit);
         
-        $members = User::get();
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        // Verify deposit belongs to active mess
+        if (!$activeMess || $deposit->mess_id !== $activeMess->id) {
+            abort(403, 'This deposit does not belong to your current mess.');
+        }
+        
+        // Get only approved members of the active mess
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('deposits.edit', compact('deposit', 'members', 'activeMonth'));
+        return view('deposits.edit', compact('deposit', 'members', 'activeMonth', 'activeMess'));
     }
 
     /**
@@ -95,6 +110,13 @@ class DepositController extends Controller
     public function update(StoreDepositRequest $request, Deposit $deposit)
     {
         $this->authorize('update', $deposit);
+        
+        $activeMess = activeMess();
+        
+        // Verify deposit belongs to active mess
+        if (!$activeMess || $deposit->mess_id !== $activeMess->id) {
+            abort(403, 'This deposit does not belong to your current mess.');
+        }
         
         // Check if month is closed
         if (isMonthClosed($deposit->month_id)) {
@@ -120,6 +142,13 @@ class DepositController extends Controller
     public function destroy(Deposit $deposit)
     {
         $this->authorize('delete', $deposit);
+        
+        $activeMess = activeMess();
+        
+        // Verify deposit belongs to active mess
+        if (!$activeMess || $deposit->mess_id !== $activeMess->id) {
+            abort(403, 'This deposit does not belong to your current mess.');
+        }
         
         // Check if month is closed
         if (isMonthClosed($deposit->month_id)) {

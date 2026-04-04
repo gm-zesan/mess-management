@@ -17,7 +17,16 @@ class Mess extends Model
         'description',
         'join_code',
         'creator_id',
+        'manager_id',
     ];
+
+    /**
+     * Get the manager of this mess.
+     */
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
 
     /**
      * Get the user who created this mess.

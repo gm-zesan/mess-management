@@ -10,32 +10,52 @@ use Illuminate\Http\Request;
 class MonthController extends Controller
 {
     /**
-     * Display a listing of all months with summaries.
+     * Display a listing of months for the current mess.
      */
     public function index()
     {
         $this->authorize('viewAny', Month::class);
         
-        $months = Month::all();
-        return view('months.index', compact('months'));
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
+        }
+        
+        // Get only months belonging to the active mess
+        $months = $activeMess->months()->orderBy('start_date', 'desc')->paginate(15);
+        
+        return view('months.index', compact('months', 'activeMess'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new month for the active mess.
      */
     public function create()
     {
         $this->authorize('create', Month::class);
         
-        return view('months.create');
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
+        }
+        
+        return view('months.create', compact('activeMess'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created month for the active mess.
      */
     public function store(Request $request, MonthService $monthService)
     {
         $this->authorize('create', Month::class);
+        
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
+        }
         
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:months',
@@ -44,32 +64,48 @@ class MonthController extends Controller
             'status' => 'required|in:' . MonthStatusEnum::ACTIVE->value . ',' . MonthStatusEnum::CLOSED->value,
         ]);
 
+        // Automatically assign the active mess to the month
+        $validated['mess_id'] = $activeMess->id;
         $month = Month::create($validated);
 
-        // If status is active, ensure only this month is active
+        // If status is active, ensure only this month is active for this mess
         if ($month->status === MonthStatusEnum::ACTIVE) {
             $monthService->activateMonth($month);
         }
 
-        return redirect()->route('months.index')->with('success', 'Month created successfully.');
+        return redirect()->route('months.index')->with('success', 'Month created successfully for ' . $activeMess->name . '.');
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified month.
      */
     public function edit(Month $month)
     {
         $this->authorize('update', $month);
         
-        return view('months.edit', compact('month'));
+        $activeMess = activeMess();
+        
+        // Verify month belongs to active mess
+        if (!$activeMess || $month->mess_id !== $activeMess->id) {
+            abort(403, 'This month does not belong to your current mess.');
+        }
+        
+        return view('months.edit', compact('month', 'activeMess'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified month.
      */
     public function update(Request $request, Month $month, MonthService $monthService)
     {
         $this->authorize('update', $month);
+        
+        $activeMess = activeMess();
+        
+        // Verify month belongs to active mess
+        if (!$activeMess || $month->mess_id !== $activeMess->id) {
+            abort(403, 'This month does not belong to your current mess.');
+        }
         
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:months,name,' . $month->id,
@@ -80,7 +116,7 @@ class MonthController extends Controller
 
         $month->update($validated);
 
-        // If status is being set to active, ensure only this month is active
+        // If status is being set to active, ensure only this month is active for this mess
         if ($month->status === MonthStatusEnum::ACTIVE) {
             $monthService->activateMonth($month);
         }
@@ -95,18 +131,32 @@ class MonthController extends Controller
     {
         $this->authorize('update', $month);
         
+        $activeMess = activeMess();
+        
+        // Verify month belongs to active mess
+        if (!$activeMess || $month->mess_id !== $activeMess->id) {
+            abort(403, 'This month does not belong to your current mess.');
+        }
+        
         $monthService->closeMonth($month);
         
-        return redirect()->route('months.show', $month)
+        return redirect()->route('months.index')
             ->with('success', 'Month has been closed. No further modifications are allowed.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified month.
      */
     public function destroy(Month $month)
     {
         $this->authorize('delete', $month);
+        
+        $activeMess = activeMess();
+        
+        // Verify month belongs to active mess
+        if (!$activeMess || $month->mess_id !== $activeMess->id) {
+            abort(403, 'This month does not belong to your current mess.');
+        }
         
         $month->delete();
         return redirect()->route('months.index')->with('success', 'Month deleted successfully.');

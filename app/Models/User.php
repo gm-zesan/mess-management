@@ -62,6 +62,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Meal::class);
     }
+    
+
     public function messes(): BelongsToMany
     {
         return $this->belongsToMany(Mess::class, 'mess_user')
@@ -73,6 +75,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(MessUser::class);
     }
+
+    /**
+     * Get the active mess for this user (first approved mess).
+     */
+    public function activeMess(): ?Mess
+    {
+        return $this->messes()
+            ->where('status', 'approved')
+            ->first();
+    }
+
     /**
      * Get the deposits for this user.
      */

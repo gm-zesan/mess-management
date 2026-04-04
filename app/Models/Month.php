@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Month extends Model
 {
@@ -67,5 +68,38 @@ class Month extends Model
     public function isOpen(): bool
     {
         return !$this->isClosed();
+    }
+
+    /**
+     * Scope to filter months by mess.
+     */
+    public function scopeByMess(Builder $query, $messId): Builder
+    {
+        return $query->where('mess_id', $messId);
+    }
+
+    /**
+     * Scope to get active months.
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', MonthStatusEnum::ACTIVE->value);
+    }
+
+    /**
+     * Scope to get closed months.
+     */
+    public function scopeClosed(Builder $query): Builder
+    {
+        return $query->where('status', MonthStatusEnum::CLOSED->value);
+    }
+
+    /**
+     * Scope to get months by mess and status.
+     */
+    public function scopeByMessAndStatus(Builder $query, $messId, $status): Builder
+    {
+        return $query->where('mess_id', $messId)
+                     ->where('status', $status);
     }
 }

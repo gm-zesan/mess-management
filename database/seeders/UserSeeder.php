@@ -50,6 +50,6 @@ class UserSeeder extends Seeder
             'email' => 'fatima@example.com',
             'password' => bcrypt('password'),
         ]);
-        $member3->assignRole(RoleEnum::MEMBER);
+        $member3->assignRole(RoleEnum::MANAGER);
     }
 }

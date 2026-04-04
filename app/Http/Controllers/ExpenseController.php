@@ -39,10 +39,17 @@ class ExpenseController extends Controller
     {
         $this->authorize('create', Expense::class);
         
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
-        $members = User::get();
+        
+        if (!$activeMess || !$activeMonth) {
+            return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
+        }
+        
+        // Get only approved members of the active mess
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('expenses.create', compact('activeMonth', 'members'));
+        return view('expenses.create', compact('activeMonth', 'members', 'activeMess'));
     }
 
     /**
@@ -104,10 +111,18 @@ class ExpenseController extends Controller
     {
         $this->authorize('update', $expense);
         
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
-        $members = User::get();
+        
+        // Verify expense belongs to active mess
+        if (!$activeMess || $expense->mess_id !== $activeMess->id) {
+            abort(403, 'This expense does not belong to your current mess.');
+        }
+        
+        // Get only approved members of the active mess
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('expenses.edit', compact('expense', 'activeMonth', 'members'));
+        return view('expenses.edit', compact('expense', 'activeMonth', 'members', 'activeMess'));
     }
 
     /**
@@ -116,6 +131,13 @@ class ExpenseController extends Controller
     public function update(StoreExpenseRequest $request, Expense $expense)
     {
         $this->authorize('update', $expense);
+        
+        $activeMess = activeMess();
+        
+        // Verify expense belongs to active mess
+        if (!$activeMess || $expense->mess_id !== $activeMess->id) {
+            abort(403, 'This expense does not belong to your current mess.');
+        }
         
         // Check if month is closed
         if (isMonthClosed($expense->month_id)) {
@@ -141,6 +163,13 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense)
     {
         $this->authorize('delete', $expense);
+        
+        $activeMess = activeMess();
+        
+        // Verify expense belongs to active mess
+        if (!$activeMess || $expense->mess_id !== $activeMess->id) {
+            abort(403, 'This expense does not belong to your current mess.');
+        }
         
         // Check if month is closed
         if (isMonthClosed($expense->month_id)) {

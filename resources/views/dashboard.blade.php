@@ -139,23 +139,20 @@
             </div>
         @endif
     @else
-        <!-- No Active Month -->
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card border-warning">
-                    <div class="card-body text-center py-5">
-                        <h3 class="text-warning mb-3">
-                            <i class="fa-solid fa-calendar-times"></i> No Active Month
-                        </h3>
-                        <p class="lead text-muted mb-4">
-                            {{ $error ?? 'There is no active month. Please create and activate a month to get started.' }}
-                        </p>
-                        <a href="{{ route('months.create') }}" class="btn btn-primary btn-lg">
-                            <i class="fa-solid fa-plus"></i> Create Month
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <!-- No Active Month Alert -->
+        <div class="alert alert-warning mb-4" role="alert">
+            <h5 class="alert-heading">
+                <i class="fa-solid fa-calendar-times"></i> No Active Month
+            </h5>
+            <p class="mb-2">
+                There is currently no active month for <strong>{{ $activeMess?->name ?? 'your mess' }}</strong>.
+            </p>
+            <a href="{{ route('months.create') }}" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-plus"></i> Create & Activate Month
+            </a>
+            <a href="{{ route('months.index') }}" class="btn btn-sm btn-secondary">
+                <i class="fa-solid fa-list"></i> View All Months
+            </a>
         </div>
     @endif
 </div>

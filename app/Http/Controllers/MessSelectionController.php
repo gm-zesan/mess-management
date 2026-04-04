@@ -6,6 +6,7 @@ use App\Enums\RoleEnum;
 use App\Models\Mess;
 use App\Models\MessUser;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -15,9 +16,15 @@ class MessSelectionController extends Controller
     /**
      * Display mess selection page
      */
-    public function show(): View
+    public function show(): View|RedirectResponse
     {
         $user = Auth::user();
+        
+        // If user already has an approved mess, redirect to dashboard
+        if ($user->activeMess()) {
+            return redirect(route('dashboard'));
+        }
+        
         $userMessIds = $user->messUsers()->pluck('mess_id')->toArray();
         $availableMesses = Mess::whereNotIn('id', $userMessIds)->get();
 
@@ -55,6 +62,7 @@ class MessSelectionController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'creator_id' => $user->id,
+            'manager_id' => $user->id,  // User is the manager of their own mess
             'join_code' => $joinCode,
         ]);
 
@@ -112,5 +120,79 @@ class MessSelectionController extends Controller
         ]);
 
         return redirect(route('mess.selection'))->with('success', 'Request to join sent! Waiting for admin approval.');
+    }
+
+    /**
+     * Show pending users waiting for approval in the current mess
+     */
+    public function pendingInvitations(): View
+    {
+        $user = Auth::user();
+        $activeMess = $user->activeMess();
+
+        if (!$activeMess) {
+            return redirect(route('mess.selection'))->with('error', 'Please select a mess first.');
+        }
+
+        // Get only pending users in the current mess
+        $pendingUsers = MessUser::where('mess_id', $activeMess->id)
+            ->where('status', 'pending')
+            ->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('mess.pending-invitations', [
+            'pendingUsers' => $pendingUsers,
+            'activeMess' => $activeMess,
+        ]);
+    }
+
+    /**
+     * Approve a pending user for the mess
+     */
+    public function approveUser(MessUser $messUser)
+    {
+        $user = Auth::user();
+        $activeMess = $user->activeMess();
+
+        // Verify user is manager of this mess
+        if (!$activeMess || $messUser->mess_id !== $activeMess->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Only manager can approve
+        if ($activeMess->manager_id !== $user->id) {
+            abort(403, 'Only mess manager can approve users');
+        }
+
+        $messUser->update(['status' => 'approved']);
+
+        // Assign MEMBER role to the approved user
+        $messUser->user->assignRole(RoleEnum::MEMBER->value);
+
+        return redirect(route('dashboard'))->with('success', $messUser->user->name . ' has been approved!');
+    }
+
+    /**
+     * Reject a pending user for the mess
+     */
+    public function rejectUser(MessUser $messUser)
+    {
+        $user = Auth::user();
+        $activeMess = $user->activeMess();
+
+        // Verify user is manager of this mess
+        if (!$activeMess || $messUser->mess_id !== $activeMess->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Only manager can reject
+        if ($activeMess->manager_id !== $user->id) {
+            abort(403, 'Only mess manager can reject users');
+        }
+
+        $messUser->delete();
+
+        return redirect(route('mess.pending-invitations'))->with('success', 'User request has been rejected.');
     }
 }

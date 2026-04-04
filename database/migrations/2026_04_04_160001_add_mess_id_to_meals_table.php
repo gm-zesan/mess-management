@@ -23,8 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('meals', function (Blueprint $table) {
-            $table->dropForeignIdFor('messes');
-        });
+        // This migration is a backup - 155119 handles the column.
+        // Do nothing on rollback to avoid conflicts.
     }
 };

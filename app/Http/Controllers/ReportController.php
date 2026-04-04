@@ -17,6 +17,16 @@ class ReportController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            abort(403, 'You must be a member of a mess to view reports.');
+        }
+        
+        // Verify month belongs to active mess
+        if ($month->mess_id !== $activeMess->id) {
+            abort(403, 'This month does not belong to your mess.');
+        }
         
         // Members can only view current month report
         if ($user->hasRole('member')) {
@@ -29,7 +39,7 @@ class ReportController extends Controller
             $this->authorize('view', $month);
         }
         
-        $summary = $calculationService->getMonthSummary($month);
+        $summary = $calculationService->getMonthSummary($month, $activeMess->id);
         
         return view('reports.monthly', [
             'month' => $month,
@@ -44,22 +54,28 @@ class ReportController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            abort(403, 'You must be a member of a mess to view reports.');
+        }
         
         // Check if user has permission to view all months reports
         if (!$user->can('reports.all-months')) {
             abort(403, 'You do not have permission to access this page.');
         }
         
-        // Members only see current month, managers/superadmins see all months
+        // Get all months for the active mess (or current month for members)
         if ($user->hasRole('member')) {
             $months = [activeMonth()];
         } else {
-            $months = Month::all();
+            // Managers and superadmins see all months for their mess
+            $months = $activeMess->months()->get();
         }
         
         $reports = [];
         foreach ($months as $month) {
-            $reports[$month->id] = $calculationService->getMonthSummary($month);
+            $reports[$month->id] = $calculationService->getMonthSummary($month, $activeMess->id);
         }
         
         return view('reports.all-months', compact('months', 'reports'));
@@ -72,6 +88,16 @@ class ReportController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            abort(403, 'You must be a member of a mess to export reports.');
+        }
+        
+        // Verify month belongs to active mess
+        if ($month->mess_id !== $activeMess->id) {
+            abort(403, 'This month does not belong to your mess.');
+        }
         
         // Members can only export current month report
         if ($user->hasRole('member')) {
@@ -84,7 +110,7 @@ class ReportController extends Controller
             $this->authorize('view', $month);
         }
         
-        $summary = $calculationService->getMonthSummary($month);
+        $summary = $calculationService->getMonthSummary($month, $activeMess->id);
         
         $html = view('reports.monthly-pdf', [
             'month' => $month,

@@ -12,38 +12,47 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 d-flex items-center">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    @can('meals.viewAny')
-                        <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
-                            {{ __('Meals') }}
+                    @if(activeMess())
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
                         </x-nav-link>
-                    @endcan
-                    <x-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
-                        {{ __('Expenses') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
-                        {{ __('Deposits') }}
-                    </x-nav-link>
-                    @can('reports.view')
-                        <x-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
-                            {{ __('Reports') }}
+                        <x-nav-link :href="route('mess.profile', activeMess())" :active="request()->routeIs('mess.profile')">
+                            <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
                         </x-nav-link>
-                    @endcan
-                    @can('members.view')
-                        <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
-                            {{ __('Members') }}
+                        @can('meals.viewAny')
+                            <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
+                                {{ __('Meals') }}
+                            </x-nav-link>
+                        @endcan
+                        <x-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
+                            {{ __('Expenses') }}
                         </x-nav-link>
-                    @endcan
-                    @can('months.view')
-                        <x-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
-                            {{ __('Months') }}
+                        <x-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
+                            {{ __('Deposits') }}
                         </x-nav-link>
-                    @endcan
-                    @if(auth()->user() && auth()->user()->hasRole('superadmin'))
-                        <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
-                            {{ __('Permissions') }}
+                        @can('reports.view')
+                            <x-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
+                                {{ __('Reports') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('members.view')
+                            <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
+                                {{ __('Members') }}
+                            </x-nav-link>
+                        @endcan
+                        @can('months.view')
+                            <x-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
+                                {{ __('Months') }}
+                            </x-nav-link>
+                        @endcan
+                        @if(auth()->user() && auth()->user()->hasRole('superadmin'))
+                            <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
+                                {{ __('Permissions') }}
+                            </x-nav-link>
+                        @endif
+                    @else
+                        <x-nav-link :href="route('mess.selection')" :active="request()->routeIs('mess.selection')">
+                            {{ __('Select a Mess') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -52,6 +61,19 @@
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
+                    <!-- Pending Invitations Link -->
+                    @role(['manager', 'superadmin'])
+                        <a href="{{ route('mess.pending-invitations') }}" class="ms-4">
+                            <span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-warning rounded-md hover:bg-warning-dark">
+                                <i class="fa-solid fa-envelope me-2"></i>
+                                Pending
+                                <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-danger rounded-full">
+                                    {{ pendingInvitationsCount() }}
+                                </span>
+                            </span>
+                        </a>
+                    @endrole
+
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -106,38 +128,47 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            @can('meals.viewAny')
-                <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
-                    {{ __('Meals') }}
+            @if(activeMess())
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-            @endcan
-            <x-responsive-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
-                {{ __('Expenses') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
-                {{ __('Deposits') }}
-            </x-responsive-nav-link>
-            @can('reports.view')
-                <x-responsive-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
-                    {{ __('Reports') }}
+                <x-responsive-nav-link :href="route('mess.profile', activeMess())" :active="request()->routeIs('mess.profile')">
+                    <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
                 </x-responsive-nav-link>
-            @endcan
-            @can('members.view')
-                <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
-                    {{ __('Members') }}
+                @can('meals.viewAny')
+                    <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
+                        {{ __('Meals') }}
+                    </x-responsive-nav-link>
+                @endcan
+                <x-responsive-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
+                    {{ __('Expenses') }}
                 </x-responsive-nav-link>
-            @endcan
-            @can('months.view')
-                <x-responsive-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
-                    {{ __('Months') }}
+                <x-responsive-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
+                    {{ __('Deposits') }}
                 </x-responsive-nav-link>
-            @endcan
-            @if(auth()->user() && auth()->user()->hasRole('superadmin'))
-                <x-responsive-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
-                    {{ __('Permissions') }}
+                @can('reports.view')
+                    <x-responsive-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
+                        {{ __('Reports') }}
+                    </x-responsive-nav-link>
+                @endcan
+                @can('members.view')
+                    <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
+                        {{ __('Members') }}
+                    </x-responsive-nav-link>
+                @endcan
+                @can('months.view')
+                    <x-responsive-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
+                        {{ __('Months') }}
+                    </x-responsive-nav-link>
+                @endcan
+                @if(auth()->user() && auth()->user()->hasRole('superadmin'))
+                    <x-responsive-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
+                        {{ __('Permissions') }}
+                    </x-responsive-nav-link>
+                @endif
+            @else
+                <x-responsive-nav-link :href="route('mess.selection')" :active="request()->routeIs('mess.selection')">
+                    {{ __('Select a Mess') }}
                 </x-responsive-nav-link>
             @endif
         </div>

@@ -62,58 +62,6 @@ class MessInviteController extends Controller
         return redirect(route('mess.members', $mess))->with('success', "Invitation sent to {$invitee->email}!");
     }
 
-    /**
-     * View pending members for approval
-     */
-    public function pending(Mess $mess): View
-    {
-        $this->authorize('approveMember', $mess);
-
-        $pendingMembers = $mess->messUsers()
-            ->where('status', 'pending')
-            ->with('user')
-            ->get();
-
-        return view('mess.pending-members', [
-            'mess' => $mess,
-            'pendingMembers' => $pendingMembers,
-        ]);
-    }
-
-    /**
-     * Approve a pending member
-     */
-    public function approve(Mess $mess, MessUser $messUser)
-    {
-        $this->authorize('approveMember', $mess);
-
-        // Ensure the mess_user belongs to this mess
-        $this->authorize('update', $messUser);
-
-        $messUser->update(['status' => 'approved']);
-
-        // Assign member role to the user
-        if (!$messUser->user->hasRole(RoleEnum::MEMBER->value)) {
-            $messUser->user->assignRole(RoleEnum::MEMBER->value);
-        }
-
-        return redirect(route('mess.pending', $mess))->with('success', "Member {$messUser->user->name} approved!");
-    }
-
-    /**
-     * Reject a pending member
-     */
-    public function reject(Mess $mess, MessUser $messUser)
-    {
-        $this->authorize('approveMember', $mess);
-
-        // Ensure the mess_user belongs to this mess
-        $this->authorize('update', $messUser);
-
-        $messUser->update(['status' => 'rejected']);
-
-        return redirect(route('mess.pending', $mess))->with('success', "Member {$messUser->user->name} rejected!");
-    }
 
     /**
      * View all members of a mess
@@ -132,4 +80,46 @@ class MessInviteController extends Controller
             'members' => $approvedMembers,
         ]);
     }
+
+    /**
+     * Show mess profile
+     */
+    public function profile(Mess $mess): View
+    {
+        $this->authorize('view', $mess);
+
+        return view('mess.profile', [
+            'mess' => $mess,
+        ]);
+    }
+
+    /**
+     * Update mess profile
+     */
+    public function updateProfile(Request $request, Mess $mess)
+    {
+        $this->authorize('update', $mess);
+
+        $user = Auth::user();
+
+        // Superadmin can edit everything, manager can only edit description
+        if ($user->hasRole('SUPERADMIN')) {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|unique:messes,name,' . $mess->id,
+                'description' => 'nullable|string|max:1000',
+            ]);
+            
+            $mess->update($validated);
+        } else {
+            // Manager can only edit description
+            $validated = $request->validate([
+                'description' => 'nullable|string|max:1000',
+            ]);
+            
+            $mess->update($validated);
+        }
+
+        return redirect(route('mess.profile', $mess))->with('success', 'Mess profile updated successfully!');
+    }
 }
+

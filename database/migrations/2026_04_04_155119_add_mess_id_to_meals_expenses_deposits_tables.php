@@ -35,19 +35,22 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('meals', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\Mess::class);
-            $table->dropIndex('meals_mess_id_index');
-        });
+        if (Schema::hasColumn('meals', 'mess_id')) {
+            Schema::table('meals', function (Blueprint $table) {
+                $table->dropColumn('mess_id');
+            });
+        }
 
-        Schema::table('expenses', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\Mess::class);
-            $table->dropIndex('expenses_mess_id_index');
-        });
+        if (Schema::hasColumn('expenses', 'mess_id')) {
+            Schema::table('expenses', function (Blueprint $table) {
+                $table->dropColumn('mess_id');
+            });
+        }
 
-        Schema::table('deposits', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\Mess::class);
-            $table->dropIndex('deposits_mess_id_index');
-        });
+        if (Schema::hasColumn('deposits', 'mess_id')) {
+            Schema::table('deposits', function (Blueprint $table) {
+                $table->dropColumn('mess_id');
+            });
+        }
     }
 };

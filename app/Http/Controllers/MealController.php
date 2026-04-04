@@ -44,8 +44,8 @@ class MealController extends Controller
         
         $meals = $query->latest('date')->paginate(15);
         
-        // Get all members for filter dropdown
-        $members = User::orderBy('name')->get();
+        // Get only approved members of the active mess for filter dropdown
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
         
         return view('meals.index', compact('meals', 'activeMess', 'activeMonth', 'members', 'filterDate', 'filterMember'));
     }
@@ -57,10 +57,17 @@ class MealController extends Controller
     {
         $this->authorize('create', Meal::class);
         
-        $members = User::get();
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        if (!$activeMess || !$activeMonth) {
+            return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
+        }
+        
+        // Get only approved members of the active mess
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('meals.create', compact('members', 'activeMonth'));
+        return view('meals.create', compact('members', 'activeMonth', 'activeMess'));
     }
 
     /**
@@ -143,10 +150,18 @@ class MealController extends Controller
     {
         $this->authorize('update', $meal);
         
-        $members = User::get();
+        $activeMess = activeMess();
         $activeMonth = activeMonth();
+        
+        // Verify meal belongs to active mess
+        if (!$activeMess || $meal->mess_id !== $activeMess->id) {
+            abort(403, 'This meal does not belong to your current mess.');
+        }
+        
+        // Get only approved members of the active mess
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('meals.edit', compact('meal', 'members', 'activeMonth'));
+        return view('meals.edit', compact('meal', 'members', 'activeMonth', 'activeMess'));
     }
 
     /**
@@ -155,6 +170,13 @@ class MealController extends Controller
     public function update(UpdateMealRequest $request, Meal $meal)
     {
         $this->authorize('update', $meal);
+        
+        $activeMess = activeMess();
+        
+        // Verify meal belongs to active mess
+        if (!$activeMess || $meal->mess_id !== $activeMess->id) {
+            abort(403, 'This meal does not belong to your current mess.');
+        }
         
         // Check if month is closed
         if ($meal->month->isClosed()) {
@@ -178,6 +200,13 @@ class MealController extends Controller
     public function destroy(Meal $meal)
     {
         $this->authorize('delete', $meal);
+        
+        $activeMess = activeMess();
+        
+        // Verify meal belongs to active mess
+        if (!$activeMess || $meal->mess_id !== $activeMess->id) {
+            abort(403, 'This meal does not belong to your current mess.');
+        }
         
         // Check if month is closed
         if (isMonthClosed($meal->month_id)) {

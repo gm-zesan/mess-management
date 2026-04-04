@@ -17,14 +17,19 @@ class MemberController extends Controller
     {
         $this->authorize('viewAny', User::class);
         
-        // Exclude superadmin from member list and load roles
-        $members = User::whereDoesntHave('roles', function ($query) {
-            $query->where('name', RoleEnum::SUPERADMIN->value);
-        })
-        ->with('roles')
-        ->paginate(10);
+        $activeMess = activeMess();
         
-        return view('members.index', compact('members'));
+        if (!$activeMess) {
+            return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
+        }
+        
+        // Get members of the current mess with roles
+        $members = $activeMess->messUsers()
+            ->where('status', 'approved')
+            ->with('user.roles')
+            ->paginate(10);
+        
+        return view('members.index', compact('members', 'activeMess'));
     }
 
     /**

@@ -70,3 +70,36 @@ function isMonthClosed($month)
 {
     return app(App\Services\MonthService::class)->isClosed($month);
 }
+
+/**
+ * Get pending invitations count for the current user.
+ * 
+ * @return int
+ */
+function pendingInvitationsCount(): int
+{
+    if (!Auth::check()) {
+        return 0;
+    }
+
+    return Auth::user()->messUsers()
+        ->where('status', 'pending')
+        ->count();
+}
+
+/**
+ * Get all pending invitations for the current user.
+ * 
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+function getPendingInvitations()
+{
+    if (!Auth::check()) {
+        return collect();
+    }
+
+    return Auth::user()->messUsers()
+        ->where('status', 'pending')
+        ->with('mess')
+        ->get();
+}

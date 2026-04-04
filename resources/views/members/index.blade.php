@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-use App\Models\User;
+use App\Models\MessUser;
 @endphp
 
 @section('content')
@@ -10,7 +10,13 @@ use App\Models\User;
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="mb-0">Members</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-0">Members of {{ $activeMess->name }}</h3>
+                            <small class="text-muted">{{ $activeMess->description }}</small>
+                        </div>
+                        <span class="badge bg-primary">{{ $activeMess->messUsers()->where('status', 'approved')->count() }} Members</span>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if ($message = Session::get('success'))
@@ -38,14 +44,17 @@ use App\Models\User;
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Role</th>
-                                            <th>Created At</th>
+                                            <th>Joined At</th>
                                             @canany(['members.update', 'members.delete', 'members.manage-roles'])
                                                 <th>Actions</th>
                                             @endcanany
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($members as $member)
+                                        @foreach ($members as $messUser)
+                                            @php
+                                                $member = $messUser->user;
+                                            @endphp
                                             <tr>
                                                 <td>{{ $member->id }}</td>
                                                 <td>{{ $member->name }}</td>
@@ -59,7 +68,7 @@ use App\Models\User;
                                                         <span class="badge bg-secondary">No Role</span>
                                                     @endforelse
                                                 </td>
-                                                <td>{{ $member->created_at->format('Y-m-d H:i') }}</td>
+                                                <td>{{ $messUser->created_at->format('Y-m-d H:i') }}</td>
                                                 @canany(['members.update', 'members.delete', 'members.manage-roles'])
                                                     <td>
                                                         @can('update', $member)
@@ -69,11 +78,11 @@ use App\Models\User;
                                                         @endcan
 
                                                         @can('members.manage-roles')
-                                                            @if(!$member->hasRole('manager'))
+                                                            @if(!$member->hasRole('manager') && $activeMess->manager_id !== $member->id)
                                                                 <form action="{{ route('members.change-manager', $member) }}" method="POST" style="display:inline;">
                                                                     @csrf
                                                                     <button type="submit" class="btn btn-sm btn-success" title="Make Manager" 
-                                                                            onclick="return confirm('Make {{ $member->name }} the manager?')">
+                                                                            onclick="return confirm('Make {{ $member->name }} the manager of {{ $activeMess->name }}?')">
                                                                         <i class="fas fa-crown"></i>
                                                                     </button>
                                                                 </form>
@@ -83,14 +92,16 @@ use App\Models\User;
                                                         @endcan
 
                                                         @can('delete', $member)
-                                                            <form action="{{ route('members.destroy', $member) }}" method="POST" style="display:inline;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-danger" title="Delete" 
-                                                                        onclick="return confirm('Are you sure?')">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
+                                                            @if($activeMess->manager_id !== $member->id)
+                                                                <form action="{{ route('members.destroy', $member) }}" method="POST" style="display:inline;">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger" title="Remove from Mess" 
+                                                                            onclick="return confirm('Remove {{ $member->name }} from {{ $activeMess->name }}?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endif
                                                         @endcan
                                                     </td>
                                                 @endcanany
@@ -104,9 +115,9 @@ use App\Models\User;
                                 {{ $members->links() }}
                             </div>
                         @else
-                            <div class="alert alert-info">No members found. 
+                            <div class="alert alert-info">No members found in this mess.
                                 @can('members.create')
-                                    <a href="{{ route('members.create') }}">Create one now</a>
+                                    <a href="{{ route('members.create') }}">Invite members</a>
                                 @endcan
                             </div>
                         @endif

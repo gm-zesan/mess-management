@@ -23,8 +23,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('months', function (Blueprint $table) {
-            $table->dropForeignIdFor('messes');
-        });
+        // Drop the mess_id foreign key and column from months table
+        if (Schema::hasColumn('months', 'mess_id')) {
+            Schema::table('months', function (Blueprint $table) {
+                $table->dropForeign(['mess_id']);
+                $table->dropColumn('mess_id');
+            });
+        }
     }
 };
