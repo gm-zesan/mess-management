@@ -56,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasRole(RoleEnum::SUPERADMIN) ? true : null;
         });
 
-        // Use Bootstrap for pagination
-        Paginator::useBootstrapFive();
+        // Use Tailwind for pagination
+        Paginator::useTailwind();
     }
 }
