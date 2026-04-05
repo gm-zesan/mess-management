@@ -36,10 +36,6 @@
                 background: linear-gradient(180deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
             }
 
-            .gradient-blue {
-                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            }
-
             .gradient-indigo-purple {
                 background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             }
@@ -86,20 +82,20 @@
     <body class="antialiased">
         <div class="split-layout flex h-screen w-full">
             <!-- Left Panel - Branding -->
-            <div class="left-panel relative hidden lg:flex lg:w-3/5 flex-col justify-between overflow-hidden bg-cover bg-center bg-no-repeat p-[60px]" style="background-image: url('/auth.jpeg')">
+            <div class="left-panel relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-between overflow-hidden bg-cover bg-center bg-no-repeat p-[60px]" style="background-image: url('/auth.jpeg')">
                 <!-- Dark Overlay -->
                 <div class="gradient-overlay absolute inset-0 z-0"></div>
 
                 <!-- Logo Container -->
                 <div class="logo-container relative z-10 flex items-center gap-4 mb-0">
-                    <div class="gradient-blue flex h-[50px] w-[50px] flex-shrink-0 items-center justify-center rounded-xl">
+                    <div class="bg-sky-600 flex h-[50px] w-[50px] flex-shrink-0 items-center justify-center rounded-xl">
                         <svg class="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
                     </div>
                     <div class="logo-text m-0">
                         <h2 class="m-0 font-[family-name:var(--font-sora)] text-2xl font-bold text-white">MessManager</h2>
-                        <p class="m-0 mt-0.5 text-xs font-normal text-blue-300">Meal & Expense Tracking</p>
+                        <p class="m-0 mt-0.5 text-xs font-normal text-sky-300">Meal & Expense Tracking</p>
                     </div>
                 </div>
 
@@ -111,25 +107,25 @@
                     <!-- Features List -->
                     <ul class="features-list list-none m-0 mb-8 flex flex-col gap-3 p-0">
                         <li class="feature-item flex items-center gap-3 text-sm font-normal text-slate-200">
-                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10 12a5 5 0 100-10 5 5 0 000 10zM2 18a8 8 0 0116 0H2z"></path>
                             </svg>
                             <span>Member & User Management</span>
                         </li>
                         <li class="feature-item flex items-center gap-3 text-sm font-normal text-slate-200">
-                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                             </svg>
                             <span>Meal & Attendance Tracking</span>
                         </li>
                         <li class="feature-item flex items-center gap-3 text-sm font-normal text-slate-200">
-                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
                             </svg>
                             <span>Expense & Deposit Tracking</span>
                         </li>
                         <li class="feature-item flex items-center gap-3 text-sm font-normal text-slate-200">
-                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="feature-icon h-5 w-5 flex-shrink-0 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v2h16V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
                             </svg>
                             <span>Monthly Billing & Settlement</span>
@@ -139,9 +135,9 @@
                     <!-- Avatar Stack -->
                     <div class="avatar-stack relative z-10 flex flex-col items-start gap-3" style="margin-top: 32px;">
                         <div class="avatars flex mr-2">
-                            <div class="gradient-indigo-purple avatar relative -ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-slate-900 text-xs font-semibold text-white first:ml-0">SA</div>
-                            <div class="gradient-pink-rose avatar relative -ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-slate-900 text-xs font-semibold text-white first:ml-0">JD</div>
-                            <div class="gradient-teal-green avatar relative -ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-slate-900 text-xs font-semibold text-white first:ml-0">MK</div>
+                            <div class="bg-indigo-600 avatar relative -ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-slate-900 text-xs font-semibold text-white first:ml-0">SA</div>
+                            <div class="bg-orange-600 avatar relative -ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-slate-900 text-xs font-semibold text-white first:ml-0">JD</div>
+                            <div class="bg-green-600 avatar relative -ml-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-slate-900 text-xs font-semibold text-white first:ml-0">MK</div>
                         </div>
                         <p class="m-0 text-sm font-medium text-slate-200">Trusted by <strong class="text-white">500+ mess managers</strong></p>
                     </div>
@@ -149,7 +145,7 @@
             </div>
 
             <!-- Right Panel - Form Side -->
-            <div class="right-panel flex w-full flex-col justify-center overflow-y-auto bg-slate-50 px-24 py-[60px] lg:w-2/5 md:px-24 md:py-10">
+            <div class="right-panel flex w-full flex-col justify-center overflow-y-auto bg-slate-50 px-6 py-[60px] md:w-1/2 lg:w-2/5 sm:px-32 md:px-16 md:py-10">
                 <!-- Grid Texture -->
                 <svg class="grid-texture pointer-events-none fixed top-0 right-0 z-0 h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" style="color: rgba(148, 163, 184, 0.02);">
                     <defs>

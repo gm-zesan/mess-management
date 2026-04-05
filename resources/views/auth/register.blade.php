@@ -8,20 +8,6 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-6" :status="session('status')" />
 
-    <!-- Validation Errors -->
-    @if ($errors->any())
-        <div class="mb-6 flex gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
-            <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-            <div class="flex-1">
-                @foreach ($errors->all() as $error)
-                    <p class="text-sm font-medium text-red-700">{{ $error }}</p>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
     <!-- Register Form -->
     <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-4">
         @csrf
@@ -41,7 +27,7 @@
                     required
                     autofocus
                     autocomplete="name"
-                    class="w-full rounded-2xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 {{ $errors->has('name') ? 'border-red-500' : '' }}"
+                    class="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('name') ? 'border-red-500' : '' }}"
                     placeholder="Your full name"
                 />
             </div>
@@ -63,7 +49,7 @@
                     value="{{ old('email') }}"
                     required
                     autocomplete="username"
-                    class="w-full rounded-2xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 {{ $errors->has('email') ? 'border-red-500' : '' }}"
+                    class="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('email') ? 'border-red-500' : '' }}"
                     placeholder="you@company.com"
                 />
             </div>
@@ -83,10 +69,10 @@
                     name="password"
                     required
                     autocomplete="new-password"
-                    class="w-full rounded-2xl border border-gray-300 bg-white py-2.5 pl-10 pr-16 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 {{ $errors->has('password') ? 'border-red-500' : '' }}"
+                    class="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-16 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('password') ? 'border-red-500' : '' }}"
                     placeholder="••••••••"
                 />
-                <button type="button" class="absolute right-3.5 bg-none border-none cursor-pointer px-2 py-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-500 active:text-blue-700" onclick="togglePassword()" data-toggle="password">
+                <button type="button" class="absolute right-3.5 bg-none border-none cursor-pointer px-2 py-1 text-xs font-semibold text-sky-600 transition-colors hover:text-sky-500 active:text-sky-700" onclick="togglePassword()" data-toggle="password">
                     <span class="toggle-text">Show</span>
                 </button>
             </div>
@@ -106,7 +92,7 @@
                     name="password_confirmation"
                     required
                     autocomplete="new-password"
-                    class="w-full rounded-2xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 {{ $errors->has('password_confirmation') ? 'border-red-500' : '' }}"
+                    class="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('password_confirmation') ? 'border-red-500' : '' }}"
                     placeholder="••••••••"
                 />
             </div>
@@ -114,14 +100,14 @@
         </div>
 
         <!-- Create Account Button -->
-        <button type="submit" class="w-full rounded-2xl bg-blue-600 px-4 py-2.5 font-[family-name:var(--font-sora)] text-sm font-bold uppercase tracking-wider text-white transition-all hover:bg-blue-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-blue-100 mt-1 mb-4">
+        <button type="submit" class="w-full rounded-md bg-sky-600 px-4 py-2.5 font-[family-name:var(--font-sora)] text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-sky-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-sky-100 mt-1 mb-4">
             Create Account
         </button>
     </form>
 
     <!-- Already registered (inline link) -->
     <div class="text-center">
-        <p class="text-sm text-gray-600">Already registered? <a href="{{ route('login') }}" class="font-semibold text-blue-600 no-underline transition-all hover:underline hover:text-blue-500 ml-1.5">Sign in</a></p>
+        <p class="text-sm text-gray-600">Already registered? <a href="{{ route('login') }}" class="font-semibold text-sky-600 no-underline transition-all hover:underline hover:text-sky-500 ml-1.5">Sign in</a></p>
     </div>
 
     <!-- Vanilla JS for Password Toggle -->

@@ -8,20 +8,6 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-6" :status="session('status')" />
 
-    <!-- Validation Errors -->
-    @if ($errors->any())
-        <div class="mb-6 flex gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
-            <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-            <div class="flex-1">
-                @foreach ($errors->all() as $error)
-                    <p class="text-sm font-medium text-red-700">{{ $error }}</p>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
     <!-- Login Form -->
     <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-4">
         @csrf
@@ -42,7 +28,7 @@
                     required
                     autofocus
                     autocomplete="username"
-                    class="w-full rounded-2xl border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 {{ $errors->has('email') ? 'border-red-500' : '' }}"
+                    class="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('email') ? 'border-red-500' : '' }}"
                     placeholder="you@company.com"
                 />
             </div>
@@ -62,10 +48,10 @@
                     name="password"
                     required
                     autocomplete="current-password"
-                    class="w-full rounded-2xl border border-gray-300 bg-white py-2.5 pl-10 pr-16 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 {{ $errors->has('password') ? 'border-red-500' : '' }}"
+                    class="w-full rounded-md border border-gray-300 bg-white py-2.5 pl-10 pr-16 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('password') ? 'border-red-500' : '' }}"
                     placeholder="••••••••"
                 />
-                <button type="button" class="absolute right-3.5 bg-none border-none cursor-pointer px-2 py-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-500 active:text-blue-700" onclick="togglePassword()" data-toggle="password">
+                <button type="button" class="absolute right-3.5 bg-none border-none cursor-pointer px-2 py-1 text-xs font-semibold text-sky-600 transition-colors hover:text-sky-500 active:text-sky-700" onclick="togglePassword()" data-toggle="password">
                     <span class="toggle-text">Show</span>
                 </button>
             </div>
@@ -79,19 +65,19 @@
                     id="remember"
                     type="checkbox"
                     name="remember"
-                    class="h-4 w-4 cursor-pointer rounded accent-blue-600 border"
+                    class="h-4 w-4 cursor-pointer rounded accent-sky-600 border"
                 />
                 <span>Remember me</span>
             </label>
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="font-semibold text-blue-600 no-underline transition-all hover:underline hover:text-blue-500">
+                <a href="{{ route('password.request') }}" class="font-semibold text-sky-600 no-underline transition-all hover:underline hover:text-sky-500">
                     Forgot password?
                 </a>
             @endif
         </div>
 
         <!-- Sign In Button -->
-        <button type="submit" class="w-full rounded-2xl bg-blue-600 px-4 py-2.5 font-[family-name:var(--font-sora)] text-sm font-bold uppercase tracking-wider text-white transition-all hover:bg-blue-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-blue-100 mt-1">
+        <button type="submit" class="w-full rounded-md bg-sky-600 px-4 py-2.5 font-[family-name:var(--font-sora)] text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-sky-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-sky-100 mt-1">
             Sign In
         </button>
 
@@ -102,7 +88,7 @@
         </div>
 
         <!-- Google Login Button -->
-        <a href="/auth/google/redirect" class="inline-flex w-full items-center justify-center gap-2.5 rounded-2xl border border-gray-300 bg-white px-4 py-2.5 font-[family-name:var(--font-sans)] text-sm font-semibold text-gray-900 transition-all hover:bg-gray-50 active:scale-98 focus:outline-none focus:ring-2 focus:ring-blue-100 mb-4">
+        <a href="/auth/google/redirect" class="inline-flex w-full items-center justify-center gap-2.5 rounded-md border border-gray-300 bg-white px-4 py-2.5 font-[family-name:var(--font-sans)] text-sm font-semibold text-gray-900 transition-all hover:bg-gray-50 active:scale-98 focus:outline-none focus:ring-2 focus:ring-sky-100 mb-4">
             <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5 flex-shrink-0">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -115,7 +101,7 @@
 
     <!-- Create Account (inline link) -->
     <div class="text-center">
-        <p class="text-sm text-gray-600 mb-3">Don't have an account? <a href="{{ route('register') }}" class="font-semibold text-blue-600 no-underline transition-all hover:underline hover:text-blue-500 ml-1.5">Create Account</a></p>
+        <p class="text-sm text-gray-600 mb-3">Don't have an account? <a href="{{ route('register') }}" class="font-semibold text-sky-600 no-underline transition-all hover:underline hover:text-sky-500 ml-1.5">Create Account</a></p>
     </div>
 
     <!-- Vanilla JS for Password Toggle -->
