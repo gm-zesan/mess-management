@@ -1,3 +1,4 @@
+@use('App\Enums\RoleEnum')
 @extends('layouts.app')
 
 @section('content')
@@ -169,9 +170,12 @@
             <p class="mb-2">
                 There is currently no active month for <strong>{{ $activeMess?->name ?? 'your mess' }}</strong>.
             </p>
-            <a href="{{ route('months.create') }}" class="btn btn-sm btn-primary">
-                <i class="fa-solid fa-plus"></i> Create & Activate Month
-            </a>
+            @if(auth()->user()->hasRole(RoleEnum::MANAGER->value))
+                <a href="{{ route('months.create') }}" class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-plus"></i> Create & Activate Month
+                </a>
+            @endif
+            
             <a href="{{ route('months.index') }}" class="btn btn-sm btn-secondary">
                 <i class="fa-solid fa-list"></i> View All Months
             </a>

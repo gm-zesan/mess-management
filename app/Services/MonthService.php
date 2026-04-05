@@ -61,16 +61,17 @@ class MonthService
     }
 
     /**
-     * Ensure only one month is active at a time.
-     * Deactivates other months when activating a new one.
+     * Ensure only one month is active at a time per mess.
+     * Deactivates other months in the same mess when activating a new one.
      *
      * @param Month $month
      * @return Month
      */
     public function activateMonth(Month $month): Month
     {
-        // Deactivate all other months
+        // Deactivate all other months in the same mess
         Month::where('id', '!=', $month->id)
+            ->where('mess_id', $month->mess_id)
             ->where('status', MonthStatusEnum::ACTIVE->value)
             ->update(['status' => MonthStatusEnum::CLOSED->value]);
 

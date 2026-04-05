@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     // Mess Selection (after registration)
     Route::get('/mess/selection', [MessSelectionController::class, 'show'])->name('mess.selection');
     Route::post('/mess/create', [MessSelectionController::class, 'create'])->name('mess.create');
+    Route::post('/mess/join-by-code', [MessSelectionController::class, 'joinByCode'])->name('mess.join-by-code');
     Route::post('/mess/{mess}/join', [MessSelectionController::class, 'join'])->name('mess.join');
     Route::post('/mess/{mess}/enter', [MessSelectionController::class, 'enterMess'])->name('mess.enter');
     Route::post('/mess/exit', [MessSelectionController::class, 'exitMess'])->name('mess.exit');

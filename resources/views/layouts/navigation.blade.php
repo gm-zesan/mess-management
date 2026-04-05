@@ -1,254 +1,249 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav class="sticky top-0 z-50 bg-white border-b border-gray-200">
     @use('App\Enums\RoleEnum')
-    <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
-
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 d-flex items-center">
-                    @if(activeMess())
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                            {{ __('Dashboard') }}
-                        </x-nav-link>
-                        @can('meals.view')
-                            <x-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
-                                {{ __('Meals') }}
-                            </x-nav-link>
-                        @endcan
-                        <x-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
-                            {{ __('Expenses') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
-                            {{ __('Deposits') }}
-                        </x-nav-link>
-                        @can('reports.view')
-                            <x-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
-                                {{ __('Reports') }}
-                            </x-nav-link>
-                        @endcan
-                        @can('members.view')
-                            <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
-                                {{ __('Members') }}
-                            </x-nav-link>
-                        @endcan
-                        @can('months.view')
-                            <x-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
-                                {{ __('Months') }}
-                            </x-nav-link>
-                        @endcan
-                        @if(auth()->user() && auth()->user()->hasRole(RoleEnum::SUPERADMIN->value))
-                            <x-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
-                                {{ __('Permissions') }}
-                            </x-nav-link>
-                        @endif
-                    @else
-                        <x-nav-link :href="route('mess.selection')" :active="request()->routeIs('mess.selection')">
-                            {{ __('Select a Mess') }}
-                        </x-nav-link>
-                    @endif
-                </div>
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
+                    <x-application-logo class="block h-8 w-auto fill-current text-sky-600 transition-transform group-hover:scale-110" />
+                    <span class="hidden sm:inline font-bold text-gray-900">Mess Management</span>
+                </a>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center gap-1">
+                @if(activeMess() || isSuperAdminInMess())
+                    <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                        Dashboard
+                    </a>
+                    @can('meals.view')
+                        <a href="{{ route('meals.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('meals.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                            Meals
+                        </a>
+                    @endcan
+                    @if(activeMonth())
+                        <a href="{{ route('expenses.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('expenses.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                            Expenses
+                        </a>
+                        <a href="{{ route('deposits.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('deposits.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                            Deposits
+                        </a>
+                    @endif
+                    @can('reports.view')
+                        <a href="{{ route('reports.all-months') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                            Reports
+                        </a>
+                    @endcan
+                    @can('members.view')
+                        <a href="{{ route('members.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('members.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                            Members
+                        </a>
+                    @endcan
+                    @can('months.view')
+                        <a href="{{ route('months.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('months.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                            Months
+                        </a>
+                    @endcan
+                @endif
+            </div>
+
+            <!-- Right Side Actions -->
+            <div class="flex items-center gap-3">
                 @auth
-                    <!-- Pending Invitations Link -->
-                    @role(['manager', 'superadmin'])
-                        <a href="{{ route('mess.pending-invitations') }}" class="ms-4">
-                            <span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-warning rounded-md hover:bg-warning-dark">
-                                <i class="fa-solid fa-envelope me-2"></i>
-                                Pending
-                                <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-danger rounded-full">
+                    <!-- Pending Invitations Badge -->
+                    @role([RoleEnum::MANAGER->value, RoleEnum::SUPERADMIN->value])
+                        <a href="{{ route('mess.pending-invitations') }}" class="relative inline-flex items-center gap-2 px-3 py-2 rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors text-sm font-medium">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Pending</span>
+                            @if(pendingInvitationsCount() > 0)
+                                <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
                                     {{ pendingInvitationsCount() }}
                                 </span>
-                            </span>
+                            @endif
                         </a>
                     @endrole
 
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                                <div>{{ Auth::user()->name }}</div>
+                    <!-- User Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="hidden sm:inline text-sm font-medium text-gray-900">{{ Auth::user()->name }}</span>
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </button>
 
-                                <div class="ms-1">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <!-- Exit Mess for Superadmin -->
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                            <!-- Superadmin Mode Badge -->
                             @if(isSuperAdminInMess())
-                                <div class="px-4 py-2 bg-yellow-50 border-b border-yellow-200">
-                                    <p class="text-xs font-semibold text-yellow-700 mb-2">
-                                        <i class="fa-solid fa-crown me-1"></i> Superadmin Mode
+                                <div class="px-4 py-3 bg-yellow-50 border-b border-yellow-200 rounded-t-lg">
+                                    <p class="text-xs font-semibold text-yellow-700 mb-1 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        Superadmin Mode
                                     </p>
                                     <p class="text-xs text-yellow-600 mb-3">Viewing: <strong>{{ activeMess()->name }}</strong></p>
-                                    <form method="POST" action="{{ route('mess.exit') }}" class="mb-0">
+                                    <form method="POST" action="{{ route('mess.exit') }}" class="m-0">
                                         @csrf
-                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded transition">
-                                            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Exit Mess
+                                        <button type="submit" class="w-full text-left px-2 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded transition flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                            </svg>
+                                            Exit Mess
                                         </button>
                                     </form>
                                 </div>
-                                <div class="border-t border-gray-100"></div>
                             @endif
 
-                            <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 {{ isSuperAdminInMess() ? '' : 'border-t border-gray-200' }} {{ isSuperAdminInMess() ? 'rounded-t-none' : 'rounded-t-lg' }} transition-colors">
+                                <svg class="inline w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4z"></path>
+                                </svg>
+                                Profile
+                            </a>
 
                             @if(activeMess())
-                                <x-dropdown-link :href="route('mess.profile', activeMess())">
-                                    <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
-                                </x-dropdown-link>
-                                <div class="border-t border-gray-100"></div>
+                                <a href="{{ route('mess.profile', activeMess()) }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg class="inline w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    Mess Settings
+                                </a>
+                                <div class="border-t border-gray-200"></div>
                             @endif
 
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
+                            @if(auth()->user() && auth()->user()->hasRole(RoleEnum::SUPERADMIN->value))
+                                <a href="{{ route('permissions.index') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <svg class="inline w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                    Permissions
+                                </a>
+                                <div class="border-t border-gray-200"></div>
+                            @endif
+
+                            <form method="POST" action="{{ route('logout') }}" class="m-0">
                                 @csrf
-
-                                <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault();
-                                                    this.closest('form').submit();">
-                                    {{ __('Log Out') }}
-                                </x-dropdown-link>
-                            </form>
-                        </x-slot>
-                    </x-dropdown>
-                @else
-                    <div style="text-align: right;">
-                        <a href="{{ route('login') }}" class="btn btn-sm btn-primary">
-                            {{ __('Login') }}
-                        </a>
-                    </div>
-                @endauth
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            @if(activeMess())
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
-                </x-responsive-nav-link>
-                @can('meals.viewAny')
-                    <x-responsive-nav-link :href="route('meals.index')" :active="request()->routeIs('meals.*')">
-                        {{ __('Meals') }}
-                    </x-responsive-nav-link>
-                @endcan
-                <x-responsive-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')">
-                    {{ __('Expenses') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('deposits.index')" :active="request()->routeIs('deposits.*')">
-                    {{ __('Deposits') }}
-                </x-responsive-nav-link>
-                @can('reports.view')
-                    <x-responsive-nav-link :href="route('reports.all-months')" :active="request()->routeIs('reports.*')">
-                        {{ __('Reports') }}
-                    </x-responsive-nav-link>
-                @endcan
-                @can('members.view')
-                    <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
-                        {{ __('Members') }}
-                    </x-responsive-nav-link>
-                @endcan
-                @can('months.view')
-                    <x-responsive-nav-link :href="route('months.index')" :active="request()->routeIs('months.*')">
-                        {{ __('Months') }}
-                    </x-responsive-nav-link>
-                @endcan
-                @if(auth()->user() && auth()->user()->hasRole(RoleEnum::SUPERADMIN->value))
-                    <x-responsive-nav-link :href="route('permissions.index')" :active="request()->routeIs('permissions.*')">
-                        {{ __('Permissions') }}
-                    </x-responsive-nav-link>
-                @endif
-            @else
-                <x-responsive-nav-link :href="route('mess.selection')" :active="request()->routeIs('mess.selection')">
-                    {{ __('Select a Mess') }}
-                </x-responsive-nav-link>
-            @endif
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            @auth
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-
-                <div class="mt-3 space-y-1">
-                    <!-- Exit Mess for Superadmin -->
-                    @if(isSuperAdminInMess())
-                        <div class="px-4 py-3 bg-yellow-50 border border-yellow-200 rounded">
-                            <p class="text-xs font-semibold text-yellow-700 mb-2">
-                                <i class="fa-solid fa-crown me-1"></i> Superadmin Mode
-                            </p>
-                            <p class="text-xs text-yellow-600 mb-3">Viewing: <strong>{{ activeMess()->name }}</strong></p>
-                            <form method="POST" action="{{ route('mess.exit') }}" class="mb-0">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded transition font-medium">
-                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Exit Mess
+                                <button type="submit" class="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-b-lg transition-colors">
+                                    <svg class="inline w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                    </svg>
+                                    Log Out
                                 </button>
                             </form>
                         </div>
-                    @endif
-                    
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 transition-colors">
+                        Sign In
+                    </a>
+                @endauth
+            </div>
 
-                    @if(activeMess())
-                        <x-responsive-nav-link :href="route('mess.profile', activeMess())">
-                            <i class="fa-solid fa-cog me-1"></i> {{ __('Mess Settings') }}
-                        </x-responsive-nav-link>
-                        <div class="border-t border-gray-200"></div>
-                    @endif
+            <!-- Mobile Menu Button -->
+            <button @click="open = !open" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <svg class="h-6 w-6" :class="{ 'hidden': open, 'block': !open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+                <svg class="h-6 w-6" :class="{ 'block': open, 'hidden': !open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
 
-                    <!-- Authentication -->
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-
-                        <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                            this.closest('form').submit();">
-                            {{ __('Log Out') }}
-                        </x-responsive-nav-link>
-                    </form>
-                </div>
+    <!-- Mobile Navigation -->
+    <div x-show="open" class="md:hidden border-t border-gray-200 bg-gray-50">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            @if(activeMess())
+                <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                    Dashboard
+                </a>
+                @can('meals.viewAny')
+                    <a href="{{ route('meals.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('meals.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                        Meals
+                    </a>
+                @endcan
+                <a href="{{ route('expenses.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('expenses.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                    Expenses
+                </a>
+                <a href="{{ route('deposits.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('deposits.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                    Deposits
+                </a>
+                @can('reports.view')
+                    <a href="{{ route('reports.all-months') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('reports.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                        Reports
+                    </a>
+                @endcan
+                @can('members.view')
+                    <a href="{{ route('members.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('members.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                        Members
+                    </a>
+                @endcan
+                @can('months.view')
+                    <a href="{{ route('months.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('months.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                        Months
+                    </a>
+                @endcan
             @else
-                <div class="px-4">
-                    <p class="text-sm text-gray-600">{{ __('Not logged in') }}</p>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('login')">
-                        {{ __('Login') }}
-                    </x-responsive-nav-link>
+                <a href="{{ route('mess.selection') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('mess.selection') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-white' }} transition-colors">
+                    Select a Mess
+                </a>
+            @endif
+        </div>
 
+        <!-- Mobile Settings -->
+        <div class="border-t border-gray-200 px-2 py-3 space-y-1">
+            @auth
+                <div class="px-3 py-2 text-sm font-medium text-gray-700">
+                    {{ Auth::user()->name }}<br>
+                    <span class="text-xs text-gray-500">{{ Auth::user()->email }}</span>
                 </div>
+
+                @if(isSuperAdminInMess())
+                    <div class="px-3 py-2 bg-yellow-50 rounded-md border border-yellow-200 text-xs">
+                        <p class="font-semibold text-yellow-700 mb-2">Superadmin Mode: {{ activeMess()->name }}</p>
+                        <form method="POST" action="{{ route('mess.exit') }}" class="m-0">
+                            @csrf
+                            <button type="submit" class="text-red-600 font-medium hover:underline">Exit Mess</button>
+                        </form>
+                    </div>
+                @endif
+
+                <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-white transition-colors">
+                    Profile
+                </a>
+
+                @if(activeMess())
+                    <a href="{{ route('mess.profile', activeMess()) }}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-white transition-colors">
+                        Mess Settings
+                    </a>
+                @endif
+
+                @if(auth()->user() && auth()->user()->hasRole(RoleEnum::SUPERADMIN->value))
+                    <a href="{{ route('permissions.index') }}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-white transition-colors">
+                        Permissions
+                    </a>
+                @endif
+
+                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                        Log Out
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-sm font-semibold text-sky-600 hover:bg-sky-50 transition-colors">
+                    Sign In
+                </a>
             @endauth
         </div>
     </div>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use App\Models\Mess;
 use App\Enums\RoleEnum;
+use App\Models\MessUser;
 
 /**
  * Get the active mess for the current user.
@@ -102,9 +103,12 @@ function pendingInvitationsCount(): int
         return 0;
     }
 
-    return Auth::user()->messUsers()
-        ->where('status', 'pending')
-        ->count();
+    $activeMess = Auth::user()->activeMess();
+
+    if (isSuperAdminInMess()) {
+        $activeMess = Mess::find(session('superadmin_mess_id'));
+    }
+    return MessUser::where('mess_id', $activeMess?->id)->where('status', 'pending')->count();
 }
 
 /**

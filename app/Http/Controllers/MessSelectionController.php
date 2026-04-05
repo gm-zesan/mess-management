@@ -22,7 +22,7 @@ class MessSelectionController extends Controller
         
         // If superadmin, show all messes without joining requirement
         if ($user->hasRole(RoleEnum::SUPERADMIN->value)) {
-            $allMesses = Mess::orderBy('created_at', 'desc')->get();
+            $allMesses = Mess::orderBy('created_at', 'desc')->paginate(15);
             return view('mess.selection', [
                 'availableMesses' => $allMesses,
                 'isSuperAdmin' => true,
@@ -35,7 +35,7 @@ class MessSelectionController extends Controller
         }
         
         $userMessIds = $user->messUsers()->pluck('mess_id')->toArray();
-        $availableMesses = Mess::whereNotIn('id', $userMessIds)->get();
+        $availableMesses = Mess::whereNotIn('id', $userMessIds)->paginate(15);
 
         return view('mess.selection', [
             'availableMesses' => $availableMesses,
@@ -133,6 +133,50 @@ class MessSelectionController extends Controller
     }
 
     /**
+     * Join a mess using join code
+     */
+    public function joinByCode(Request $request)
+    {
+        $validated = $request->validate([
+            'join_code' => 'required|string|size:8',
+        ], [
+            'join_code.required' => 'Join code is required',
+            'join_code.size' => 'Join code must be 8 characters',
+        ]);
+
+        $mess = Mess::where('join_code', strtoupper($validated['join_code']))->first();
+
+        if (!$mess) {
+            return redirect(route('mess.selection'))->with('error', 'Invalid join code. Please check and try again.');
+        }
+
+        $user = Auth::user();
+
+        // Check if already a member of this mess
+        if (MessUser::where('mess_id', $mess->id)->where('user_id', $user->id)->exists()) {
+            return redirect(route('mess.selection'))->with('error', 'You are already a member of this mess.');
+        }
+
+        // Check if user already has an approved mess membership
+        $existingMess = MessUser::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->first();
+
+        if ($existingMess) {
+            return redirect(route('mess.selection'))->with('error', 'You can only be a member of one mess at a time.');
+        }
+
+        // Add user as pending member
+        MessUser::create([
+            'mess_id' => $mess->id,
+            'user_id' => $user->id,
+            'status' => 'pending',
+        ]);
+
+        return redirect(route('mess.selection'))->with('success', "Request to join '{$mess->name}' sent! Waiting for admin approval.");
+    }
+
+    /**
      * Show pending users waiting for approval in the current mess
      */
     public function pendingInvitations(): View|RedirectResponse
@@ -140,8 +184,13 @@ class MessSelectionController extends Controller
         $user = Auth::user();
         $activeMess = $user->activeMess();
 
-        if (!$activeMess) {
+        if (!$activeMess && !isSuperAdminInMess()) {
             return redirect(route('mess.selection'))->with('error', 'Please select a mess first.');
+        }
+
+        // get the mess id for superadmin if they are in a mess
+        if (isSuperAdminInMess()) {
+            $activeMess = Mess::find(session('superadmin_mess_id'));
         }
 
         // Get only pending users in the current mess

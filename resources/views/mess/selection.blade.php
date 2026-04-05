@@ -1,276 +1,151 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        @if($isSuperAdmin)
-            <!-- Superadmin View -->
-            <div class="mb-6">
-                <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
-                    <i class="fa-solid fa-crown text-yellow-500 me-2"></i> Superadmin - All Messes
-                </h2>
-                <p class="text-gray-600 mt-2">Click on any mess to enter and manage it. You can view all messes without joining.</p>
+<div class="bg-gray-50 overflow-hidden flex">
+    <!-- Left Side: Create Mess Form -->
+    <div class="w-2/5 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+        <div class="p-8 flex flex-col h-full">
+            <!-- Heading -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Create New Mess</h1>
+                <p class="text-sm text-gray-600 mt-1">Add a new mess to the system</p>
             </div>
 
-            <!-- Success Message -->
+            <!-- Alert Messages -->
             @if (session('success'))
-                <div class="mb-4 px-4 py-3 bg-green-100 border border-green-400 text-green-700 rounded">
-                    {{ session('success') }}
+                <div class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3 text-sm">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ session('success') }}</span>
                 </div>
             @endif
 
-            <!-- Error Message -->
             @if (session('error'))
-                <div class="mb-4 px-4 py-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                    {{ session('error') }}
+                <div class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3 text-sm">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ session('error') }}</span>
                 </div>
             @endif
 
-            <!-- Create New Mess -->
-            <div class="mb-8 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                        <i class="fa-solid fa-plus me-2"></i> Create a New Mess
-                    </h3>
-                    
-                    <form action="{{ route('mess.create') }}" method="POST" class="space-y-4">
-                        @csrf
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">
-                                    Mess Name <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    name="name" 
-                                    value="{{ old('name') }}"
-                                    class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2"
-                                    placeholder="e.g., East Wing Mess"
-                                    required
-                                />
-                                @error('name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="description" class="block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-                                <textarea 
-                                    id="description" 
-                                    name="description" 
-                                    rows="1"
-                                    class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2"
-                                    placeholder="Optional description"
-                                >{{ old('description') }}</textarea>
-                                @error('description')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <button 
-                            type="submit" 
-                            class="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 transition"
-                        >
-                            <i class="fa-solid fa-plus me-2"></i> Create Mess
-                        </button>
-                    </form>
+            <!-- Form -->
+            <form action="{{ route('mess.create') }}" method="POST" class="space-y-4">
+                @csrf
+                <div class="flex flex-col gap-1">
+                    <label for="name" class="text-xs font-semibold uppercase tracking-wider text-gray-900">
+                        Mess Name <span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        value="{{ old('name') }}"
+                        class="rounded-md border border-gray-300 bg-white py-2.5 px-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 {{ $errors->has('name') ? 'border-red-500' : '' }}"
+                        placeholder="e.g., East Wing Mess"
+                        required
+                    />
+                    @error('name')
+                        <p class="text-xs font-medium text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-            </div>
 
-            <!-- All Messes Grid -->
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                    <i class="fa-solid fa-list me-2"></i> All Messes ({{ $availableMesses->count() }})
-                </h3>
-
-                @if($availableMesses->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($availableMesses as $mess)
-                            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg hover:shadow-lg transition cursor-pointer group">
-                                <form action="{{ route('mess.enter', $mess) }}" method="POST" class="h-full">
-                                    @csrf
-                                    <button type="submit" class="w-full h-full text-left">
-                                        <div class="p-6 bg-white border-b border-gray-200 group-hover:bg-gray-50 transition">
-                                            <div class="flex justify-between items-start mb-3">
-                                                <div class="flex-1">
-                                                    <h4 class="font-semibold text-gray-900 text-lg group-hover:text-indigo-600 transition">{{ $mess->name }}</h4>
-                                                    @if ($mess->description)
-                                                        <p class="text-sm text-gray-600 mt-1">{{ Str::limit($mess->description, 100) }}</p>
-                                                    @endif
-                                                </div>
-                                                <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-indigo-600 transition"></i>
-                                            </div>
-                                            
-                                            <!-- Mess Details -->
-                                            <div class="bg-gray-50 p-3 rounded mt-4 space-y-2">
-                                                <div class="flex justify-between items-center text-sm">
-                                                    <span class="text-gray-600">Join Code:</span>
-                                                    <span class="font-mono font-bold text-gray-800">{{ $mess->join_code }}</span>
-                                                </div>
-                                                <div class="flex justify-between items-center text-sm">
-                                                    <span class="text-gray-600">Manager:</span>
-                                                    <span class="text-gray-800">{{ $mess->manager?->name ?? 'Not assigned' }}</span>
-                                                </div>
-                                                <div class="flex justify-between items-center text-sm">
-                                                    <span class="text-gray-600">Members:</span>
-                                                    <span class="text-gray-800 font-semibold">{{ $mess->messUsers()->where('status', 'approved')->count() }}</span>
-                                                </div>
-                                                <div class="flex justify-between items-center text-sm">
-                                                    <span class="text-gray-600">Pending:</span>
-                                                    <span class="text-yellow-600 font-semibold">{{ $mess->messUsers()->where('status', 'pending')->count() }}</span>
-                                                </div>
-                                                <div class="flex justify-between items-center text-sm">
-                                                    <span class="text-gray-600">Created:</span>
-                                                    <span class="text-gray-800">{{ $mess->created_at->format('M d, Y') }}</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Enter Button -->
-                                            <div class="mt-4">
-                                                <div class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition text-center font-medium">
-                                                    <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Enter Mess
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </button>
-                                </form>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6 bg-white border-b border-gray-200 text-center">
-                            <i class="fa-solid fa-inbox text-4xl text-gray-300 mb-4 block"></i>
-                            <h3 class="text-lg font-semibold text-gray-700 mb-2">No Messes Found</h3>
-                            <p class="text-gray-600">Create a new mess above to get started.</p>
-                        </div>
-                    </div>
-                @endif
-            </div>
-
-        @else
-            <!-- Regular User View -->
-            <div class="mb-6">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ __('Welcome! Select or Create a Mess') }}
-                </h2>
-            </div>
-
-            <!-- Success Message -->
-            @if (session('success'))
-                <div class="mb-4 px-4 py-3 bg-green-100 border border-green-400 text-green-700 rounded">
-                    {{ session('success') }}
+                <div class="flex flex-col gap-1">
+                    <label for="description" class="text-xs font-semibold uppercase tracking-wider text-gray-900">
+                        Description <span class="text-gray-500">(Optional)</span>
+                    </label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        rows="5"
+                        class="rounded-md border border-gray-300 bg-white py-2.5 px-3 text-sm font-normal text-gray-900 placeholder-gray-400 transition-all focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-100 resize-none {{ $errors->has('description') ? 'border-red-500' : '' }}"
+                        placeholder="Building name, location, or other details"
+                    >{{ old('description') }}</textarea>
+                    @error('description')
+                        <p class="text-xs font-medium text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-            @endif
 
-            <!-- Error Message -->
-            @if (session('error'))
-                <div class="mb-4 px-4 py-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                    {{ session('error') }}
-                </div>
-            @endif
+                <button 
+                    type="submit" 
+                    class="w-full rounded-md bg-sky-600 px-4 py-2.5 font-semibold text-white transition-all hover:bg-sky-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-sky-100 mt-8"
+                >
+                    Create Mess
+                </button>
+            </form>
+        </div>
+    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Create New Mess Section -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Create a New Mess</h3>
-                        
-                        <form action="{{ route('mess.create') }}" method="POST" class="space-y-4">
+    <!-- Right Side: All Messes List -->
+    <div class="w-3/5 bg-gray-50 overflow-y-auto flex flex-col">
+        <div class="p-6 flex-1 overflow-y-auto">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">All Messes</h2>
+            <p class="text-xs text-gray-600 mb-4">{{ $availableMesses->total() }} total mess{{ $availableMesses->total() !== 1 ? 'es' : '' }} in system</p>
+            
+            @if($availableMesses->count() > 0)
+                <div class="grid grid-cols-3 gap-3">
+                    @foreach($availableMesses as $mess)
+                        <form action="{{ route('mess.enter', $mess) }}" method="POST">
                             @csrf
-
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">
-                                    Mess Name <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
-                                    name="name" 
-                                    value="{{ old('name') }}"
-                                    class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2"
-                                    placeholder="e.g., East Wing Mess"
-                                    required
-                                />
-                                @error('name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="description" class="block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-                                <textarea 
-                                    id="description" 
-                                    name="description" 
-                                    rows="3"
-                                    class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2"
-                                    placeholder="Optional description for your mess"
-                                >{{ old('description') }}</textarea>
-                                @error('description')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <button 
-                                type="submit" 
-                                class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition"
-                            >
-                                Create Mess
+                            <button type="submit" class="w-full text-left group h-full">
+                                <div class="bg-white rounded border border-gray-200 p-3 hover:border-sky-300 hover:shadow-sm transition-all h-full flex flex-col">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate group-hover:text-sky-600 transition-colors line-clamp-2">{{ $mess->name }}</h3>
+                                    <div class="mt-auto pt-2 flex items-center gap-2 text-xs text-gray-600 border-t border-gray-100">
+                                        <span class="flex items-center gap-0.5">
+                                            <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM9 12a6 6 0 11-12 0 6 6 0 0112 0z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-800">{{ $mess->messUsers()->where('status', 'approved')->count() }}</span>
+                                        </span>
+                                        <span class="text-gray-400">•</span>
+                                        <span class="text-gray-600 text-xs">{{ $mess->created_at->format('M d') }}</span>
+                                    </div>
+                                </div>
                             </button>
                         </form>
-                    </div>
+                    @endforeach
                 </div>
+            @else
+                <div class="flex flex-col items-center justify-center h-64">
+                    <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    <p class="text-gray-600 font-medium text-sm">No messes yet</p>
+                    <p class="text-gray-500 text-xs mt-0.5">Create one on the left to get started</p>
+                </div>
+            @endif
+        </div>
 
-                <!-- Join Existing Mess Section -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Join an Existing Mess</h3>
-                        
-                        @if ($availableMesses->count() > 0)
-                            <div class="space-y-3 max-h-96 overflow-y-auto">
-                                @foreach ($availableMesses as $mess)
-                                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div>
-                                                <h4 class="font-semibold text-gray-900">{{ $mess->name }}</h4>
-                                                @if ($mess->description)
-                                                    <p class="text-sm text-gray-600 mt-1">{{ $mess->description }}</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Join Code Display -->
-                                        <div class="bg-gray-50 p-2 rounded my-2 text-center">
-                                            <p class="text-xs text-gray-500 mb-1">Join Code:</p>
-                                            <p class="text-sm font-mono font-bold text-gray-800">{{ $mess->join_code }}</p>
-                                        </div>
-                                        
-                                        <div class="flex items-center justify-between mt-3">
-                                            <span class="text-xs text-gray-500">
-                                                👥 {{ $mess->messUsers()->where('status', 'approved')->count() }} members
-                                            </span>
-                                            <form action="{{ route('mess.join', $mess) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                <button 
-                                                    type="submit" 
-                                                    class="bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700 transition"
-                                                >
-                                                    Request to Join
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
+        <!-- Pagination -->
+        @if($availableMesses->hasPages())
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <div class="flex items-center justify-between text-xs">
+                    <div class="text-gray-600">
+                        Page {{ $availableMesses->currentPage() }} of {{ $availableMesses->lastPage() }}
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        {{-- Previous Page Link --}}
+                        @if ($availableMesses->onFirstPage())
+                            <span class="px-2 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50">
+                                ← Prev
+                            </span>
                         @else
-                            <p class="text-gray-500 text-center py-8">No available messes to join. Create one above!</p>
+                            <a href="{{ $availableMesses->previousPageUrl() }}" class="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:border-sky-300 hover:text-sky-600 transition-colors">
+                                ← Prev
+                            </a>
+                        @endif
+
+                        {{-- Next Page Link --}}
+                        @if ($availableMesses->hasMorePages())
+                            <a href="{{ $availableMesses->nextPageUrl() }}" class="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:border-sky-300 hover:text-sky-600 transition-colors">
+                                Next →
+                            </a>
+                        @else
+                            <span class="px-2 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50">
+                                Next →
+                            </span>
                         @endif
                     </div>
                 </div>

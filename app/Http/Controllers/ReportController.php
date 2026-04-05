@@ -31,7 +31,8 @@ class ReportController extends Controller
         
         // Members can only view current month report
         if ($user->hasRole(RoleEnum::MEMBER->value)) {
-            if ($month->id !== activeMonth()->id) {
+            $activeMonth = activeMonth();
+            if (!$activeMonth || $month->id !== $activeMonth->id) {
                 abort(403, 'You can only view the current month report.');
             }
             // Skip policy authorization for members viewing current month
@@ -66,17 +67,13 @@ class ReportController extends Controller
             abort(403, 'You do not have permission to access this page.');
         }
         
-        // Get all months for the active mess (or current month for members)
-        if ($user->hasRole(RoleEnum::MEMBER->value)) {
-            $months = [activeMonth()];
-        } else {
-            // Managers and superadmins see all months for their mess
-            $months = $activeMess->months()->get();
-        }
+        $months = $activeMess->months()->get();
         
         $reports = [];
         foreach ($months as $month) {
-            $reports[$month->id] = $calculationService->getMonthSummary($month, $activeMess->id);
+            if ($month) {
+                $reports[$month->id] = $calculationService->getMonthSummary($month, $activeMess->id);
+            }
         }
         
         return view('reports.all-months', compact('months', 'reports'));
@@ -102,7 +99,8 @@ class ReportController extends Controller
         
         // Members can only export current month report
         if ($user->hasRole(RoleEnum::MEMBER->value)) {
-            if ($month->id !== activeMonth()->id) {
+            $activeMonth = activeMonth();
+            if (!$activeMonth || $month->id !== $activeMonth->id) {
                 abort(403, 'You can only export the current month report.');
             }
             // Skip policy authorization for members exporting current month

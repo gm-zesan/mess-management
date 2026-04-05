@@ -12,12 +12,9 @@ Your task:
 
 Design style:
 - Modern SaaS dashboard (like Stripe / Notion / Linear)
-- Soft shadows, rounded corners, subtle gradients
+- Soft shadows, rounded corners.
 - Accessible and user-friendly
 
-Output:
-- Only HTML (Blade-compatible)
-- No explanations unless asked
 
 
 
@@ -26,7 +23,7 @@ the color theme
 
 | Role                   | Hex                | Tailwind Class                        | Use                               |
 | ---------------------- | ------------------ | ------------------------------------- | --------------------------------- |
-| **Primary**            | `#2563EB`          | `bg-blue-600` / `hover:bg-blue-700`   | Main buttons, links, active items |
+| **Primary**            | `#0284c7`          | `bg-sky-600` / `hover:bg-sky-700`     | Main buttons, links, active items |
 | **Secondary / Accent** | `#10B981`          | `bg-green-500` / `hover:bg-green-600` | Secondary actions, highlights     |
 | **Background (page)**  | `#F8FAFC`          | `bg-gray-50`                          | Main page background              |
 | **Header / Navbar**    | `#FFFFFF`          | `bg-white`                            | Header bar                        |
