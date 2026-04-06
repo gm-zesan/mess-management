@@ -214,13 +214,8 @@ class MessSelectionController extends Controller
         $user = Auth::user();
         $activeMess = $user->activeMess();
 
-        // Verify user is manager of this mess
-        if (!$activeMess || $messUser->mess_id !== $activeMess->id) {
-            abort(403, 'Unauthorized');
-        }
-
-        // Only manager can approve
-        if ($activeMess->manager_id !== $user->id) {
+        // Only manager and superadmin can approve
+        if ($activeMess?->manager_id !== $user->id && !isSuperAdminInMess()) {
             abort(403, 'Only mess manager can approve users');
         }
 

@@ -16,18 +16,23 @@
                     <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
                         Dashboard
                     </a>
-                    @can('meals.view')
-                        <a href="{{ route('meals.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('meals.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
-                            Meals
-                        </a>
-                    @endcan
+
                     @if(activeMonth())
-                        <a href="{{ route('expenses.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('expenses.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
-                            Expenses
-                        </a>
-                        <a href="{{ route('deposits.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('deposits.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
-                            Deposits
-                        </a>
+                        @can('meals.view')
+                            <a href="{{ route('meals.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('meals.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                                Meals
+                            </a>
+                        @endcan
+                        @can('expenses.view')
+                            <a href="{{ route('expenses.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('expenses.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                                Expenses
+                            </a>
+                        @endcan
+                        @can('deposits.view')
+                            <a href="{{ route('deposits.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('deposits.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
+                                Deposits
+                            </a>
+                        @endcan
                     @endif
                     @can('reports.view')
                         <a href="{{ route('reports.all-months') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('reports.*') ? 'text-sky-600 bg-sky-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }} transition-colors">
