@@ -60,6 +60,15 @@ class MemberController extends Controller
     {
         $this->authorize('update', $member);
         
+        // Return JSON for AJAX requests
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'id' => $member->id,
+                'name' => $member->name,
+                'email' => $member->email,
+            ]);
+        }
+        
         return view('members.edit', compact('member'));
     }
 

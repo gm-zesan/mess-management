@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         ->name('members.change-manager');
     Route::resource('months', MonthController::class)->except('show');
     Route::post('/months/{month}/close', [MonthController::class, 'close'])->name('months.close');
+    Route::get('/months/create-current', [MonthController::class, 'createCurrent'])->name('months.create-current');
     
     Route::resource('meals', MealController::class)->except('show');    
     Route::resource('expenses', ExpenseController::class)->except('show');

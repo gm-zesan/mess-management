@@ -28,7 +28,10 @@ class DepositController extends Controller
             ->latest('date')
             ->paginate(15);
 
-        return view('deposits.index', compact('deposits', 'activeMess', 'activeMonth'));
+        // Get members for create modal
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+
+        return view('deposits.index', compact('deposits', 'activeMess', 'activeMonth', 'members'));
     }
 
     /**
@@ -96,6 +99,18 @@ class DepositController extends Controller
         // Verify deposit belongs to active mess
         if (!$activeMess || $deposit->mess_id !== $activeMess->id) {
             abort(403, 'This deposit does not belong to your current mess.');
+        }
+        
+        // Return JSON for AJAX requests
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'id' => $deposit->id,
+                'user_id' => $deposit->user_id,
+                'user_name' => $deposit->user->name,
+                'date' => $deposit->date->format('Y-m-d'),
+                'date_display' => $deposit->date->format('M d'),
+                'amount' => $deposit->amount,
+            ]);
         }
         
         // Get only approved members of the active mess

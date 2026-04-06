@@ -2,7 +2,6 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gray-50">
     <!-- Main Container -->
     <div class="max-w-7xl mx-auto">
         @if ($activeMonth)
@@ -314,7 +313,5 @@
                 </div>
             </div>
         @endif
-
     </div>
-</div>
 @endsection

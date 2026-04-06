@@ -221,8 +221,8 @@ class MessSelectionController extends Controller
 
         $messUser->update(['status' => 'approved']);
 
-        // Assign MEMBER role to the approved user
-        $messUser->user->assignRole(RoleEnum::MEMBER->value);
+        // Remove all existing roles and assign MEMBER role only
+        $messUser->user->syncRoles([RoleEnum::MEMBER->value]);
 
         return redirect(route('dashboard'))->with('success', $messUser->user->name . ' has been approved!');
     }

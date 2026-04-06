@@ -29,7 +29,10 @@ class ExpenseController extends Controller
             ->latest('date')
             ->paginate(15);
 
-        return view('expenses.index', compact('expenses', 'activeMess', 'activeMonth'));
+        // Get members for create modal
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+
+        return view('expenses.index', compact('expenses', 'activeMess', 'activeMonth', 'members'));
     }
 
     /**
@@ -117,6 +120,20 @@ class ExpenseController extends Controller
         // Verify expense belongs to active mess
         if (!$activeMess || $expense->mess_id !== $activeMess->id) {
             abort(403, 'This expense does not belong to your current mess.');
+        }
+        
+        // Return JSON for AJAX requests
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'id' => $expense->id,
+                'user_id' => $expense->user_id,
+                'user_name' => $expense->user->name,
+                'date' => $expense->date->format('Y-m-d'),
+                'date_display' => $expense->date->format('M d'),
+                'category' => $expense->category,
+                'amount' => $expense->amount,
+                'note' => $expense->note,
+            ]);
         }
         
         // Get only approved members of the active mess

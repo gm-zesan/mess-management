@@ -76,7 +76,6 @@ class MealController extends Controller
     public function store(StoreMealRequest $request)
     {
         $this->authorize('create', Meal::class);
-        
         // Get validated data
         $data = $request->validated();
 
@@ -123,9 +122,9 @@ class MealController extends Controller
                 'user_id' => $userId,
                 'month_id' => $activeMonth->id,
                 'date' => $date,
-                'breakfast_count' => isset($mealData['breakfast_count']) ? intval($mealData['breakfast_count']) : 0,
-                'lunch_count' => isset($mealData['lunch_count']) ? intval($mealData['lunch_count']) : 0,
-                'dinner_count' => isset($mealData['dinner_count']) ? intval($mealData['dinner_count']) : 0,
+                'breakfast_count' => isset($mealData['breakfast_count']) ? floatval($mealData['breakfast_count']) : 0,
+                'lunch_count' => isset($mealData['lunch_count']) ? floatval($mealData['lunch_count']) : 0,
+                'dinner_count' => isset($mealData['dinner_count']) ? floatval($mealData['dinner_count']) : 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -157,10 +156,23 @@ class MealController extends Controller
         if (!$activeMess || $meal->mess_id !== $activeMess->id) {
             abort(403, 'This meal does not belong to your current mess.');
         }
-        
-        // Get only approved members of the active mess
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
+        // Return JSON for modal (AJAX request)
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'id' => $meal->id,
+                'user_id' => $meal->user_id,
+                'user_name' => $meal->user->name,
+                'date' => $meal->date->format('Y-m-d'),
+                'date_display' => $meal->date->format('M d, Y'),
+                'breakfast_count' => $meal->breakfast_count,
+                'lunch_count' => $meal->lunch_count,
+                'dinner_count' => $meal->dinner_count,
+            ]);
+        }
+
+        // Return view for traditional page view
+        $members = $activeMess->approvedMembers()->orderBy('name')->get();
         return view('meals.edit', compact('meal', 'members', 'activeMonth', 'activeMess'));
     }
 

@@ -45,6 +45,56 @@ class MonthController extends Controller
     }
 
     /**
+     * Automatically create a month for the current month with active status
+     */
+    public function createCurrent(MonthService $monthService)
+    {
+        $this->authorize('create', Month::class);
+        
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
+        }
+        
+        // Check if a month already exists for current month
+        $currentMonth = $activeMess->months()
+            ->whereYear('start_date', now()->year)
+            ->whereMonth('start_date', now()->month)
+            ->first();
+        
+        if ($currentMonth) {
+            return redirect()->route('months.index')->with('error', 'A month for ' . now()->format('F Y') . ' already exists.');
+        }
+        
+        // Get the first day and last day of the current month
+        $startDate = now()->startOfMonth();
+        $endDate = now()->endOfMonth();
+        
+        // Generate unique month name
+        $monthName = $startDate->format('F Y');
+        $counter = 1;
+        while (Month::where('name', $monthName)->exists()) {
+            $monthName = $startDate->format('F Y') . ' (' . $counter . ')';
+            $counter++;
+        }
+        
+        // Create the month with active status
+        $month = Month::create([
+            'mess_id' => $activeMess->id,
+            'name' => $monthName,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'status' => MonthStatusEnum::ACTIVE,
+        ]);
+        
+        // Ensure only this month is active for this mess
+        $monthService->activateMonth($month);
+        
+        return redirect()->route('months.index')->with('success', 'Month "' . $month->name . '" created successfully with active status!');
+    }
+
+    /**
      * Store a newly created month for the active mess.
      */
     public function store(Request $request, MonthService $monthService)
@@ -88,6 +138,17 @@ class MonthController extends Controller
         // Verify month belongs to active mess
         if (!$activeMess || $month->mess_id !== $activeMess->id) {
             abort(403, 'This month does not belong to your current mess.');
+        }
+        
+        // Return JSON for AJAX requests
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'id' => $month->id,
+                'name' => $month->name,
+                'start_date' => $month->start_date->format('Y-m-d'),
+                'end_date' => $month->end_date->format('Y-m-d'),
+                'status' => $month->status->value,
+            ]);
         }
         
         return view('months.edit', compact('month', 'activeMess'));
