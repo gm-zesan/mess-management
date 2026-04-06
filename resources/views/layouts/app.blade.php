@@ -18,7 +18,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen">
             @if(Auth::check())
                 @include('layouts.navigation')
             @endif
@@ -33,7 +33,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="py-12">
+            <main class="py-12 bg-gray-50">
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     @yield('content')
                 </div>
