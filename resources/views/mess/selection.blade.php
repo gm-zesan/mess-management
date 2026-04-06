@@ -32,7 +32,7 @@
             @endif
 
             <!-- Form -->
-            <form action="{{ route('mess.create') }}" method="POST" class="space-y-4">
+            <form id="createForm" action="{{ route('mess.create') }}" method="POST" class="space-y-4">
                 @csrf
                 <div class="flex flex-col gap-1">
                     <label for="name" class="text-xs font-semibold uppercase tracking-wider text-gray-900">
@@ -70,6 +70,7 @@
 
                 <button 
                     type="submit" 
+                    id="createButton"
                     class="w-full rounded-md bg-sky-600 px-4 py-2.5 font-semibold text-white transition-all hover:bg-sky-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-sky-100 mt-8"
                 >
                     Create Mess
@@ -221,6 +222,100 @@
             </div>
         </div>
     @endif
+
+    <!-- Confirmation Modal for Create Mess -->
+    @if(!Auth::user()->hasRole(RoleEnum::SUPERADMIN->value) && $existingMess)
+    <div id="createConfirmModal" class="hidden pointer-events-none fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-bold text-gray-900">Leave Previous Mess?</h3>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 py-4 space-y-3">
+                <p class="text-sm text-gray-700">
+                    You will be removed from <span class="font-semibold text-sky-600">{{ $existingMess->mess->name }}</span>.
+                </p>
+                <p class="text-sm text-gray-600">
+                    Are you sure you want to create a new mess?
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t border-gray-200 flex gap-3 justify-end">
+                <button 
+                    id="createModalCancel"
+                    type="button" 
+                    class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                >
+                    Cancel
+                </button>
+                <button 
+                    id="createModalConfirm"
+                    type="button" 
+                    class="px-4 py-2 rounded-md bg-sky-600 text-white font-medium hover:bg-sky-700 transition-colors"
+                >
+                    Yes, Create Mess
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
+
+<!-- Modal and Form Submission Script -->
+<script>
+    @if(!Auth::user()->hasRole(RoleEnum::SUPERADMIN->value) && $existingMess)
+    const $createForm = $('#createForm');
+    const $createConfirmModal = $('#createConfirmModal');
+    const $createModalCancel = $('#createModalCancel');
+    const $createModalConfirm = $('#createModalConfirm');
+    let shouldCreateSubmit = false;
+
+    function openCreateConfirmModal() {
+        $createConfirmModal.removeClass('hidden');
+        $createConfirmModal.removeClass('pointer-events-none');
+        void $createConfirmModal[0].offsetWidth; // Force reflow
+        $createConfirmModal.removeClass('opacity-0').addClass('opacity-100');
+    }
+
+    function closeCreateConfirmModal() {
+        $createConfirmModal.addClass('opacity-0').removeClass('opacity-100');
+        setTimeout(() => {
+            $createConfirmModal.addClass('hidden');
+            $createConfirmModal.addClass('pointer-events-none');
+        }, 300);
+    }
+
+    $createForm.on('submit', function(e) {
+        if (!shouldCreateSubmit) {
+            e.preventDefault();
+            openCreateConfirmModal();
+        }
+    });
+
+    $createModalCancel.on('click', function() {
+        closeCreateConfirmModal();
+        shouldCreateSubmit = false;
+    });
+
+    $createModalConfirm.on('click', function() {
+        shouldCreateSubmit = true;
+        closeCreateConfirmModal();
+        setTimeout(() => {
+            $createForm.submit();
+        }, 300);
+    });
+
+    // Close modal when clicking outside
+    $createConfirmModal.on('click', function(e) {
+        if (e.target === this) {
+            closeCreateConfirmModal();
+            shouldCreateSubmit = false;
+        }
+    });
+    @endif
+</script>
 @endsection
 

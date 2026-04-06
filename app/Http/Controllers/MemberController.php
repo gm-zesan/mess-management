@@ -90,8 +90,16 @@ class MemberController extends Controller
     {
         $this->authorize('delete', $member);
         
-        $member->delete();
-        return redirect()->route('members.index')->with('success', 'Member deleted successfully.');
+        $activeMess = activeMess();
+        
+        if (!$activeMess) {
+            return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
+        }
+        
+        // Remove member from this mess
+        $activeMess->messUsers()->where('user_id', $member->id)->delete();
+        
+        return redirect()->route('members.index')->with('success', 'Member removed from mess successfully.');
     }
 
     /**

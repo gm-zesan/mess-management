@@ -26,6 +26,7 @@ class MessSelectionController extends Controller
             return view('mess.selection', [
                 'availableMesses' => $allMesses,
                 'isSuperAdmin' => true,
+                'existingMess' => null,
             ]);
         }
         
@@ -33,13 +34,17 @@ class MessSelectionController extends Controller
         if ($user->activeMess()) {
             return redirect(route('dashboard'));
         }
-        
+
+        // Get existing pending/approved mess for the user (for warning on create)
+        $existingMess = MessUser::where('user_id', $user->id)->with('mess')->first();
+
         $userMessIds = $user->messUsers()->pluck('mess_id')->toArray();
         $availableMesses = Mess::whereNotIn('id', $userMessIds)->paginate(15);
 
         return view('mess.selection', [
             'availableMesses' => $availableMesses,
             'isSuperAdmin' => false,
+            'existingMess' => $existingMess,
         ]);
     }
 
@@ -50,13 +55,19 @@ class MessSelectionController extends Controller
     {
         $user = Auth::user();
 
+        // Check if user is a manager
+        if ($user->hasRole(RoleEnum::MANAGER->value)) {
+            return redirect(route('mess.selection'))->with('error', 'You cannot join another mess because you are a mess manager. Please change your role first.');
+        }
+        if ($user->hasRole(RoleEnum::MEMBER->value)) {
+            $user->removeRole(RoleEnum::MEMBER->value);
+        }
+
         // Check if user already has an approved mess
-        $existingMess = MessUser::where('user_id', $user->id)
-            ->where('status', 'approved')
-            ->first();
+        $existingMess = MessUser::where('user_id', $user->id)->first();
 
         if ($existingMess) {
-            return redirect(route('mess.selection'))->with('error', 'You can only be a member of one mess at a time.');
+            $existingMess->delete();
         }
 
         $validated = $request->validate([
@@ -113,13 +124,16 @@ class MessSelectionController extends Controller
             return redirect(route('mess.selection'))->with('error', 'You are already a member of this mess.');
         }
 
-        // Check if user already has an approved mess membership
-        $existingMess = MessUser::where('user_id', $user->id)
-            ->where('status', 'approved')
-            ->first();
+        // Check if user is a manager
+        if ($user->hasRole(RoleEnum::MANAGER->value)) {
+            return redirect(route('mess.selection'))->with('error', 'You cannot join another mess because you are a mess manager. Please change your role first.');
+        }
+
+        // If user is a member with approved mess, remove from previous mess
+        $existingMess = MessUser::where('user_id', $user->id)->first();
 
         if ($existingMess) {
-            return redirect(route('mess.selection'))->with('error', 'You can only be a member of one mess at a time.');
+            $existingMess->delete();
         }
 
         // Add user as pending member
@@ -157,13 +171,16 @@ class MessSelectionController extends Controller
             return redirect(route('mess.selection'))->with('error', 'You are already a member of this mess.');
         }
 
-        // Check if user already has an approved mess membership
-        $existingMess = MessUser::where('user_id', $user->id)
-            ->where('status', 'approved')
-            ->first();
+        // Check if user is a manager
+        if ($user->hasRole(RoleEnum::MANAGER->value)) {
+            return redirect(route('mess.selection'))->with('error', 'You cannot join another mess because you are a mess manager. Please change your role first.');
+        }
+
+        // If user is a member with approved mess, remove from previous mess
+        $existingMess = MessUser::where('user_id', $user->id)->first();
 
         if ($existingMess) {
-            return redirect(route('mess.selection'))->with('error', 'You can only be a member of one mess at a time.');
+            $existingMess->delete();
         }
 
         // Add user as pending member
