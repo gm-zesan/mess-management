@@ -294,4 +294,36 @@ class MessSelectionController extends Controller
 
         return redirect(route('mess.selection'))->with('success', 'Exited mess');
     }
+
+    /**
+     * Leave a mess
+     */
+    public function leave(Mess $mess): RedirectResponse
+    {
+        $user = Auth::user();
+
+        // Get the mess user record
+        $messUser = MessUser::where('mess_id', $mess->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$messUser) {
+            return redirect(route('mess.selection'))->with('error', 'You are not a member of this mess.');
+        }
+
+        // Cannot leave if user is the manager
+        if ($mess->manager_id === $user->id) {
+            return redirect(route('mess.profile', $mess))->with('error', 'You cannot leave this mess because you are the manager. Please assign a new manager first.');
+        }
+
+        // Remove user from mess
+        $messUser->delete();
+
+        // Remove MEMBER role if it's the only role
+        if ($user->getRoleNames()->count() === 1 && $user->hasRole(RoleEnum::MEMBER->value)) {
+            $user->removeRole(RoleEnum::MEMBER->value);
+        }
+
+        return redirect(route('mess.selection'))->with('success', "You have left the mess '{$mess->name}'.");
+    }
 }

@@ -1,15 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="py-12">
+<div class="py-8">
     <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-        <div class="mb-6">
-            <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
-                <i class="fa-solid fa-user-plus me-2"></i> Invite Member to {{ $mess->name }}
-            </h2>
-            <p class="text-gray-600 mt-2">Send an invitation to add a new member to your mess</p>
-        </div>
-
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 @if ($errors->any())

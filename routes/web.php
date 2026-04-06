@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/mess/join-by-code', [MessSelectionController::class, 'joinByCode'])->name('mess.join-by-code');
     Route::post('/mess/{mess}/join', [MessSelectionController::class, 'join'])->name('mess.join');
     Route::post('/mess/{mess}/enter', [MessSelectionController::class, 'enterMess'])->name('mess.enter');
+    Route::delete('/mess/{mess}/leave', [MessSelectionController::class, 'leave'])->name('mess.leave');
     Route::post('/mess/exit', [MessSelectionController::class, 'exitMess'])->name('mess.exit');
     Route::get('/mess/pending-invitations', [MessSelectionController::class, 'pendingInvitations'])->name('mess.pending-invitations');
     Route::post('/mess/pending-invitations/{messUser}/approve', [MessSelectionController::class, 'approveUser'])->name('mess.approve-user');
