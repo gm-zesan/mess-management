@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/months/{month}/close', [MonthController::class, 'close'])->name('months.close');
     Route::get('/months/create-current', [MonthController::class, 'createCurrent'])->name('months.create-current');
     
-    Route::resource('meals', MealController::class)->except('show');    
+    Route::resource('meals', MealController::class)->except('show');
     Route::resource('expenses', ExpenseController::class)->except('show');
     Route::resource('deposits', DepositController::class)->except('show');
     

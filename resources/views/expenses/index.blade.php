@@ -1,119 +1,88 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full">
-
-        <!-- Success Message -->
-        @if (session('success'))
-            <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-sm">
-                <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="text-green-800">{{ session('success') }}</span>
+    <div class="w-full px-4 py-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Success Message -->
+            @if (session('success'))
+                <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-green-800">{{ session('success') }}</span>
+                    </div>
+                    <button onclick="this.parentElement.style.display='none'" class="text-green-600 hover:text-green-800">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
                 </div>
-                <button onclick="this.parentElement.style.display='none'" class="text-green-600 hover:text-green-800">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                    </svg>
-                </button>
-            </div>
-        @endif
+            @endif
 
-        <!-- Filter & Action Bar -->
-        <div class="mb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between">
-            <div class="text-sm">
-                <span class="text-gray-600">Active Month:</span>
-                <span class="font-semibold text-gray-900">{{ $activeMonth?->name ?? 'No Active Month' }}</span>
-            </div>
-            @can('expenses.create')
-                <button type="button" onclick="openCreateModal()" class="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Add
-                </button>
-            @endcan
-        </div>
+            @can('expenses.view')
+                <!-- DataTable Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-x-[4rem]">
+                        <div class="flex items-center">
+                            <span class="text-sm text-gray-700">Show</span>
+                            <select id="length-select" class="border-0 py-0 bg-transparent text-sm text-gray-900 font-medium cursor-pointer" style="padding-right:20px">
+                                <option value="15">15</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span class="text-sm text-gray-700">entries</span>
+                        </div>
+                        <div class="relative w-80">
+                            <input type="text" id="search-input" placeholder="Search" class="w-full px-4 py-2 border-0 border-b-2 border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-sky-500">
+                            <svg class="w-5 h-5 text-gray-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    @can('expenses.create')
+                        <button onclick="openCreateModal()" class="px-4 py-2 bg-sky-500 text-white text-sm font-medium rounded hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Add Expense
+                        </button>
+                    @endcan
+                </div>
 
-        @can('expenses.view')
-            @if ($expenses->count())
-                <!-- Data Table -->
-                <div class="bg-white rounded-lg border border-gray-200 shadow-xs overflow-hidden">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50 border-b border-gray-200">
+                <!-- DataTable -->
+                <div class="overflow-hidden">
+                    <table id="expenses-table" class="w-full">
+                        <thead>
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Date</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Member</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Category</th>
-                                <th class="px-4 py-3 text-right font-semibold text-gray-700 text-xs">Amount</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Note</th>
-                                @canany(['expenses.update', 'expenses.delete'])
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Member</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                @canany(['expenses.update','expenses.delete'])
+                                    <th>Actions</th>
                                 @endcanany
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach ($expenses as $expense)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-4 py-2 text-gray-600 text-xs">{{ $expense->date->format('M d') }}</td>
-                                    <td class="px-4 py-2 text-gray-900 font-medium">{{ $expense->user?->name ?? 'N/A' }}</td>
-                                    <td class="px-4 py-2">
-                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded capitalize">{{ $expense->category }}</span>
-                                    </td>
-                                    <td class="px-4 py-2 text-right font-semibold text-gray-900">৳ {{ number_format($expense->amount, 2) }}</td>
-                                    <td class="px-4 py-2 text-gray-600 text-xs">{{ Str::limit($expense->note, 30) ?? '-' }}</td>
-                                    @canany(['expenses.update', 'expenses.delete'])
-                                        <td class="px-4 py-2 text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                @can('update', $expense)
-                                                    <button type="button" onclick="openEditModal({{ $expense->id }})" class="p-1.5 text-sky-600 hover:bg-sky-100 rounded transition-colors" title="Edit">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                        </svg>
-                                                    </button>
-                                                @endcan
-                                                @can('delete', $expense)
-                                                    <button type="button" onclick="openDeleteModal({{ $expense->id }}, '{{ $expense->user->name }}', '৳ ' + {{ $expense->amount }})" class="p-1.5 text-red-600 hover:bg-red-100 rounded transition-colors" title="Delete">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                        </svg>
-                                                    </button>
-                                                @endcan
-                                            </div>
-                                        </td>
-                                    @endcanany
-                                </tr>
-                            @endforeach
+                        <tbody>
+                            <!-- DataTables will populate rows here -->
                         </tbody>
                     </table>
                 </div>
-
-                <div class="mt-4 flex justify-center text-sm">
-                    {{ $expenses->links() }}
-                </div>
             @else
-                <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2z" clip-rule="evenodd"></path>
+                <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+                    <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 2.476a6 6 0 018.367 8.414zm1.414-5.27a8 8 0 11-11.313-11.313 8 8 0 0111.313 11.313z" clip-rule="evenodd"></path>
                     </svg>
-                    <div>
-                        <span class="text-sm text-blue-800">No expenses found.</span>
-                        @can('expenses.create')
-                            <a href="{{ route('expenses.create') }}" class="ml-2 font-medium text-blue-600 hover:text-blue-800">Create one</a>
-                        @endcan
-                    </div>
+                    <span class="text-sm text-red-800">You don't have permission to view expenses.</span>
                 </div>
-            @endif
-        @else
-            <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 2.476a6 6 0 018.367 8.414zm1.414-5.27a8 8 0 11-11.313-11.313 8 8 0 0111.313 11.313z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="text-sm text-red-800">You don't have permission to view expenses.</span>
-            </div>
-        @endcan
+            @endcan
 
+        </div>
     </div>
 
     <!-- Create Expense Modal -->
@@ -260,6 +229,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-lg max-w-sm w-full shadow-xl">
             <!-- Modal Header -->
@@ -303,131 +274,217 @@
         </div>
     </div>
 
-    <script>
-        let currentDeleteExpenseId = null;
-        let currentEditExpenseId = null;
+    @push('custom-scripts')
+    <script type="text/javascript">
+        var listUrl = "{{ route('expenses.index') }}";
+        var SITEURL = "{{ URL::to('') }}";
+        var currentDeleteId = null;
 
-        // Create Modal Functions
+        // Modal functions
         function openCreateModal() {
-            $('#createForm')[0].reset();
-            const $modal = $('#createModal');
-            $modal.removeClass('hidden');
-            void $modal[0].offsetWidth;
-            $modal.removeClass('opacity-0').addClass('opacity-100');
+            document.getElementById('createForm').reset();
+            document.getElementById('createModal').classList.remove('hidden');
+            document.getElementById('createModal').classList.add('flex');
+            document.getElementById('createModal').offsetHeight; // Trigger reflow
+            document.getElementById('createModal').classList.remove('opacity-0');
+            document.getElementById('createModal').classList.add('opacity-100');
         }
 
         function closeCreateModal() {
-            const $modal = $('#createModal');
-            $modal.addClass('opacity-0').removeClass('opacity-100');
+            document.getElementById('createModal').classList.remove('opacity-100');
+            document.getElementById('createModal').classList.add('opacity-0');
             setTimeout(() => {
-                $modal.addClass('hidden');
+                document.getElementById('createModal').classList.add('hidden');
+                document.getElementById('createModal').classList.remove('flex');
             }, 300);
         }
 
-        // Edit Modal Functions
-        function openEditModal(expenseId) {
-            currentEditExpenseId = expenseId;
-            
-            // Fetch expense data via AJAX
+        function openEditModal(id) {
             $.ajax({
-                url: `/expenses/${expenseId}/edit`,
+                url: SITEURL + '/expenses/' + id + '/edit',
                 type: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
                 success: function(data) {
-                    // Populate modal with data
-                    $('#editMemberName').text(data.user_name);
-                    $('#editDateDisplay').text(data.date_display);
-                    $('#editUserId').val(data.user_id);
-                    $('#editDateValue').val(data.date);
-                    $('#editCategory').val(data.category);
-                    $('#editAmount').val(data.amount);
-                    $('#editNote').val(data.note);
+                    // Populate edit form with data
+                    document.getElementById('editUserId').value = data.user_id;
+                    document.getElementById('editDateValue').value = data.date;
+                    document.getElementById('editMemberName').textContent = data.user_name;
+                    document.getElementById('editDateDisplay').textContent = data.formatted_date;
+                    document.getElementById('editCategory').value = data.category;
+                    document.getElementById('editAmount').value = data.amount;
+                    document.getElementById('editNote').value = data.note || '';
                     
                     // Set form action
-                    $('#editForm').attr('action', `/expenses/${expenseId}`);
+                    document.getElementById('editForm').action = SITEURL + '/expenses/' + id;
                     
-                    // Show modal with fade-in effect
-                    const $modal = $('#editModal');
-                    $modal.removeClass('hidden');
-                    void $modal[0].offsetWidth;
-                    $modal.removeClass('opacity-0').addClass('opacity-100');
-                },
-                error: function() {
-                    console.error('Error fetching expense data');
-                    alert('Failed to load expense data');
+                    // Show modal
+                    document.getElementById('editModal').classList.remove('hidden');
+                    document.getElementById('editModal').classList.add('flex');
+                    document.getElementById('editModal').offsetHeight; // Trigger reflow
+                    document.getElementById('editModal').classList.remove('opacity-0');
+                    document.getElementById('editModal').classList.add('opacity-100');
                 }
             });
         }
 
         function closeEditModal() {
-            const $modal = $('#editModal');
-            $modal.addClass('opacity-0').removeClass('opacity-100');
+            document.getElementById('editModal').classList.remove('opacity-100');
+            document.getElementById('editModal').classList.add('opacity-0');
             setTimeout(() => {
-                $modal.addClass('hidden');
-                currentEditExpenseId = null;
+                document.getElementById('editModal').classList.add('hidden');
+                document.getElementById('editModal').classList.remove('flex');
             }, 300);
         }
 
-        // Delete Modal Functions
-        function openDeleteModal(expenseId, memberName, amount) {
-            currentDeleteExpenseId = expenseId;
-            $('#deleteModalMember').text(memberName);
-            $('#deleteModalAmount').text(amount);
+        function openDeleteModal(id, member, amount) {
+            currentDeleteId = id;
+            document.getElementById('deleteModalMember').textContent = member;
+            document.getElementById('deleteModalAmount').textContent = amount;
             
-            const $modal = $('#deleteModal');
-            $modal.removeClass('hidden');
-            void $modal[0].offsetWidth;
-            $modal.removeClass('opacity-0').addClass('opacity-100');
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
+            document.getElementById('deleteModal').offsetHeight; // Trigger reflow
+            document.getElementById('deleteModal').classList.remove('opacity-0');
+            document.getElementById('deleteModal').classList.add('opacity-100');
         }
 
         function closeDeleteModal() {
-            const $modal = $('#deleteModal');
-            $modal.addClass('opacity-0').removeClass('opacity-100');
+            document.getElementById('deleteModal').classList.remove('opacity-100');
+            document.getElementById('deleteModal').classList.add('opacity-0');
             setTimeout(() => {
-                $modal.addClass('hidden');
-                currentDeleteExpenseId = null;
+                document.getElementById('deleteModal').classList.add('hidden');
+                document.getElementById('deleteModal').classList.remove('flex');
+                currentDeleteId = null;
             }, 300);
         }
 
         function confirmDelete() {
-            if (!currentDeleteExpenseId) return;
-            
-            const $form = $('<form>')
-                .attr('method', 'POST')
-                .attr('action', `/expenses/${currentDeleteExpenseId}`)
-                .html(`
-                    @csrf
-                    @method('DELETE')
-                `);
-            $('body').append($form);
-            $form.submit();
+            if (currentDeleteId) {
+                $.ajax({
+                    url: SITEURL + '/expenses/' + currentDeleteId,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        closeDeleteModal();
+                        $('#expenses-table').DataTable().ajax.reload();
+                        // Show success message
+                        toastr.success('Expense deleted successfully');
+                    },
+                    error: function(error) {
+                        toastr.error('Error deleting expense');
+                    }
+                });
+            }
         }
 
-        // Close modals when clicking outside
-        $('#createModal').on('click', function(event) {
-            if (event.target === this) {
-                closeCreateModal();
-            }
-        });
+        $(document).ready(function () {
+            var table = $('#expenses-table').DataTable({
+                processing: true,
+                responsive: true,
+                serverSide: true,
+                fixedHeader: true,
+                "pageLength": 15,
+                "lengthMenu": [15, 25, 50, 100],
+                "dom": 'rt<"dataTables_bottom"ip>',
+                ajax: {
+                    url: listUrl,
+                    type: 'GET'
+                },
+                columns: [
+                    { data: 'id', name: 'id', orderable: false, searchable: false, render: function(data, type, row) {
+                        return '<span class="font-medium text-gray-900">' + data + '</span>';
+                    }},
+                    { data: 'date', name: 'date', orderable: true },
+                    { data: 'user', name: 'user_id', orderable: true },
+                    { data: 'category', name: 'category', orderable: true },
+                    { data: 'amount', name: 'amount', orderable: true },
+                    // `note` is the DB column; use it for server-side searching
+                    { data: 'description', name: 'note', orderable: true },
+                    {
+                        data: 'id', 
+                        orderable: false, 
+                        searchable: false,
+                        render: function (data, type, row) {
+                            var btns = '<div class="flex items-center justify-center gap-3">';
+                            btns += '<a onclick="openEditModal(' + data + ')" class="text-sky-600 hover:text-sky-800 font-medium text-sm cursor-pointer" title="Edit">Edit</a>';
+                            btns += '<a onclick="openDeleteModal(' + data + ', \'' + row.user + '\', \'' + row.amount + '\')" class="text-red-600 hover:text-red-800 font-medium text-sm cursor-pointer" title="Delete">Delete</a>';
+                            btns += '</div>';
+                            return btns;
+                        }
+                    }
+                ],
+                order: [[1, 'desc']],
+            });
 
-        $('#editModal').on('click', function(event) {
-            if (event.target === this) {
-                closeEditModal();
-            }
-        });
+            // Handle page length change
+            document.getElementById('length-select').addEventListener('change', function(e) {
+                table.page.len(parseInt(e.target.value)).draw();
+            });
 
-        $('#deleteModal').on('click', function(event) {
-            if (event.target === this) {
-                closeDeleteModal();
+            // Debounce helper for reducing requests while typing
+            function debounce(fn, wait) {
+                var timeout;
+                return function () {
+                    var context = this, args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        fn.apply(context, args);
+                    }, wait);
+                };
             }
-        });
 
-        // Handle edit form submission
-        $('#editForm').on('submit', function(event) {
-            event.preventDefault();
-            this.submit();
+            // Handle search input (debounced)
+            var onSearchInput = debounce(function (e) {
+                var q = e.target.value.trim();
+                table.search(q).draw();
+            }, 300);
+
+            document.getElementById('search-input').addEventListener('input', onSearchInput);
+
+            // Close modals when clicking outside
+            $(document).on('click', function(e) {
+                if (e.target.id === 'createModal') closeCreateModal();
+                if (e.target.id === 'editModal') closeEditModal();
+                if (e.target.id === 'deleteModal') closeDeleteModal();
+            });
+
+            // Handle create form submission
+            document.getElementById('createForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: SITEURL + '/expenses',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        closeCreateModal();
+                        table.ajax.reload();
+                        toastr.success('Expense created successfully');
+                    },
+                    error: function(error) {
+                        toastr.error('Error creating expense');
+                    }
+                });
+            });
+
+            // Handle edit form submission
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: this.action,
+                    type: 'PUT',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        closeEditModal();
+                        table.ajax.reload();
+                        toastr.success('Expense updated successfully');
+                    },
+                    error: function(error) {
+                        toastr.error('Error updating expense');
+                    }
+                });
+            });
         });
     </script>
+    @endpush
 @endsection

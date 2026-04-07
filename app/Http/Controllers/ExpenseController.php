@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExpenseRequest;
 use App\Models\Expense;
-use App\Models\User;
 use App\Models\Deposit;
+use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class ExpenseController extends Controller
 {
     /**
      * Display a listing of the expenses.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Expense::class);
         
@@ -22,17 +23,43 @@ class ExpenseController extends Controller
         if (!$activeMess || !$activeMonth) {
             return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
         }
-        
-        $expenses = Expense::with('month', 'user', 'mess')
-            ->where('mess_id', $activeMess->id)
-            ->where('month_id', $activeMonth->id)
-            ->latest('date')
-            ->paginate(15);
 
-        // Get members for create modal
+        // AJAX request
+        if ($request->ajax()) {
+            // Join users so server-side search can filter by user name
+            $query = Expense::select(
+                    'expenses.id',
+                    'expenses.date',
+                    'expenses.category',
+                    'expenses.amount',
+                    'expenses.note',
+                    'expenses.user_id',
+                    'users.name as user_name'
+                )
+                ->leftJoin('users', 'users.id', '=', 'expenses.user_id')
+                ->with('user')
+                ->where('expenses.mess_id', $activeMess->id)
+                ->where('expenses.month_id', $activeMonth->id);
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('id', fn($row) => 'EXP-' . $row->id)
+                ->addColumn('date', fn($expense) => $expense->date->format('d M Y'))
+                ->addColumn('user', fn($expense) => $expense->user->name ?? '-')
+                ->addColumn('category', fn($expense) => $expense->category ?? 'N/A')
+                ->addColumn('amount', fn($expense) => '$' . number_format($expense->amount, 2))
+                ->addColumn('description', fn($expense) => $expense->note ?? '-')
+                ->addColumn('action-btn', function($row){
+                    return $row->id;
+                })
+                ->rawColumns(['action-btn'])
+                ->make(true);
+        }
+
+        // Normal page load
         $members = $activeMess->approvedMembers()->orderBy('name')->get();
 
-        return view('expenses.index', compact('expenses', 'activeMess', 'activeMonth', 'members'));
+        return view('expenses.index', compact('activeMess', 'activeMonth', 'members'));
     }
 
     /**
@@ -129,7 +156,7 @@ class ExpenseController extends Controller
                 'user_id' => $expense->user_id,
                 'user_name' => $expense->user->name,
                 'date' => $expense->date->format('Y-m-d'),
-                'date_display' => $expense->date->format('M d'),
+                'formatted_date' => $expense->date->format('d M Y'),
                 'category' => $expense->category,
                 'amount' => $expense->amount,
                 'note' => $expense->note,

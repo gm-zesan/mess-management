@@ -17,11 +17,17 @@
         <!-- Toastr CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
+        <!-- DataTables CSS -->
+        <link rel="stylesheet" href="https://cdn.datatables.net/v/dt/dt-2.3.7/datatables.min.css">
+
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+        <!-- DataTables JS -->
+        <script src="https://cdn.datatables.net/v/dt/dt-2.3.7/datatables.min.js" defer></script>
+
         <!-- Toastr JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" defer></script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -52,7 +58,17 @@
 
         <!-- Session Messages Notification Script -->
         <script>
+            var SITEURL = "{{ URL::to('') }}";
+            var ASSET_URL = "{{ config('app.asset_url') }}/";
+            
             $(document).ready(function() {
+                // Setup CSRF token for all AJAX requests
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
                 @if (session('success'))
                     toastr.success('{{ session('success') }}');
                 @endif
@@ -76,5 +92,7 @@
                 @endif
             });
         </script>
+        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js" defer></script>
+        @stack('custom-scripts')
     </body>
 </html>
