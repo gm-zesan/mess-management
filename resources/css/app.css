@@ -175,6 +175,10 @@
     margin-top: 10px;
 }
 
+#length-select{
+    padding-right: 1.3rem;
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);
