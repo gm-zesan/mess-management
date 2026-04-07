@@ -59,6 +59,7 @@
         <!-- Session Messages Notification Script -->
         <script>
             var SITEURL = "{{ URL::to('') }}";
+            const BASE_URL = "{{ url('/') }}";
             var ASSET_URL = "{{ config('app.asset_url') }}/";
             
             $(document).ready(function() {

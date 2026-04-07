@@ -3,22 +3,6 @@
 @section('content')
     <div class="w-full px-4 py-8">
         <div class="max-w-7xl mx-auto">
-            <!-- Success Message -->
-            @if (session('success'))
-                <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-sm">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-green-800">{{ session('success') }}</span>
-                    </div>
-                    <button onclick="this.parentElement.style.display='none'" class="text-green-600 hover:text-green-800">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                </div>
-            @endif
 
             @can('expenses.view')
                 <!-- DataTable Header -->
@@ -194,6 +178,7 @@
                             <p id="editDateDisplay" class="font-semibold text-gray-900">-</p>
                             <input type="hidden" id="editUserId" name="user_id">
                             <input type="hidden" id="editDateValue" name="date">
+                            <input type="hidden" id="editId" value="">
                         </div>
                     </div>
 
@@ -277,82 +262,75 @@
     @push('custom-scripts')
     <script type="text/javascript">
         var listUrl = "{{ route('expenses.index') }}";
-        var SITEURL = "{{ URL::to('') }}";
         var currentDeleteId = null;
 
         // Modal functions
         function openCreateModal() {
-            document.getElementById('createForm').reset();
-            document.getElementById('createModal').classList.remove('hidden');
-            document.getElementById('createModal').classList.add('flex');
-            document.getElementById('createModal').offsetHeight; // Trigger reflow
-            document.getElementById('createModal').classList.remove('opacity-0');
-            document.getElementById('createModal').classList.add('opacity-100');
+            // reset form via jQuery
+            $('#createForm')[0].reset();
+            $('#createModal').removeClass('hidden').addClass('flex');
+            // trigger reflow
+            $('#createModal')[0].offsetHeight;
+            $('#createModal').removeClass('opacity-0').addClass('opacity-100');
         }
 
         function closeCreateModal() {
-            document.getElementById('createModal').classList.remove('opacity-100');
-            document.getElementById('createModal').classList.add('opacity-0');
-            setTimeout(() => {
-                document.getElementById('createModal').classList.add('hidden');
-                document.getElementById('createModal').classList.remove('flex');
+            $('#createModal').removeClass('opacity-100').addClass('opacity-0');
+            setTimeout(function () {
+                $('#createModal').addClass('hidden').removeClass('flex');
             }, 300);
         }
 
         function openEditModal(id) {
+            // Store expense ID immediately
+            $('#editId').val(id);
+            
             $.ajax({
-                url: SITEURL + '/expenses/' + id + '/edit',
+                url: BASE_URL + '/expenses/' + id + '/edit',
                 type: 'GET',
                 success: function(data) {
-                    // Populate edit form with data
-                    document.getElementById('editUserId').value = data.user_id;
-                    document.getElementById('editDateValue').value = data.date;
-                    document.getElementById('editMemberName').textContent = data.user_name;
-                    document.getElementById('editDateDisplay').textContent = data.formatted_date;
-                    document.getElementById('editCategory').value = data.category;
-                    document.getElementById('editAmount').value = data.amount;
-                    document.getElementById('editNote').value = data.note || '';
-                    
-                    // Set form action
-                    document.getElementById('editForm').action = SITEURL + '/expenses/' + id;
-                    
+                    // Populate edit form with data using jQuery
+                    $('#editUserId').val(data.user_id);
+                    $('#editDateValue').val(data.date);
+                    $('#editMemberName').text(data.user_name);
+                    $('#editDateDisplay').text(data.formatted_date);
+                    $('#editCategory').val(data.category);
+                    $('#editAmount').val(data.amount);
+                    $('#editNote').val(data.note || '');
+                    // Verify values were set (no console logs in production)
+
                     // Show modal
-                    document.getElementById('editModal').classList.remove('hidden');
-                    document.getElementById('editModal').classList.add('flex');
-                    document.getElementById('editModal').offsetHeight; // Trigger reflow
-                    document.getElementById('editModal').classList.remove('opacity-0');
-                    document.getElementById('editModal').classList.add('opacity-100');
+                    $('#editModal').removeClass('hidden').addClass('flex');
+                    $('#editModal')[0].offsetHeight; // Trigger reflow
+                    $('#editModal').removeClass('opacity-0').addClass('opacity-100');
+                },
+                error: function(error) {
+                    toastr.error('Error loading expense details');
                 }
             });
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.remove('opacity-100');
-            document.getElementById('editModal').classList.add('opacity-0');
-            setTimeout(() => {
-                document.getElementById('editModal').classList.add('hidden');
-                document.getElementById('editModal').classList.remove('flex');
+            $('#editModal').removeClass('opacity-100').addClass('opacity-0');
+            setTimeout(function () {
+                $('#editModal').addClass('hidden').removeClass('flex');
             }, 300);
         }
 
         function openDeleteModal(id, member, amount) {
             currentDeleteId = id;
-            document.getElementById('deleteModalMember').textContent = member;
-            document.getElementById('deleteModalAmount').textContent = amount;
-            
-            document.getElementById('deleteModal').classList.remove('hidden');
-            document.getElementById('deleteModal').classList.add('flex');
-            document.getElementById('deleteModal').offsetHeight; // Trigger reflow
-            document.getElementById('deleteModal').classList.remove('opacity-0');
-            document.getElementById('deleteModal').classList.add('opacity-100');
+            $('#deleteModalMember').text(member);
+            $('#deleteModalAmount').text(amount);
+
+            $('#deleteModal').removeClass('hidden').addClass('flex');
+            $('#deleteModal')[0].offsetHeight; // Trigger reflow
+            $('#deleteModal').removeClass('opacity-0').addClass('opacity-100');
         }
 
         function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('opacity-100');
-            document.getElementById('deleteModal').classList.add('opacity-0');
-            setTimeout(() => {
-                document.getElementById('deleteModal').classList.add('hidden');
-                document.getElementById('deleteModal').classList.remove('flex');
+            $('#deleteModal').removeClass('opacity-100').addClass('opacity-0');
+            setTimeout(function () {
+                $('#deleteModal').addClass('hidden').removeClass('flex');
                 currentDeleteId = null;
             }, 300);
         }
@@ -360,7 +338,7 @@
         function confirmDelete() {
             if (currentDeleteId) {
                 $.ajax({
-                    url: SITEURL + '/expenses/' + currentDeleteId,
+                    url: BASE_URL + '/expenses/' + currentDeleteId,
                     type: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -381,7 +359,7 @@
         $(document).ready(function () {
             var table = $('#expenses-table').DataTable({
                 processing: true,
-                responsive: true,
+                responsive: { details: true },
                 serverSide: true,
                 fixedHeader: true,
                 "pageLength": 15,
@@ -393,13 +371,12 @@
                 },
                 columns: [
                     { data: 'id', name: 'id', orderable: false, searchable: false, render: function(data, type, row) {
-                        return '<span class="font-medium text-gray-900">' + data + '</span>';
+                        return 'EXP-' + data;
                     }},
                     { data: 'date', name: 'date', orderable: true },
                     { data: 'user', name: 'user_id', orderable: true },
                     { data: 'category', name: 'category', orderable: true },
                     { data: 'amount', name: 'amount', orderable: true },
-                    // `note` is the DB column; use it for server-side searching
                     { data: 'description', name: 'note', orderable: true },
                     {
                         data: 'id', 
@@ -407,8 +384,12 @@
                         searchable: false,
                         render: function (data, type, row) {
                             var btns = '<div class="flex items-center justify-center gap-3">';
-                            btns += '<a onclick="openEditModal(' + data + ')" class="text-sky-600 hover:text-sky-800 font-medium text-sm cursor-pointer" title="Edit">Edit</a>';
-                            btns += '<a onclick="openDeleteModal(' + data + ', \'' + row.user + '\', \'' + row.amount + '\')" class="text-red-600 hover:text-red-800 font-medium text-sm cursor-pointer" title="Delete">Delete</a>';
+                            if (row.can_edit) {
+                                btns += '<a onclick="openEditModal(' + data + ')" class="text-sky-600 hover:text-sky-800 font-medium text-sm cursor-pointer" title="Edit">Edit</a>';
+                            }
+                            if (row.can_delete) {
+                                btns += '<a href="#" class="delete-btn text-red-600 hover:text-red-800 text-sm" data-id="' + data + '">Delete</a>';
+                            }
                             btns += '</div>';
                             return btns;
                         }
@@ -417,9 +398,9 @@
                 order: [[1, 'desc']],
             });
 
-            // Handle page length change
-            document.getElementById('length-select').addEventListener('change', function(e) {
-                table.page.len(parseInt(e.target.value)).draw();
+            // Handle page length change (jQuery)
+            $('#length-select').on('change', function() {
+                table.page.len(parseInt($(this).val())).draw();
             });
 
             // Debounce helper for reducing requests while typing
@@ -440,7 +421,7 @@
                 table.search(q).draw();
             }, 300);
 
-            document.getElementById('search-input').addEventListener('input', onSearchInput);
+            $('#search-input').on('input', onSearchInput);
 
             // Close modals when clicking outside
             $(document).on('click', function(e) {
@@ -449,13 +430,26 @@
                 if (e.target.id === 'deleteModal') closeDeleteModal();
             });
 
-            // Handle create form submission
-            document.getElementById('createForm').addEventListener('submit', function(e) {
+            // Delegated handler for delete links rendered by DataTables
+            $(document).on('click', '.delete-btn', function(e) {
                 e.preventDefault();
+                var $t = $(this);
+                var id = $t.data('id');
+                // get row data via DataTables API (more reliable than HTML attributes)
+                var row = table.row($t.closest('tr')).data() || {};
+                var user = row.user || '';
+                var amount = row.amount || '';
+                openDeleteModal(id, user, amount);
+            });
+
+            // Handle create form submission (jQuery)
+            $('#createForm').on('submit', function(e) {
+                e.preventDefault();
+                var $form = $(this);
                 $.ajax({
-                    url: SITEURL + '/expenses',
+                    url: BASE_URL + '/expenses',
                     type: 'POST',
-                    data: $(this).serialize(),
+                    data: $form.serialize(),
                     success: function(response) {
                         closeCreateModal();
                         table.ajax.reload();
@@ -467,16 +461,31 @@
                 });
             });
 
-            // Handle edit form submission
-            document.getElementById('editForm').addEventListener('submit', function(e) {
+            // Handle edit form submission (jQuery)
+            $('#editForm').on('submit', function(e) {
                 e.preventDefault();
+                var $form = $(this);
+                var expenseId = $('#editId').val();
+                
+                if (!expenseId) {
+                    toastr.error('Error: No expense ID. Please reopen the edit dialog.');
+                    return;
+                }
+                
+                var putUrl = BASE_URL + '/expenses/' + expenseId;
+                // prepare and send
+                
                 $.ajax({
-                    url: this.action,
+                    url: putUrl,
                     type: 'PUT',
-                    data: $(this).serialize(),
+                    data: $form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     success: function(response) {
                         closeEditModal();
-                        table.ajax.reload();
+                        table.ajax.reload(null, false);
                         toastr.success('Expense updated successfully');
                     },
                     error: function(error) {

@@ -43,16 +43,14 @@ class ExpenseController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                ->editColumn('id', fn($row) => 'EXP-' . $row->id)
                 ->addColumn('date', fn($expense) => $expense->date->format('d M Y'))
                 ->addColumn('user', fn($expense) => $expense->user->name ?? '-')
                 ->addColumn('category', fn($expense) => $expense->category ?? 'N/A')
                 ->addColumn('amount', fn($expense) => '$' . number_format($expense->amount, 2))
                 ->addColumn('description', fn($expense) => $expense->note ?? '-')
-                ->addColumn('action-btn', function($row){
-                    return $row->id;
-                })
-                ->rawColumns(['action-btn'])
+                // Permissions sent from backend so frontend can conditionally render action buttons
+                ->addColumn('can_edit', fn() => auth()->user()->can('expenses.update'))
+                ->addColumn('can_delete', fn() => auth()->user()->can('expenses.delete'))
                 ->make(true);
         }
 
@@ -96,19 +94,25 @@ class ExpenseController extends Controller
         $activeMonth = activeMonth();
         
         if (!$activeMess || !$activeMonth) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'No active mess or month found.'], 400);
+            }
             return redirect()->back()
                 ->with('error', 'No active mess or month found.');
         }
         
         // Check if month is closed
         if (isMonthClosed($activeMonth)) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'This month is closed. No further modifications are allowed.'], 422);
+            }
             return redirect()->back()
                 ->with('error', 'This month is closed. No further modifications are allowed.');
         }
         
         $data['mess_id'] = $activeMess->id;
         $data['month_id'] = $activeMonth->id;
-        Expense::create($data);
+        $expense = Expense::create($data);
 
         // Check if also creating a deposit
         if ($request->has('with_deposit') && $request->input('with_deposit') == 1) {
@@ -129,6 +133,11 @@ class ExpenseController extends Controller
         $message = ($request->has('with_deposit') && $request->input('with_deposit') == 1)
             ? 'Expense and deposit created successfully.'
             : 'Expense record created successfully.';
+
+        // Return JSON for AJAX, redirect for normal requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => $message, 'expense' => $expense], 201);
+        }
 
         return redirect()->route('expenses.index')
             ->with('success', $message);
@@ -180,11 +189,17 @@ class ExpenseController extends Controller
         
         // Verify expense belongs to active mess
         if (!$activeMess || $expense->mess_id !== $activeMess->id) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'This expense does not belong to your current mess.'], 403);
+            }
             abort(403, 'This expense does not belong to your current mess.');
         }
         
         // Check if month is closed
         if (isMonthClosed($expense->month_id)) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'This month is closed. No further modifications are allowed.'], 422);
+            }
             return redirect()->back()
                 ->with('error', 'This month is closed. No further modifications are allowed.');
         }
@@ -197,8 +212,15 @@ class ExpenseController extends Controller
         
         $expense->update($data);
 
+        $message = 'Expense record updated successfully.';
+
+        // Return JSON for AJAX, redirect for normal requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => $message, 'expense' => $expense], 200);
+        }
+
         return redirect()->route('expenses.index')
-            ->with('success', 'Expense record updated successfully.');
+            ->with('success', $message);
     }
 
     /**
@@ -212,18 +234,31 @@ class ExpenseController extends Controller
         
         // Verify expense belongs to active mess
         if (!$activeMess || $expense->mess_id !== $activeMess->id) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['error' => 'This expense does not belong to your current mess.'], 403);
+            }
             abort(403, 'This expense does not belong to your current mess.');
         }
         
         // Check if month is closed
         if (isMonthClosed($expense->month_id)) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['error' => 'This month is closed. No further deletions are allowed.'], 422);
+            }
             return redirect()->back()
                 ->with('error', 'This month is closed. No further deletions are allowed.');
         }
         
         $expense->delete();
 
+        $message = 'Expense record deleted successfully.';
+
+        // Return JSON for AJAX, redirect for normal requests
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['message' => $message], 200);
+        }
+
         return redirect()->route('expenses.index')
-            ->with('success', 'Expense record deleted successfully.');
+            ->with('success', $message);
     }
 }
