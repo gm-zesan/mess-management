@@ -12,6 +12,15 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
+        <!-- Toastr CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- Toastr JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
         <!-- Vite Assets -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -80,6 +89,9 @@
         </style>
     </head>
     <body class="antialiased">
+        <!-- Hot Toast Container -->
+        <div id="hot-toast-root"></div>
+        
         <div class="split-layout flex h-screen w-full">
             <!-- Left Panel - Branding -->
             <div class="left-panel relative hidden md:flex md:w-1/2 lg:w-3/5 flex-col justify-between overflow-hidden bg-cover bg-center bg-no-repeat p-[60px]" style="background-image: url('/auth.jpeg')">
@@ -165,5 +177,32 @@
                 </div>
             </div>
         </div>
+
+        <!-- Session Messages Notification Script -->
+        <script>
+            $(document).ready(function() {
+                @if (session('success'))
+                    toastr.success('{{ session('success') }}');
+                @endif
+
+                @if (session('error'))
+                    toastr.error('{{ session('error') }}');
+                @endif
+
+                @if (session('warning'))
+                    toastr.warning('{{ session('warning') }}');
+                @endif
+
+                @if (session('info'))
+                    toastr.info('{{ session('info') }}');
+                @endif
+
+                @if ($errors->any())
+                    @foreach ($errors->all() as $error)
+                        toastr.error('{{ $error }}');
+                    @endforeach
+                @endif
+            });
+        </script>
     </body>
 </html>

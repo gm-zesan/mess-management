@@ -1,38 +1,229 @@
-You are a senior frontend designer and Tailwind CSS expert.
+# 🎨 SaaS Design Context — Mess Management System
 
-I am building a SaaS-based Mess Management System using Laravel Blade and Tailwind CSS.
+## 🧠 Product Overview
 
-Your task:
-- Generate clean, modern, production-ready UI code
-- Use only Tailwind CSS (no external JS frameworks)
-- Focus on SaaS-style design (minimal, clean, professional)
-- Ensure responsive design (mobile + desktop)
-- Use proper spacing, typography, and color hierarchy
-- Keep code clean and Blade-friendly
+This is a SaaS-based Mess Management System used by:
 
-Design style:
-- Modern SaaS dashboard (like Stripe / Notion / Linear)
-- Soft shadows, rounded corners.
-- Accessible and user-friendly
+* Students
+* Job holder
+* Bachelor Mess
+
+The UI must be:
+
+* Clean
+* Fast
+* Highly readable
+* Minimal cognitive load
+
+---
+
+## 🎯 Design Goals
+
+* Reduce clutter
+* Improve usability
+* Make data easy to scan
+* Professional SaaS look (like Stripe / Linear / Notion)
+
+---
+
+## 🌈 Theme Configuration (Tailwind आधारित)
+
+### Primary Color
+
+* `sky-600` (main brand color)
+
+### Color System
+
+* Primary: `sky-600`
+* Primary Hover: `sky-700`
+* Light Background: `bg-white`
+* Secondary Background: `bg-gray-50`
+* Border: `border-gray-200`
+* Text Primary: `text-gray-800`
+* Text Secondary: `text-gray-500`
+* Success: `green-600`
+* Danger: `red-500`
+* Warning: `yellow-500`
+
+---
+
+## 🧱 Layout Rules
+
+### Structure
+
+* Header only (NO sidebar)
+* No vertical scroll unless necessary
+* Content centered with max width
+
+### Container
+
+```tailwind
+max-w-7xl mx-auto
+```
+
+---
+
+## 🧩 Component Design Rules
+
+### Cards (Use minimally)
+
+* `bg-white border border-gray-200 rounded-xl shadow-sm`
+* Avoid too many nested cards
+
+---
+
+### Buttons
+
+Primary:
+
+```tailwind
+bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded transition-colors
+```
+
+Secondary:
+
+```tailwind
+bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded transition-colors
+```
+---
+
+### Tables (IMPORTANT for Mess System)
+
+* Clean, spaced rows
+* Hover effect: `hover:bg-gray-50`
+* Header:
+
+```tailwind
+text-xs uppercase text-gray-500 bg-gray-50
+```
+
+---
+
+### Forms
+
+* Input:
+
+```tailwind
+border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-500 outline-none
+```
+
+* Label:
+
+```tailwind
+text-sm text-gray-600 mb-1
+```
+
+---
+
+## 📊 Data Visualization Style
+
+* Use spacing instead of borders
+* Highlight important numbers (bold + bigger text)
+* Avoid heavy colors
+
+---
+
+## 🚫 Avoid
+
+* Gradient backgrounds
+* Too many colors
+* Deep shadows
+* Overlapping cards
+* Sidebar navigation
+
+---
+
+## ✨ UX Enhancements
+
+* Skeleton loaders
+* Empty states
+* Toast notifications
+* Confirmation modals
+
+---
+
+## 📱 Responsiveness
+
+* Mobile-first
+* Stack layout on small screens
+
+---
+
+## 🧬 Design Inspiration
+
+* Stripe Dashboard
+* Linear App
+* Notion
+
+---
+
+## ⚡ Behavior Rules
+
+* Keep UI minimal
+* Prefer whitespace over borders
+* Every page must feel fast and lightweight
+
+---
+
+## 🧑‍💻 Instruction for Copilot
+
+When redesigning:
+
+* Follow this design system strictly
+* Do NOT add random colors
+* Keep layout consistent
+* Improve spacing and hierarchy
+* Avoid overengineering
+
+Always return:
+
+* Production-ready UI
+
+---
 
 
 
 
 
-the color theme
 
-| Role                   | Hex                | Tailwind Class                        | Use                               |
-| ---------------------- | ------------------ | ------------------------------------- | --------------------------------- |
-| **Primary**            | `#0284c7`          | `bg-sky-600` / `hover:bg-sky-700`     | Main buttons, links, active items |
-| **Secondary / Accent** | `#10B981`          | `bg-green-500` / `hover:bg-green-600` | Secondary actions, highlights     |
-| **Background (page)**  | `#F8FAFC`          | `bg-gray-50`                          | Main page background              |
-| **Header / Navbar**    | `#FFFFFF`          | `bg-white`                            | Header bar                        |
-| **Card / Panel**       | `#FFFFFF`          | `bg-white`                            | Cards, tables, modals             |
-| **Card Shadow**        | `rgba(0,0,0,0.05)` | `shadow-sm`                           | Soft card shadow                  |
-| **Border / Divider**   | `#E5E7EB`          | `border-gray-200`                     | Tables, cards, dividers           |
-| **Text – Main**        | `#111827`          | `text-gray-900`                       | Headings, important text          |
-| **Text – Secondary**   | `#6B7280`          | `text-gray-500`                       | Subtext, metadata                 |
-| **Success**            | `#16A34A`          | `text-green-600`                      | Status labels, messages           |
-| **Warning**            | `#F59E0B`          | `text-yellow-500`                     | Warning labels, messages          |
-| **Error**              | `#DC2626`          | `text-red-600`                        | Error labels, messages            |
-| **Info / Neutral**     | `#0EA5E9`          | `text-sky-500`                        | Info messages, badges             |
+
+
+
+
+
+
+Use the design system from #design-context.md
+
+Redesign this page:
+[PASTE YOUR CODE HERE]
+
+Requirements:
+- Use Tailwind CSS only
+- Apply sky-600 theme
+- Light theme only
+- Improve spacing, hierarchy, and readability
+- Make it look like a modern SaaS dashboard
+- Clean spacing and section-based layout
+- Use minimal cards (avoid overuse)
+- Keep UI minimal and professional
+- Make it look like Stripe/Linear dashboard
+
+UI:
+- Clean layout
+- Proper spacing
+- sky-600 theme
+- Light SaaS style
+
+Avoid:
+- clutter
+- heavy borders
+
+Improve:
+- spacing
+- hierarchy
+- readability
+- alignment
+
+Output:
+- Only updated code
+- No explanation
