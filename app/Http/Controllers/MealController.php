@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMealRequest;
 use App\Http\Requests\UpdateMealRequest;
 use App\Models\Meal;
 use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class MealController extends Controller
 {
@@ -23,56 +24,68 @@ class MealController extends Controller
             return redirect(route('dashboard'))->with('error', 'No active mess or month found.');
         }
 
-        // AJAX request
-        if (request()->ajax()) {
-            $query = Meal::with('user', 'month', 'mess')
-                ->where('mess_id', $activeMess->id)
-                ->where('month_id', $activeMonth->id);
+            // AJAX request
+            if (request()->ajax()) {
+                // Join users so server-side search can filter by user name
+                $query = Meal::select(
+                        'meals.*',
+                        'users.name as user_name'
+                    )
+                    ->leftJoin('users', 'users.id', '=', 'meals.user_id')
+                    ->where('meals.mess_id', $activeMess->id)
+                    ->where('meals.month_id', $activeMonth->id);
 
-            // Apply filters
-            if ($filterDate = request('filter_date')) {
-                $query->where('date', $filterDate);
+                // Apply filters
+                if ($filterDate = request('filter_date')) {
+                    $query->where('meals.date', $filterDate);
+                }
+
+                if ($filterMember = request('filter_member')) {
+                    $query->where('meals.user_id', $filterMember);
+                }
+
+                return DataTables::of($query)
+                    ->addIndexColumn()
+                    ->addColumn('user', function($meal){
+                        return $meal->user_name ?? '-';
+                    })
+                    ->addColumn('date', function($meal){
+                        return Carbon::parse($meal->date)->format('d M Y');
+                    })
+                    ->addColumn('breakfast_count', fn($meal) => $meal->breakfast_count ?? 0)
+                    ->addColumn('lunch_count', fn($meal) => $meal->lunch_count ?? 0)
+                    ->addColumn('dinner_count', fn($meal) => $meal->dinner_count ?? 0)
+                    ->addColumn('total_meal_count', fn($meal) => $meal->total_meal_count ?? 0)
+                    ->addColumn('action', function($meal){
+                        $editUrl = route('meals.edit', $meal->id);
+                        $deleteUrl = route('meals.destroy', $meal->id);
+                        $html = '<div class="flex items-center justify-center gap-2">';
+                        if (request()->user()->can('update', $meal)) {
+                            $html .= '<a href="'.$editUrl.'" class="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-sky-100 text-sky-600 hover:text-sky-700" title="Edit">'
+                                .'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">'
+                                .'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>'
+                                .'</svg>'
+                            .'</a>';
+                        }
+                        if (request()->user()->can('delete', $meal)) {
+                            $html .= '<form action="'.$deleteUrl.'" method="POST" class="inline" onsubmit="return confirm(\'Are you sure?\');">'
+                                .csrf_field().method_field('DELETE')
+                                .'<button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-red-100 text-red-600 hover:text-red-700" title="Delete">'
+                                    .'<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">'
+                                        .'<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>'
+                                    .'</svg>'
+                                .'</button>'
+                            .'</form>';
+                        }
+                        $html .= '</div>';
+                        return $html;
+                    })
+                    ->rawColumns(['action'])
+                    // Permissions sent from backend so frontend can conditionally render action buttons
+                    ->addColumn('can_edit', fn() => auth()->user()->can('meals.update'))
+                    ->addColumn('can_delete', fn() => auth()->user()->can('meals.delete'))
+                    ->make(true);
             }
-
-            if ($filterMember = request('filter_member')) {
-                $query->where('user_id', $filterMember);
-            }
-
-            return DataTables::of($query)
-                ->addIndexColumn()
-                ->addColumn('user', fn($meal) => $meal->user->name)
-                ->addColumn('date', fn($meal) => $meal->date->format('d M Y'))
-                ->addColumn('breakfast_count', fn($meal) => $meal->breakfast_count ?? 0)
-                ->addColumn('lunch_count', fn($meal) => $meal->lunch_count ?? 0)
-                ->addColumn('dinner_count', fn($meal) => $meal->dinner_count ?? 0)
-                ->addColumn('total_meal_count', fn($meal) => $meal->total_meal_count ?? 0)
-                ->addColumn('action', function($meal){
-                    $editUrl = route('meals.edit', $meal->id);
-                    $deleteUrl = route('meals.destroy', $meal->id);
-                    $html = '<div class="flex items-center justify-center gap-2">';
-                    if (request()->user()->can('update', $meal)) {
-                        $html .= '<a href="'.$editUrl.'" class="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-sky-100 text-sky-600 hover:text-sky-700" title="Edit">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                        </a>';
-                    }
-                    if (request()->user()->can('delete', $meal)) {
-                        $html .= '<form action="'.$deleteUrl.'" method="POST" class="inline" onsubmit="return confirm(\'Are you sure?\');">
-                            '.csrf_field().method_field('DELETE').'
-                            <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-red-100 text-red-600 hover:text-red-700" title="Delete">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </form>';
-                    }
-                    $html .= '</div>';
-                    return $html;
-                })
-                ->rawColumns(['action'])
-                ->make(true);
-        }
 
         // Normal page load
         $members = $activeMess->approvedMembers()->orderBy('name')->get();
@@ -168,8 +181,15 @@ class MealController extends Controller
         // Bulk insert all meal records
         Meal::insert($mealsToCreate);
 
+        $message = 'Meal records created successfully (' . count($mealsToCreate) . ' members).';
+
+        // Return JSON for AJAX, redirect for normal requests
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => $message, 'count' => count($mealsToCreate)], 201);
+        }
+
         return redirect()->route('meals.index')
-            ->with('success', 'Meal records created successfully (' . count($mealsToCreate) . ' members).');
+            ->with('success', $message);
     }
 
     /**
@@ -232,8 +252,14 @@ class MealController extends Controller
         // Update the meal record
         $meal->update($data);
 
+        $message = 'Meal record updated successfully.';
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['message' => $message, 'meal' => $meal], 200);
+        }
+
         return redirect()->route('meals.index')
-            ->with('success', 'Meal record updated successfully.');
+            ->with('success', $message);
     }
 
     /**
@@ -258,8 +284,14 @@ class MealController extends Controller
         
         $meal->delete();
 
+        $message = 'Meal record deleted successfully.';
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['message' => $message], 200);
+        }
+
         return redirect()->route('meals.index')
-            ->with('success', 'Meal record deleted successfully.');
+            ->with('success', $message);
     }
 }
 

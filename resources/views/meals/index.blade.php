@@ -1,43 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full px-4 py-8 bg-white">
+    <div class="w-full px-4 py-8">
         <div class="max-w-7xl mx-auto">
-            <!-- Success Message -->
-            @if (session('success'))
-                <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-sm">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-green-800">{{ session('success') }}</span>
+            <!-- Table Controls (search + length) -->
+            <div class="mb-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center">
+                        <span class="text-sm text-gray-700 mr-2">Show</span>
+                        <select id="length-select" class="border-0 py-0 bg-transparent text-sm text-gray-900 font-medium cursor-pointer">
+                            <option value="15">15</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="text-sm text-gray-700 ml-2">entries</span>
                     </div>
-                    <button onclick="this.parentElement.style.display='none'" class="text-green-600 hover:text-green-800">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                </div>
-            @endif
 
-            <!-- Page Header -->
-            <div class="mb-6 flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Meals</h1>
-                    <p class="text-sm text-gray-600 mt-1">Track meal records for {{ $activeMonth->name ?? 'current month' }}</p>
-                </div>
-                @can('meals.create')
-                    <a href="{{ route('meals.create') }}" class="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    <div class="relative w-80">
+                        <input type="text" id="search-input" placeholder="Search" class="w-full px-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-sky-500">
+                        <svg class="w-5 h-5 text-gray-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        Add Meal
-                    </a>
-                @endcan
-            </div>
+                    </div>
 
-            <!-- Filter Bar -->
-            <div class="mb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between">
+                    <div class="mb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between">
                 <div class="flex-1 flex gap-2 w-full sm:w-auto">
                     <input 
                         type="date" 
@@ -59,18 +46,37 @@
                 </div>
             </div>
 
+
+                    
+                </div>
+
+
+                @can('meals.create')
+                        <a href="{{ route('meals.create') }}" class="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add Meal
+                        </a>
+                    @endcan
+
+                
+            </div>
+
+            
+            <!-- Filter Bar -->
             @can('meals.view')
                 <!-- DataTable -->
-                <div class="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
-                    <table id="meals-table" class="min-w-full divide-y divide-gray-200 text-sm">
+                <div class="overflow-x-auto">
+                    <table id="meals-table" class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Member</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Date</th>
-                                <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">B</th>
-                                <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">L</th>
-                                <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">D</th>
-                                <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">Total</th>
+                                <th>Member</th>
+                                <th>Date</th>
+                                <th>B</th>
+                                <th>L</th>
+                                <th>D</th>
+                                <th>Total</th>
                                 @canany(['meals.update','meals.delete'])
                                     <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
                                 @endcanany
@@ -93,43 +99,72 @@
         </div>
     </div>
 
-    @push('scripts')
+    @push('custom-scripts')
     <script>
     $(function(){
-        // Initialize DataTable
+        // Initialize DataTable (server-side, responsive)
+        function debounce(fn, wait) {
+            var timeout;
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    fn.apply(context, args);
+                }, wait);
+            };
+        }
+
         let table = $('#meals-table').DataTable({
             processing: true,
             serverSide: true,
+            responsive: { details: true },
+            fixedHeader: true,
+            pageLength: 15,
+            lengthMenu: [15, 25, 50, 100],
+            dom: 'rt<"dataTables_bottom"ip>',
             ajax: {
                 url: "{{ route('meals.index') }}",
+                type: 'GET',
                 data: function(d){
                     d.filter_date = $('#filter-date').val();
                     d.filter_member = $('#filter-member').val();
                 }
             },
             columns: [
-                {data: 'user', name: 'user'},
+                {data: 'user', name: 'user_name'},
                 {data: 'date', name: 'date'},
-                {data: 'breakfast_count', name: 'breakfast_count', className: 'text-center'},
-                {data: 'lunch_count', name: 'lunch_count', className: 'text-center'},
-                {data: 'dinner_count', name: 'dinner_count', className: 'text-center'},
-                {data: 'total_meal_count', name: 'total_meal_count', className: 'text-center'},
-                {data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center'}
+                {data: 'breakfast_count', name: 'breakfast_count'},
+                {data: 'lunch_count', name: 'lunch_count'},
+                {data: 'dinner_count', name: 'dinner_count'},
+                {data: 'total_meal_count', name: 'total_meal_count'},
+                {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
-            pageLength: 15,
             order: [[1,'desc']],
         });
 
+        // Length control
+        $('#length-select').on('change', function() {
+            table.page.len(parseInt($(this).val())).draw();
+        });
+
+        // Debounced global search
+        var onSearchInput = debounce(function (e) {
+            var q = e.target.value.trim();
+            table.search(q).draw();
+        }, 300);
+
+        $('#search-input').on('input', onSearchInput);
+
         // Filter button
         $('#filter-btn').click(function(){
-            table.ajax.reload();
+            table.ajax.reload(null, false);
         });
 
         // Reset filters
         $('#reset-btn').click(function(){
             $('#filter-date').val('');
             $('#filter-member').val('');
-            table.ajax.reload();
+            table.ajax.reload(null, false);
         });
     });
     </script>
