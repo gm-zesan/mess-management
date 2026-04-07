@@ -5,7 +5,7 @@ use App\Enums\MonthStatusEnum;
 @endphp
 
 @section('content')
-    <div class="max-w-7xl mx-auto">
+    <div class="w-full">
         @can('months.view')
             @if ($months->count() > 0)
                 <!-- Data Table -->

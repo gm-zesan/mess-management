@@ -1,9 +1,9 @@
-<nav class="sticky top-0 z-50 bg-white border-b border-gray-200">
+<nav class="sticky top-0 z-50">
     @use('App\Enums\RoleEnum')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 ml-4">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
                     <x-application-logo class="block h-8 w-auto fill-current text-sky-600 transition-transform group-hover:scale-110" />
                     <span class="hidden sm:inline font-bold text-gray-900">Mess Management</span>
@@ -73,7 +73,7 @@
 
                     <!-- User Dropdown -->
                     <div class="relative group">
-                        <button class="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
+                        <button class="flex items-center gap-2 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors">
                             <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                             </svg>

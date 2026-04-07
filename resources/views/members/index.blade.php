@@ -7,7 +7,7 @@ use App\Models\MessUser;
 @endphp
 
 @section('content')
-    <div class="max-w-7xl mx-auto">
+    <div class="w-full">
 
         <!-- Success Message -->
         @if (session('success'))

@@ -3,7 +3,7 @@
 
 @section('content')
     <!-- Main Container -->
-    <div class="max-w-7xl mx-auto">
+    <div class="w-full">
         @if ($activeMonth)
             @if ($summary)
                 <!-- Summary Cards - Compact 4-Column -->

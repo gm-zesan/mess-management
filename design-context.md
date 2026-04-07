@@ -58,7 +58,7 @@ The UI must be:
 ### Container
 
 ```tailwind
-max-w-7xl mx-auto
+w-full
 ```
 
 ---

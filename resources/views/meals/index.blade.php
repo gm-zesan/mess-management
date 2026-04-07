@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-7xl mx-auto">
-
+    <div class="">
         <!-- Success Message -->
         @if (session('success'))
             <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-sm">
@@ -371,7 +370,41 @@
 
         function handleModalSubmit(event) {
             event.preventDefault();
-            $('#editForm').submit();
+            
+            const mealId = currentMealId;
+            if (!mealId) return;
+            
+            const formData = {
+                _method: 'PUT',
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                user_id: $('#modalUserId').val(),
+                date: $('#modalDateValue').val(),
+                breakfast_count: $('#breakfast_count').val(),
+                lunch_count: $('#lunch_count').val(),
+                dinner_count: $('#dinner_count').val(),
+            };
+            
+            $.ajax({
+                url: `/meals/${mealId}`,
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    toastr.success('Meal record updated successfully');
+                    closeEditModal();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                },
+                error: function(xhr) {
+                    if (xhr.status === 403) {
+                        toastr.error('This month is closed. No modifications allowed.');
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        toastr.error(xhr.responseJSON.message);
+                    } else {
+                        toastr.error('Failed to update meal record');
+                    }
+                }
+            });
         }
 
         // Close edit modal when clicking outside

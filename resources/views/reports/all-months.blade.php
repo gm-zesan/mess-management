@@ -6,7 +6,7 @@ use App\Enums\MonthStatusEnum;
 
 @section('content')
     @can('reports.view')
-        <div class="max-w-7xl mx-auto">
+        <div class="w-full">
 
             @if ($months->count() > 0)
                 <!-- Data Table -->
@@ -112,7 +112,7 @@ use App\Enums\MonthStatusEnum;
 
         </div>
     @else
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-6">
             <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3 mb-4">
                 <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 2.476a6 6 0 018.367 8.414zm1.414-5.27a8 8 0 11-11.313-11.313 8 8 0 0111.313 11.313z" clip-rule="evenodd"></path>

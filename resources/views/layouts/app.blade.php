@@ -27,7 +27,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-white">
             @if(Auth::check())
                 @include('layouts.navigation')
             @endif
@@ -35,17 +35,18 @@
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="w-full py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
             <!-- Page Content -->
-            <main class="py-12">
-                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <main class="w-full px-4">
+                <div class="bg-gray-100 sm:px-4 lg:px-8 py-4 mb-6 rounded-3xl border border-gray-200 overflow-y-auto" style="height: calc(100vh - 80px);">
                     @yield('content')
                 </div>
+                
             </main>
         </div>
 

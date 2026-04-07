@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="w-full">
     <!-- Status Messages -->
     @if (session('status') === 'profile-updated')
         <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
