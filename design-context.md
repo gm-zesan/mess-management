@@ -89,15 +89,21 @@ bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded transiti
 
 ### Tables (IMPORTANT for Mess System)
 
-* Clean, spaced rows
-* Hover effect: `hover:bg-gray-50`
-* Header:
-
-```tailwind
-text-xs uppercase text-gray-500 bg-gray-50
-```
+* Use the reusable `<x-datatable>` component
+* Features to include:
+    - Search (global filter)
+    - Pagination (client-side)
+    - Sorting on columns
+    - Responsive layout
+    - Empty state with icon + message
+* Columns and actions should be config-driven
 
 ---
+
+### Status Badges
+
+* Paid → bg-green-100 text-green-700 text-xs px-2 py-1 rounded
+* Due → bg-red-100 text-red-600 text-xs px-2 py-1 rounded
 
 ### Forms
 
@@ -180,50 +186,3 @@ Always return:
 * Production-ready UI
 
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-Use the design system from #design-context.md
-
-Redesign this page:
-[PASTE YOUR CODE HERE]
-
-Requirements:
-- Use Tailwind CSS only
-- Apply sky-600 theme
-- Light theme only
-- Improve spacing, hierarchy, and readability
-- Make it look like a modern SaaS dashboard
-- Clean spacing and section-based layout
-- Use minimal cards (avoid overuse)
-- Keep UI minimal and professional
-- Make it look like Stripe/Linear dashboard
-
-UI:
-- Clean layout
-- Proper spacing
-- sky-600 theme
-- Light SaaS style
-
-Avoid:
-- clutter
-- heavy borders
-
-Improve:
-- spacing
-- hierarchy
-- readability
-- alignment
-
-Output:
-- Only updated code
-- No explanation

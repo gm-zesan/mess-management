@@ -1,176 +1,58 @@
-## 🧩 DataTable Architecture (Reusable System)
+## 🧩 DataTable Architecture (Laravel + Alpine.js)
 
-All tables MUST use a reusable `<DataTable />` component.
+All tables MUST use a reusable Blade component:
 
----
-
-### 🎯 Goals
-
-* Single reusable table system across entire app
-* Consistent UI & behavior
-* Clean SaaS look (light theme, sky-600)
-* Fully customizable per page
-
----
-
-### 🧱 Component Architecture
-
-Create a shared component:
-
-```tsx
-<DataTable
-  columns={columns}
-  data={data}
-  searchPlaceholder="Search members..."
-  actions={<AddButton />}
- />
+```blade
+<x-datatable 
+    :columns="$columns" 
+    :data="$data" 
+    searchPlaceholder="Search..." 
+/>
 ```
 
 ---
 
 ### ⚙️ Tech Stack
 
-* TanStack Table → table logic (sorting, pagination, filtering)
+* Laravel Blade → structure
+* Alpine.js → interactivity (search, pagination, sorting)
 * Tailwind CSS → UI
-* NO prebuilt table UI libraries
 
 ---
 
-### 📦 Props Design
+### 🎯 Features (MANDATORY)
 
-#### columns
-
-* Defines table structure
-* Includes header + cell renderer
-* Supports sorting
-
-#### data
-
-* Array of objects
-
-#### actions
-
-* React node (Add button, filters, export)
-
-#### searchPlaceholder
-
-* Custom placeholder per page
-
----
-
-### 🔍 Features (MANDATORY)
-
-Every DataTable MUST include:
-
-* 🔎 Search (global filter)
-* 🔢 Pagination (client-side)
-* 🔽 Sorting (on key columns)
-* 📱 Responsive layout
-* ⚡ Fast rendering
-
----
-
-### 🎨 UI Structure
-
-1. Top Bar
-
-   * Search input (left)
-   * Actions (right)
-
-2. Table Container
-
-   * Clean header
-   * Hover rows
-   * Proper spacing
-
-3. Footer
-
-   * Pagination
-   * Row info
-
----
-
-### 🎯 Tailwind Styling Rules
-
-#### Wrapper
-
-```tailwind
-bg-white border border-gray-200 rounded-xl overflow-hidden
-```
-
-#### Search Input
-
-```tailwind
-border border-gray-200 rounded-lg px-3 py-2 w-64 focus:ring-2 focus:ring-sky-500 outline-none
-```
-
-#### Table Head
-
-```tailwind
-bg-gray-50 text-xs uppercase text-gray-500
-```
-
-#### Table Cell
-
-```tailwind
-px-4 py-3 text-sm text-gray-700
-```
-
-#### Row
-
-```tailwind
-hover:bg-gray-50 transition
-```
-
-#### Pagination
-
-```tailwind
-flex items-center justify-between px-4 py-3 border-t border-gray-200
-```
-
-Buttons:
-
-```tailwind
-px-3 py-1 border border-gray-200 rounded-md hover:bg-gray-100
-```
+* Search (client-side)
+* Pagination
+* Sorting
+* Lightweight and fast
 
 ---
 
 ### 🧠 Behavior Rules
 
-* Default page size: 10
-* Search filters instantly
-* Sorting toggles asc/desc
-* Keep UI minimal
-* No unnecessary borders
+* No page reload for search
+* Keep interactions smooth
+* Minimal JS (Alpine only)
 
 ---
 
 ### 🧬 Reusability Rules
 
-* NO page-specific logic inside DataTable
-* All customization via props
-* Columns define rendering
-* Actions passed from parent
-
----
-
-### 🚫 Avoid
-
-* Hardcoded table UI per page
-* Different table styles across pages
-* External UI-heavy table libraries
+* Single Blade component for all tables
+* Columns and data passed dynamically
+* No hardcoded UI
 
 ---
 
 ### 🧑‍💻 Copilot Instruction
 
-When generating tables:
+When building tables:
 
-* ALWAYS create or reuse `<DataTable />`
-* Use TanStack Table for logic
-* Use Tailwind for UI
-* Follow sky-600 theme strictly
-* Keep code reusable and clean
+* Use Blade component `<x-datatable>`
+* Use Alpine.js for logic
+* Use Tailwind for styling
+* Follow sky-600 theme
+* Keep UI minimal and clean
 
-Return production-ready React code only
+Return production-ready Blade + Alpine code only
