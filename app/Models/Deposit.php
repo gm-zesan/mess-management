@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use App\Scopes\MessTenantScope;
 
 class Deposit extends Model
 {
@@ -28,6 +29,15 @@ class Deposit extends Model
         'date' => 'date',
         'amount' => 'decimal:2',
     ];
+
+    /**
+     * The "booted" method of the model.
+     * Register global scopes.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new MessTenantScope());
+    }
 
     public function mess(): BelongsTo
     {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use App\Scopes\MessTenantScope;
 
 class Meal extends Model
 {
@@ -27,6 +28,15 @@ class Meal extends Model
         'lunch_count' => 'float',
         'dinner_count' => 'float',
     ];
+
+    /**
+     * The "booted" method of the model.
+     * Register global scopes.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new MessTenantScope());
+    }
 
     /**
      * Get the mess that owns this meal.

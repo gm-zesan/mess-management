@@ -114,4 +114,21 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Login Attempt Rate Limiting & Account Lockout
+    |--------------------------------------------------------------------------
+    |
+    | Configure brute force protection and account lockout mechanisms.
+    |
+    */
+
+    'login_attempts' => [
+        'enabled' => env('LOGIN_ATTEMPTS_ENABLED', true),
+        'max_attempts' => env('LOGIN_MAX_ATTEMPTS', 5),
+        'max_ip_attempts' => env('LOGIN_MAX_IP_ATTEMPTS', 20),
+        'lockout_minutes' => env('LOGIN_LOCKOUT_MINUTES', 15),
+        'retention_days' => env('LOGIN_ATTEMPTS_RETENTION_DAYS', 90),
+    ],
+
 ];

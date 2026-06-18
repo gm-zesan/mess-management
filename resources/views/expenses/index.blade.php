@@ -357,6 +357,39 @@
         }
 
         $(document).ready(function () {
+            // Build columns array dynamically based on permissions
+            var columnsConfig = [
+                { data: 'id', name: 'id', orderable: false, searchable: false, render: function(data, type, row) {
+                    return 'EXP-' + data;
+                }},
+                { data: 'date', name: 'date', orderable: true },
+                { data: 'user', name: 'user_id', orderable: true },
+                { data: 'category', name: 'category', orderable: true },
+                { data: 'amount', name: 'amount', orderable: true },
+                { data: 'description', name: 'note', orderable: true }
+            ];
+
+            // Only add actions column if user has edit or delete permissions
+            var hasActionPermission = {!! auth()->user()->can('expenses.update') || auth()->user()->can('expenses.delete') ? 'true' : 'false' !!};
+            if (hasActionPermission) {
+                columnsConfig.push({
+                    data: 'id', 
+                    orderable: false, 
+                    searchable: false,
+                    render: function (data, type, row) {
+                        var btns = '<div class="flex items-center justify-center gap-3">';
+                        if (row.can_edit) {
+                            btns += '<a onclick="openEditModal(' + data + ')" class="text-sky-600 hover:text-sky-800 font-medium text-sm cursor-pointer" title="Edit">Edit</a>';
+                        }
+                        if (row.can_delete) {
+                            btns += '<a href="#" class="delete-btn text-red-600 hover:text-red-800 text-sm" data-id="' + data + '">Delete</a>';
+                        }
+                        btns += '</div>';
+                        return btns;
+                    }
+                });
+            }
+
             var table = $('#expenses-table').DataTable({
                 processing: true,
                 responsive: { details: true },
@@ -369,32 +402,7 @@
                     url: listUrl,
                     type: 'GET'
                 },
-                columns: [
-                    { data: 'id', name: 'id', orderable: false, searchable: false, render: function(data, type, row) {
-                        return 'EXP-' + data;
-                    }},
-                    { data: 'date', name: 'date', orderable: true },
-                    { data: 'user', name: 'user_id', orderable: true },
-                    { data: 'category', name: 'category', orderable: true },
-                    { data: 'amount', name: 'amount', orderable: true },
-                    { data: 'description', name: 'note', orderable: true },
-                    {
-                        data: 'id', 
-                        orderable: false, 
-                        searchable: false,
-                        render: function (data, type, row) {
-                            var btns = '<div class="flex items-center justify-center gap-3">';
-                            if (row.can_edit) {
-                                btns += '<a onclick="openEditModal(' + data + ')" class="text-sky-600 hover:text-sky-800 font-medium text-sm cursor-pointer" title="Edit">Edit</a>';
-                            }
-                            if (row.can_delete) {
-                                btns += '<a href="#" class="delete-btn text-red-600 hover:text-red-800 text-sm" data-id="' + data + '">Delete</a>';
-                            }
-                            btns += '</div>';
-                            return btns;
-                        }
-                    }
-                ],
+                columns: columnsConfig,
                 order: [[1, 'desc']],
             });
 

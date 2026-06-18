@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
+use App\Scopes\MessTenantScope;
 
 class Month extends Model
 {
@@ -21,6 +22,15 @@ class Month extends Model
         'status' => MonthStatusEnum::class,
         'closed_at' => 'datetime',
     ];
+
+    /**
+     * The "booted" method of the model.
+     * Register global scopes.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new MessTenantScope());
+    }
 
     /**
      * Get the mess that owns this month.

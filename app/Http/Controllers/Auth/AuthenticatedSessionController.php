@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\LoginAttemptService;
+use App\Services\AuditLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -22,10 +25,30 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request, LoginAttemptService $attemptService, AuditLogService $auditService): RedirectResponse
     {
-        $request->authenticate();
+        $email = $request->input('email');
 
+        // Check if login is allowed (rate limiting & lockout)
+        $loginCheck = $attemptService->isLoginAllowed($email);
+        if (!$loginCheck['allowed']) {
+            throw ValidationException::withMessages([
+                'email' => $loginCheck['message'],
+            ])->status(429); // Too Many Requests
+        }
+
+        // Attempt authentication
+        if (!$request->authenticate()) {
+            $attemptService->recordFailedLogin($email, 'Invalid credentials');
+            $auditService->logLoginAttempt($email, false, 'Invalid credentials');
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+        // Record successful login
+        $attemptService->recordSuccessfulLogin($email);
+        $auditService->logLoginAttempt($email, true);
         $request->session()->regenerate();
 
         // Check if user has an approved mess and redirect directly to it
@@ -46,8 +69,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, AuditLogService $auditService): RedirectResponse
     {
+        // Log the logout before clearing auth
+        $auditService->logLogout();
+
         Auth::guard('web')->logout();
 
         // Clear superadmin mess session
