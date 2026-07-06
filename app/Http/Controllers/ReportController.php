@@ -29,18 +29,7 @@ class ReportController extends Controller
             abort(403, 'This month does not belong to your mess.');
         }
         
-        // Members can only view current month report
-        if ($user->hasRole(RoleEnum::MEMBER->value)) {
-            $activeMonth = activeMonth();
-            if (!$activeMonth || $month->id !== $activeMonth->id) {
-                abort(403, 'You can only view the current month report.');
-            }
-            // Skip policy authorization for members viewing current month
-        } else {
-            // Managers/Superadmins need proper authorization
-            $this->authorize('view', $month);
-        }
-        
+        // All users can view reports for the mess they belong to
         $summary = $calculationService->getMonthSummary($month, $activeMess->id);
         
         return view('reports.monthly', [
@@ -62,11 +51,7 @@ class ReportController extends Controller
             abort(403, 'You must be a member of a mess to view reports.');
         }
         
-        // Check if user has permission to view all months reports
-        if (!$user->can('reports.all-months')) {
-            abort(403, 'You do not have permission to access this page.');
-        }
-        
+        // All users can view reports
         $months = $activeMess->months()->with('mess')->get();
         
         $reports = [];

@@ -5,36 +5,39 @@ use App\Enums\MonthStatusEnum;
 @endphp
 
 @section('content')
-    <div class="w-full">
+    <div class="w-full px-2 sm:px-4 py-3 sm:py-6">
         @can('months.view')
             @if ($months->count() > 0)
                 <!-- Data Table -->
                 <div class="bg-white rounded-lg border border-gray-200 shadow-xs overflow-hidden">
-                    <table class="w-full text-sm">
+                    <table class="w-full text-xs sm:text-sm">
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Name</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Start Date</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">End Date</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Status</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs">Name</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs hidden sm:table-cell">Start Date</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs hidden sm:table-cell">End Date</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs">Status</th>
                                 @canany(['months.update', 'months.delete'])
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
                                 @endcanany
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @foreach ($months as $month)
                                 <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-4 py-2 text-gray-900 font-medium">{{ $month->name }}</td>
-                                    <td class="px-4 py-2 text-gray-600 text-xs">{{ $month->start_date->format('M d, Y') }}</td>
-                                    <td class="px-4 py-2 text-gray-600 text-xs">{{ $month->end_date->format('M d, Y') }}</td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-900 font-medium text-xs sm:text-sm">
+                                        <div>{{ $month->name }}</div>
+                                        <div class="text-xs text-gray-500 sm:hidden">{{ $month->start_date->format('M d') }} - {{ $month->end_date->format('M d') }}</div>
+                                    </td>
+                                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600 text-xs hidden sm:table-cell">{{ $month->start_date->format('M d, Y') }}</td>
+                                    <td class="px-2 sm:px-4 py-2 sm:py-3 text-gray-600 text-xs hidden sm:table-cell">{{ $month->end_date->format('M d, Y') }}</td>
+                                    <td class="px-2 sm:px-4 py-2 sm:py-3">
                                         <span class="inline-block px-2 py-1 {{ $month->status === MonthStatusEnum::ACTIVE ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }} text-xs font-semibold rounded">
                                             {{ $month->status->label() }}
                                         </span>
                                     </td>
                                     @canany(['months.update', 'months.delete'])
-                                        <td class="px-4 py-2 text-center">
+                                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">
                                             <div class="flex items-center justify-center gap-1">
                                                 @can('update', $month)
                                                     <button type="button" onclick="openEditModal({{ $month->id }})" class="p-1.5 text-sky-600 hover:bg-sky-100 rounded transition-colors" title="Edit">
@@ -63,11 +66,11 @@ use App\Enums\MonthStatusEnum;
                     {{ $months->links() }}
                 </div>
             @else
-                <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <div class="p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+                    <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="text-sm text-blue-800">No months found. Create your first month to get started.</span>
+                    <span class="text-xs sm:text-sm text-blue-800">No months found. Use the navigation menu to create a new month.</span>
                 </div>
             @endif
         @else
@@ -82,45 +85,45 @@ use App\Enums\MonthStatusEnum;
     </div>
 
     <!-- Create Month Modal -->
-    <div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300 opacity-0">
+    <div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 p-2 sm:p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-lg max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white">
-                <h3 class="text-lg font-semibold text-gray-900">Create New Month</h3>
+            <div class="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 sticky top-0 bg-white">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Create New Month</h3>
                 <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
             <!-- Modal Content -->
-            <div class="p-4">
+            <div class="p-3 sm:p-4">
                 <form id="createForm" action="{{ route('months.store') }}" method="POST" class="space-y-3">
                     @csrf
 
                     <!-- Name Input -->
                     <div>
                         <label for="createName" class="block text-xs font-medium text-gray-600 mb-1">Name <span class="text-red-600">*</span></label>
-                        <input type="text" id="createName" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" placeholder="e.g., January 2024" required>
+                        <input type="text" id="createName" name="name" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" placeholder="e.g., January 2024" required>
                     </div>
 
                     <!-- Start Date Input -->
                     <div>
                         <label for="createStartDate" class="block text-xs font-medium text-gray-600 mb-1">Start Date <span class="text-red-600">*</span></label>
-                        <input type="date" id="createStartDate" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <input type="date" id="createStartDate" name="start_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                     </div>
 
                     <!-- End Date Input -->
                     <div>
                         <label for="createEndDate" class="block text-xs font-medium text-gray-600 mb-1">End Date <span class="text-red-600">*</span></label>
-                        <input type="date" id="createEndDate" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <input type="date" id="createEndDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                     </div>
 
                     <!-- Status Input -->
                     <div>
                         <label for="createStatus" class="block text-xs font-medium text-gray-600 mb-1">Status <span class="text-red-600">*</span></label>
-                        <select id="createStatus" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <select id="createStatus" name="status" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                             <option value="">Select Status</option>
                             <option value="active">Active</option>
                             <option value="closed">Closed</option>
@@ -138,20 +141,20 @@ use App\Enums\MonthStatusEnum;
     </div>
 
     <!-- Edit Month Modal -->
-    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300 opacity-0">
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 p-2 sm:p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-lg max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white">
-                <h3 class="text-lg font-semibold text-gray-900">Edit Month</h3>
+            <div class="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 sticky top-0 bg-white">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Edit Month</h3>
                 <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
             <!-- Modal Content -->
-            <div class="p-4">
+            <div class="p-3 sm:p-4">
                 <form id="editForm" method="POST" class="space-y-3">
                     @csrf
                     @method('PUT')
@@ -159,25 +162,25 @@ use App\Enums\MonthStatusEnum;
                     <!-- Name Input -->
                     <div>
                         <label for="editName" class="block text-xs font-medium text-gray-600 mb-1">Name <span class="text-red-600">*</span></label>
-                        <input type="text" id="editName" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <input type="text" id="editName" name="name" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                     </div>
 
                     <!-- Start Date Input -->
                     <div>
                         <label for="editStartDate" class="block text-xs font-medium text-gray-600 mb-1">Start Date <span class="text-red-600">*</span></label>
-                        <input type="date" id="editStartDate" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <input type="date" id="editStartDate" name="start_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                     </div>
 
                     <!-- End Date Input -->
                     <div>
                         <label for="editEndDate" class="block text-xs font-medium text-gray-600 mb-1">End Date <span class="text-red-600">*</span></label>
-                        <input type="date" id="editEndDate" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <input type="date" id="editEndDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                     </div>
 
                     <!-- Status Input -->
                     <div>
                         <label for="editStatus" class="block text-xs font-medium text-gray-600 mb-1">Status <span class="text-red-600">*</span></label>
-                        <select id="editStatus" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
+                        <select id="editStatus" name="status" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent" required>
                             <option value="">Select Status</option>
                             <option value="active">Active</option>
                             <option value="closed">Closed</option>
@@ -195,35 +198,35 @@ use App\Enums\MonthStatusEnum;
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300 opacity-0">
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 p-2 sm:p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-white rounded-lg max-w-sm w-full shadow-xl">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+            <div class="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200">
                 <div class="flex items-center gap-3">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-100 flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Delete Month?</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">Delete Month?</h3>
                 </div>
                 <button type="button" onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
             <!-- Modal Content -->
-            <div class="p-4">
-                <p class="text-sm text-gray-600 mb-2">Delete <span id="deleteModalMonthName" class="font-semibold">-</span>?</p>
+            <div class="p-3 sm:p-4">
+                <p class="text-xs sm:text-sm text-gray-600 mb-2">Delete <span id="deleteModalMonthName" class="font-semibold">-</span>?</p>
                 <p class="text-xs text-red-700 bg-red-50 p-2 rounded">This action cannot be undone. All associated data will be deleted.</p>
             </div>
 
             <!-- Modal Actions -->
-            <div class="flex gap-2 p-4 border-t border-gray-200">
-                <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 text-sm font-medium rounded">Cancel</button>
-                <button type="button" onclick="confirmDelete()" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded">Delete</button>
+            <div class="flex gap-2 p-3 sm:p-4 border-t border-gray-200">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 px-3 sm:px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 text-xs sm:text-sm font-medium rounded">Cancel</button>
+                <button type="button" onclick="confirmDelete()" class="flex-1 px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-medium rounded">Delete</button>
             </div>
         </div>
     </div>

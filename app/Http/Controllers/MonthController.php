@@ -30,6 +30,7 @@ class MonthController extends Controller
 
     /**
      * Show the form for creating a new month for the active mess.
+     * Note: Creation is handled via modal in index view, but keep this for completeness.
      */
     public function create()
     {
@@ -41,7 +42,8 @@ class MonthController extends Controller
             return redirect()->route('mess.selection')->with('error', 'Please select a mess first.');
         }
         
-        return view('months.create', compact('activeMess'));
+        // Redirect to index where modal form is available
+        return redirect()->route('months.index')->with('info', 'Use the create button on the months page to add a new month.');
     }
 
     /**

@@ -122,7 +122,7 @@
                                     </svg>
                                     Mess Settings
                                 </a>
-                                @role(RoleEnum::MANAGER->value)
+                                @role([RoleEnum::MANAGER->value, RoleEnum::SUPERADMIN->value])
                                 <a href="{{ route('months.create-current') }}" class="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                                     <svg class="inline w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m0 0h-6m0 0H6"></path>
@@ -277,7 +277,7 @@
                             </svg>
                             Mess Settings
                         </a>
-                        @role(RoleEnum::MANAGER->value)
+                        @role([RoleEnum::MANAGER->value, RoleEnum::SUPERADMIN->value])
                             <a href="{{ route('months.create-current') }}" class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 border-b border-gray-200 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m0 0h-6m0 0H6"></path>
