@@ -19,37 +19,37 @@ class UserSeeder extends Seeder
         // Create test users
         $superAdmin = User::factory()->create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
-            'password' => bcrypt('password'),
+            'email' => 'gmzesan7767@gmail.com',
+            'password' => bcrypt('12345678aA@'),
         ]);
         $superAdmin->assignRole(RoleEnum::SUPERADMIN);
 
-        $manager = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'),
-        ]);
-        $manager->assignRole(RoleEnum::MANAGER);
+        // $manager = User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        //     'password' => bcrypt('password'),
+        // ]);
+        // $manager->assignRole(RoleEnum::MANAGER);
 
-        $member1 = User::factory()->create([
-            'name' => 'Ashraf Ahmed',
-            'email' => 'ashraf@example.com',
-            'password' => bcrypt('password'),
-        ]);
-        $member1->assignRole(RoleEnum::MEMBER);
+        // $member1 = User::factory()->create([
+        //     'name' => 'Ashraf Ahmed',
+        //     'email' => 'ashraf@example.com',
+        //     'password' => bcrypt('password'),
+        // ]);
+        // $member1->assignRole(RoleEnum::MEMBER);
 
-        $member2 = User::factory()->create([
-            'name' => 'Karim Khan',
-            'email' => 'karim@example.com',
-            'password' => bcrypt('password'),
-        ]);
-        $member2->assignRole(RoleEnum::MEMBER);
+        // $member2 = User::factory()->create([
+        //     'name' => 'Karim Khan',
+        //     'email' => 'karim@example.com',
+        //     'password' => bcrypt('password'),
+        // ]);
+        // $member2->assignRole(RoleEnum::MEMBER);
 
-        $member3 = User::factory()->create([
-            'name' => 'Fatima Hassan',
-            'email' => 'fatima@example.com',
-            'password' => bcrypt('password'),
-        ]);
-        $member3->assignRole(RoleEnum::MANAGER);
+        // $member3 = User::factory()->create([
+        //     'name' => 'Fatima Hassan',
+        //     'email' => 'fatima@example.com',
+        //     'password' => bcrypt('password'),
+        // ]);
+        // $member3->assignRole(RoleEnum::MANAGER);
     }
 }
