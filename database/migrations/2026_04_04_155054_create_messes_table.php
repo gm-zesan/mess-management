@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('join_code')->unique();
             $table->foreignId('creator_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('manager_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->unique('manager_id');
             $table->timestamps();
             
             // Indexes

@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('months', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('mess_id')->constrained('messes')->cascadeOnDelete();
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');

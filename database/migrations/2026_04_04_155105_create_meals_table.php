@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('meals', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->index('user_id');
             $table->foreignId('month_id')->constrained('months')->cascadeOnDelete();
+            $table->foreignId('mess_id')->nullable()->constrained('messes')->cascadeOnDelete();
+            $table->index('mess_id');
             $table->date('date');
             $table->decimal('breakfast_count', 8, 2)->default(0);
             $table->decimal('lunch_count', 8, 2)->default(0);

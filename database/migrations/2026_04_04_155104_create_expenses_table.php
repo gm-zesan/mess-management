@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('month_id')->constrained('months')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->index('user_id');
+            $table->foreignId('mess_id')->nullable()->constrained('messes')->cascadeOnDelete();
+            $table->index('mess_id');
             $table->string('category');
             $table->decimal('amount', 8, 2);
             $table->date('date');

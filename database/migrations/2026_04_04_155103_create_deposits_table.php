@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->foreignId('month_id')->constrained();
+            $table->index('user_id');
+            $table->foreignId('month_id')->constrained()->onDelete('cascade');
+            $table->foreignId('mess_id')->nullable()->constrained('messes')->cascadeOnDelete();
+            $table->index('mess_id');
             $table->decimal('amount', 10, 2);
             $table->date('date');
             $table->timestamps();
