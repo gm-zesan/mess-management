@@ -35,14 +35,18 @@ class MealController extends Controller
                     ->where('meals.mess_id', $activeMess->id)
                     ->where('meals.month_id', $activeMonth->id);
 
-                // Apply filters
-                if ($filterDate = request('filter_date')) {
-                    $query->where('meals.date', $filterDate);
-                }
+            // Apply filters with validation
+            if ($filterDate = request('filter_date')) {
+                // Validate filter_date parameter
+                $validated = request()->validate(['filter_date' => 'nullable|date_format:Y-m-d']);
+                $query->where('meals.date', $validated['filter_date']);
+            }
 
-                if ($filterMember = request('filter_member')) {
-                    $query->where('meals.user_id', $filterMember);
-                }
+            if ($filterMember = request('filter_member')) {
+                // Validate filter_member parameter
+                $validated = request()->validate(['filter_member' => 'nullable|integer|exists:users,id']);
+                $query->where('meals.user_id', $validated['filter_member']);
+            }
 
                 return DataTables::of($query)
                     ->addIndexColumn()
@@ -86,7 +90,7 @@ class MealController extends Controller
             }
 
         // Normal page load
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('meals.index', compact('activeMess', 'activeMonth', 'members'));
     }
@@ -106,7 +110,7 @@ class MealController extends Controller
         }
         
         // Get only approved members of the active mess
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('meals.create', compact('members', 'activeMonth', 'activeMess'));
     }

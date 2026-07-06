@@ -46,7 +46,7 @@ class ExpenseController extends Controller
                 ->addColumn('date', fn($expense) => $expense->date->format('d M Y'))
                 ->addColumn('user', fn($expense) => $expense->user->name ?? '-')
                 ->addColumn('category', fn($expense) => $expense->category ?? 'N/A')
-                ->addColumn('amount', fn($expense) => '$' . number_format($expense->amount, 2))
+                ->addColumn('amount', fn($expense) => '৳' . number_format($expense->amount, 2))
                 ->addColumn('description', fn($expense) => $expense->note ?? '-')
                 // Permissions sent from backend so frontend can conditionally render action buttons
                 ->addColumn('can_edit', fn() => auth()->user()->can('expenses.update'))
@@ -55,7 +55,7 @@ class ExpenseController extends Controller
         }
 
         // Normal page load
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('expenses.index', compact('activeMess', 'activeMonth', 'members'));
     }
@@ -75,7 +75,7 @@ class ExpenseController extends Controller
         }
         
         // Get only approved members of the active mess
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('expenses.create', compact('activeMonth', 'members', 'activeMess'));
     }
@@ -173,7 +173,7 @@ class ExpenseController extends Controller
         }
         
         // Get only approved members of the active mess
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('expenses.edit', compact('expense', 'activeMonth', 'members', 'activeMess'));
     }

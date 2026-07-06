@@ -109,11 +109,11 @@
                                 }
                                 
                                 foreach($meals as $meal) {
-                                    $day = $meal->created_at->day;
+                                    $day = $meal->date->day;
                                     $memberId = $meal->user_id;
                                     if(isset($memberMeals[$memberId])) {
-                                        $memberMeals[$memberId][$day]++;
-                                        $dailyTotals[$day]++;
+                                        $memberMeals[$memberId][$day] += $meal->breakfast_count + $meal->lunch_count + $meal->dinner_count;
+                                        $dailyTotals[$day] += $meal->breakfast_count + $meal->lunch_count + $meal->dinner_count;
                                     }
                                 }
                             @endphp

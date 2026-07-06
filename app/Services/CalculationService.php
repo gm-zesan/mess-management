@@ -128,35 +128,37 @@ class CalculationService
         
         $users = $query->get();
         
+        // FIX: Use eager loading to get all meals at once (prevent N+1 queries)
+        $meals = Meal::where('month_id', $monthId)
+            ->when($messId, fn($q) => $q->where('mess_id', $messId))
+            ->get()
+            ->groupBy('user_id');
+        
+        // FIX: Use eager loading to get all deposits at once (prevent N+1 queries)
+        $deposits = Deposit::where('month_id', $monthId)
+            ->when($messId, fn($q) => $q->where('mess_id', $messId))
+            ->get()
+            ->groupBy('user_id');
+        
         $balances = [];
         
         foreach ($users as $user) {
-            // Calculate user's total meals (breakfast + lunch + dinner)
-            $mealQuery = Meal::where('month_id', $monthId)
-                ->where('user_id', $user->id);
-            
-            if ($messId) {
-                $mealQuery->where('mess_id', $messId);
+            // Get user's meals from pre-loaded collection
+            $userMeals = 0;
+            if ($meals->has($user->id)) {
+                $userMeals = (float) $meals->get($user->id)->sum(function($meal) {
+                    return $meal->breakfast_count + $meal->lunch_count + $meal->dinner_count;
+                });
             }
-            
-            $userMealResult = $mealQuery
-                ->selectRaw('SUM(breakfast_count + lunch_count + dinner_count) as total_meals')
-                ->first();
-            
-            $userMeals = (float) ($userMealResult->total_meals ?? 0);
             
             // Calculate user's meal cost
             $mealCost = $userMeals * $mealRate;
             
-            // Calculate user's total deposit
-            $depositQuery = Deposit::where('month_id', $monthId)
-                ->where('user_id', $user->id);
-            
-            if ($messId) {
-                $depositQuery->where('mess_id', $messId);
+            // Get user's deposits from pre-loaded collection
+            $userDeposit = 0;
+            if ($deposits->has($user->id)) {
+                $userDeposit = (float) $deposits->get($user->id)->sum('amount');
             }
-            
-            $userDeposit = (float) $depositQuery->sum('amount');
             
             // Calculate balance (deposit - cost)
             $balance = $userDeposit - $mealCost;

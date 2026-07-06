@@ -95,4 +95,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Deposit::class);
     }
+
+    /**
+     * Get the expenses for this user.
+     */
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
+    }
 }

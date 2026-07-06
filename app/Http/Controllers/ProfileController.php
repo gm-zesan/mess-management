@@ -60,10 +60,17 @@ class ProfileController extends Controller
                 ->withBag('userDeletion');
         }
 
-        // Prepare and delete the user
-        Auth::logout();
+        // Delete user FIRST, then logout
+        $deleted = $deletionService->deleteUser($user);
+        
+        if (!$deleted) {
+            return Redirect::route('profile.edit')
+                ->with('error', 'Failed to delete account. Please try again.')
+                ->withBag('userDeletion');
+        }
 
-        $deletionService->deleteUser($user);
+        // Then logout and invalidate session
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

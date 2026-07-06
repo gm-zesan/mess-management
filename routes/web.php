@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/check-deletion', [ProfileController::class, 'checkDeletionEligibility'])->name('profile.check-deletion');
     Route::post('/profile/transfer-manager', [ProfileController::class, 'transferManagerRole'])->name('profile.transfer-manager');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->middleware('throttle:3,60')->name('profile.destroy');
     
     // Resource routes with automatic policy authorization
     Route::resource('members', MemberController::class)->except('show');

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Enums\RoleEnum;
 use App\Models\User;
 use App\Models\Mess;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Service for handling user deletion with role transfer and cleanup
@@ -14,10 +16,28 @@ class UserDeletionService
 {
     /**
      * Check if a user can be deleted and return validation status
+     * 
+     * Logic:
+     * - User CANNOT delete while joined to ANY mess (active membership)
+     * - User CAN delete after leaving all messes (permanent hard delete)
+     * - User CANNOT delete if they are manager of any mess
      */
     public function canDelete(User $user): array
     {
-        // Get all messes where this user is the manager
+        // Check if user is still joined to any mess (approved or pending membership)
+        $activeMemberships = $user->messUsers()
+            ->whereIn('status', ['approved', 'pending'])
+            ->exists();
+
+        if ($activeMemberships) {
+            return [
+                'allowed' => false,
+                'reason' => 'still_joined',
+                'message' => 'You cannot delete your account while joined to a mess. Please leave all messes first.',
+            ];
+        }
+
+        // Get all messes where this user is the manager (shouldn't happen if they left, but double-check)
         $managedMesses = Mess::where('manager_id', $user->id)->get();
 
         if ($managedMesses->isNotEmpty()) {
@@ -33,10 +53,11 @@ class UserDeletionService
             ];
         }
 
+        // Can be permanently deleted
         return [
             'allowed' => true,
             'reason' => 'ok',
-            'message' => 'User can be deleted'
+            'message' => 'Your account will be permanently deleted'
         ];
     }
 
@@ -102,36 +123,62 @@ class UserDeletionService
     }
 
     /**
-     * Prepare user for deletion by cleaning up all associations
+     * Prepare user for deletion by cleaning up associations
+     * 
+     * This method:
+     * - REMOVES: mess memberships, role assignments, all financial records
+     * - WRAPPED: In database transaction for atomicity
      */
     public function prepareForDeletion(User $user): void
     {
-        // Remove from all messes
-        $user->messUsers()->delete();
-        $user->messes()->detach();
+        try {
+            DB::transaction(function() use ($user) {
+                // Delete all financial records
+                $user->expenses()->delete();
+                $user->deposits()->delete();
+                $user->meals()->delete();
 
-        // Remove from all roles
-        $user->syncRoles([]);
+                // Detach from all messes
+                $user->messes()->detach();
+                $user->messUsers()->delete();
 
-        // Optionally reassign user-created data (expenses, meals, deposits)
-        // These could be reassigned to a placeholder "deleted_user" or archived
-        // For now, we keep the records (soft delete pattern)
+                // Remove from all roles
+                $user->syncRoles([]);
+                
+                Log::info('User ' . $user->id . ' prepared for permanent deletion.');
+            });
+        } catch (\Exception $e) {
+            Log::error('Error preparing user for deletion: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
-     * Delete user account with all cleanup
+     * Permanently delete user account (hard delete)
+     * 
+     * Deletes:
+     * - User record
+     * - All financial records (expenses, deposits, meals)
+     * - All mess memberships
+     * - All roles and permissions
+     * 
+     * WRAPPED: In database transaction for atomicity
      */
     public function deleteUser(User $user): bool
     {
         try {
-            // Prepare user first
-            $this->prepareForDeletion($user);
+            DB::transaction(function() use ($user) {
+                // Prepare user first (remove all associations and financial records)
+                $this->prepareForDeletion($user);
 
-            // Delete the user
-            $user->delete();
+                // Hard delete the user permanently
+                $user->forceDelete();
 
+                Log::info('User ' . $user->id . ' (' . $user->email . ') permanently deleted.');
+            });
             return true;
         } catch (\Exception $e) {
+            Log::error('Error deleting user: ' . $e->getMessage());
             return false;
         }
     }

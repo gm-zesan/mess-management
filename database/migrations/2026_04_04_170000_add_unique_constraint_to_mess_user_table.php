@@ -1,20 +1,20 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 
+     * DEPRECATED: This migration was removed because it added a problematic unique constraint.
+     * Adding unique('user_id') prevents users from joining multiple messes.
+     * Only the composite unique(['mess_id', 'user_id']) constraint should exist.
+     * See 2026_04_04_155101_create_mess_user_table.php for the correct constraints.
      */
     public function up(): void
     {
-        Schema::table('mess_user', function (Blueprint $table) {
-            // Add unique constraint on user_id to ensure one user can only join one mess
-            $table->unique('user_id');
-        });
+        // Do nothing - the unique constraint on user_id was breaking multi-mess feature
     }
 
     /**
@@ -22,8 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('mess_user', function (Blueprint $table) {
-            $table->dropUnique(['user_id']);
-        });
+        // No-op since up() does nothing
     }
 };

@@ -22,9 +22,9 @@ class UpdateMealRequest extends FormRequest
         return [
             'user_id' => ['required', 'exists:users,id'],
             'date' => ['required', 'date'],
-            'breakfast_count' => ['required', 'numeric', 'min:0'],
-            'lunch_count' => ['required', 'numeric', 'min:0'],
-            'dinner_count' => ['required', 'numeric', 'min:0'],
+            'breakfast_count' => ['required', 'numeric', 'min:0', 'max:10'],
+            'lunch_count' => ['required', 'numeric', 'min:0', 'max:10'],
+            'dinner_count' => ['required', 'numeric', 'min:0', 'max:10'],
         ];
     }
 
@@ -41,12 +41,15 @@ class UpdateMealRequest extends FormRequest
             'breakfast_count.required' => 'Please enter breakfast count.',
             'breakfast_count.numeric' => 'Breakfast count must be a number.',
             'breakfast_count.min' => 'Breakfast count must be 0 or greater.',
+            'breakfast_count.max' => 'Breakfast count must not exceed 10.',
             'lunch_count.required' => 'Please enter lunch count.',
             'lunch_count.numeric' => 'Lunch count must be a number.',
             'lunch_count.min' => 'Lunch count must be 0 or greater.',
+            'lunch_count.max' => 'Lunch count must not exceed 10.',
             'dinner_count.required' => 'Please enter dinner count.',
             'dinner_count.numeric' => 'Dinner count must be a number.',
             'dinner_count.min' => 'Dinner count must be 0 or greater.',
+            'dinner_count.max' => 'Dinner count must not exceed 10.',
         ];
     }
 }

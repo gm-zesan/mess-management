@@ -25,7 +25,7 @@ class StoreExpenseRequest extends FormRequest
         return [
             'user_id' => ['required', 'exists:users,id'],
             'category' => ['required', 'string', 'in:meal,utility'],
-            'amount' => ['required', 'numeric', 'min:0'],
+            'amount' => ['required', 'numeric', 'min:0', 'max:999999', 'decimal:0,2'],
             'date' => ['required', 'date'],
             'note' => ['nullable', 'string', 'max:1000'],
             // Check month closure through service in controller
@@ -47,6 +47,8 @@ class StoreExpenseRequest extends FormRequest
             'amount.required' => 'Amount is required',
             'amount.numeric' => 'Amount must be a valid number',
             'amount.min' => 'Amount must be 0 or greater',
+            'amount.max' => 'Amount must not exceed 999,999',
+            'amount.decimal' => 'Amount must have at most 2 decimal places',
             'date.required' => 'Date is required',
             'date.date' => 'Date must be a valid date',
         ];

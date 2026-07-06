@@ -22,9 +22,9 @@ class StoreMealRequest extends FormRequest
         return [
             'date' => ['required', 'date'],
             'meals' => ['required', 'array'],
-            'meals.*.breakfast_count' => ['nullable', 'numeric', 'min:0'],
-            'meals.*.lunch_count' => ['nullable', 'numeric', 'min:0'],
-            'meals.*.dinner_count' => ['nullable', 'numeric', 'min:0'],
+            'meals.*.breakfast_count' => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'meals.*.lunch_count' => ['nullable', 'numeric', 'min:0', 'max:10'],
+            'meals.*.dinner_count' => ['nullable', 'numeric', 'min:0', 'max:10'],
         ];
     }
 
@@ -40,10 +40,13 @@ class StoreMealRequest extends FormRequest
             'meals.array' => 'Invalid meal data format.',
             'meals.*.breakfast_count.numeric' => 'Breakfast count must be a number.',
             'meals.*.breakfast_count.min' => 'Breakfast count must be 0 or greater.',
+            'meals.*.breakfast_count.max' => 'Breakfast count must not exceed 10.',
             'meals.*.lunch_count.numeric' => 'Lunch count must be a number.',
             'meals.*.lunch_count.min' => 'Lunch count must be 0 or greater.',
+            'meals.*.lunch_count.max' => 'Lunch count must not exceed 10.',
             'meals.*.dinner_count.numeric' => 'Dinner count must be a number.',
             'meals.*.dinner_count.min' => 'Dinner count must be 0 or greater.',
+            'meals.*.dinner_count.max' => 'Dinner count must not exceed 10.',
         ];
     }
 }

@@ -29,7 +29,7 @@ class DepositController extends Controller
             ->paginate(15);
 
         // Get members for create modal
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('deposits.index', compact('deposits', 'activeMess', 'activeMonth', 'members'));
     }
@@ -49,7 +49,7 @@ class DepositController extends Controller
         }
         
         // Get only approved members of the active mess
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('deposits.create', compact('members', 'activeMonth', 'activeMess'));
     }
@@ -114,7 +114,7 @@ class DepositController extends Controller
         }
         
         // Get only approved members of the active mess
-        $members = $activeMess->approvedMembers()->orderBy('name')->get();
+        $members = $activeMess->approvedMembers()->select('users.id', 'users.name')->orderBy('name')->get();
 
         return view('deposits.edit', compact('deposit', 'members', 'activeMonth', 'activeMess'));
     }

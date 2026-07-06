@@ -44,7 +44,7 @@ class ReportController extends Controller
         $summary = $calculationService->getMonthSummary($month, $activeMess->id);
         
         return view('reports.monthly', [
-            'month' => $month,
+            'month' => $month->load('mess'),
             'summary' => $summary,
         ]);
     }
@@ -67,7 +67,7 @@ class ReportController extends Controller
             abort(403, 'You do not have permission to access this page.');
         }
         
-        $months = $activeMess->months()->get();
+        $months = $activeMess->months()->with('mess')->get();
         
         $reports = [];
         foreach ($months as $month) {

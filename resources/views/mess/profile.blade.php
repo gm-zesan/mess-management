@@ -135,12 +135,14 @@
                     </div>
 
                     <div class="flex items-center justify-center col-span-2 gap-2">
-                        <a 
-                            href="{{ route('mess.invite', $mess) }}" 
-                            class="block w-full text-center bg-green-600 hover:bg-green-700 text-white py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        <button 
+                            type="button"
+                            onclick="alert('Member invite feature is coming soon! We\'re working on improving this feature.')"
+                            disabled
+                            class="block w-full text-center bg-gray-400 cursor-not-allowed text-white py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors opacity-75"
                         >
-                            Invite Member
-                        </a>
+                            Invite Member (Coming Soon)
+                        </button>
                         
                         @if($mess->messUsers()->where('status', 'pending')->count() > 0)
                             <a 
