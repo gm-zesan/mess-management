@@ -2,9 +2,9 @@
 @use('App\Enums\RoleEnum')
 
 @section('content')
-<div class="bg-gray-50 overflow-hidden flex">
+<div class="bg-gray-50 overflow-hidden flex flex-col lg:flex-row min-h-screen">
     <!-- Left Side: Create Mess Form (for ALL users) -->
-    <div class="w-2/5 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+    <div class="w-full lg:w-2/5 bg-white lg:border-r border-gray-200 border-b lg:border-b-0 flex flex-col overflow-hidden">
         <div class="p-8 flex flex-col h-full">
             <!-- Heading -->
             <div class="mb-8">
@@ -14,7 +14,7 @@
 
             <!-- Alert Messages -->
             @if (session('success'))
-                <div class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3 text-sm">
+                <div class="mb-6 px-3 py-2 sm:px-4 sm:py-3 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                     <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
@@ -23,7 +23,7 @@
             @endif
 
             @if (session('error'))
-                <div class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3 text-sm">
+                <div class="mb-6 px-3 py-2 sm:px-4 sm:py-3 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
                     <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                     </svg>
@@ -32,7 +32,7 @@
             @endif
 
             <!-- Form -->
-            <form id="createForm" action="{{ route('mess.create') }}" method="POST" class="space-y-4">
+            <form id="createForm" action="{{ route('mess.create') }}" method="POST" class="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
                 @csrf
                 <div class="flex flex-col gap-1">
                     <label for="name" class="text-xs font-semibold uppercase tracking-wider text-gray-900">
@@ -82,13 +82,13 @@
     <!-- Right Side -->
     @if(Auth::user()->hasRole(RoleEnum::SUPERADMIN->value))
         <!-- Right Side: All Messes List (for superadmin) -->
-        <div class="w-3/5 bg-gray-50 overflow-y-auto flex flex-col">
+        <div class="w-full lg:w-3/5 bg-gray-50 overflow-y-auto flex flex-col">
             <div class="p-6 flex-1 overflow-y-auto">
                 <h2 class="text-xl font-bold text-gray-900 mb-1">All Messes</h2>
                 <p class="text-xs text-gray-600 mb-4">{{ $availableMesses->total() }} total mess{{ $availableMesses->total() !== 1 ? 'es' : '' }} in system</p>
                 
                 @if($availableMesses->count() > 0)
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         @foreach($availableMesses as $mess)
                             <form action="{{ route('mess.enter', $mess) }}" method="POST">
                                 @csrf
@@ -158,7 +158,7 @@
         </div>
     @else
         <!-- Right Side: Join by Code Form (for non-superadmin) -->
-        <div class="w-3/5 bg-gray-50 flex items-center justify-center p-8">
+        <div class="w-full lg:w-3/5 bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
             <div class="w-full max-w-md bg-white rounded-lg shadow-sm border border-gray-200 p-8">
                 <!-- Heading -->
                 <div class="mb-8">
@@ -226,7 +226,7 @@
     <!-- Confirmation Modal for Create Mess -->
     @if(!Auth::user()->hasRole(RoleEnum::SUPERADMIN->value) && $existingMess)
     <div id="createConfirmModal" class="hidden pointer-events-none fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity duration-300 opacity-0">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 sm:mx-auto">
             <!-- Header -->
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-bold text-gray-900">Leave Previous Mess?</h3>

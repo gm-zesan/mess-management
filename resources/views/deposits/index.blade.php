@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full">
+    <div class="w-full px-2 sm:px-4 py-4 sm:py-8">
 
         <!-- Success Message -->
         @if (session('success'))
-            <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-sm">
+            <div class="mb-4 p-2 sm:p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between text-xs sm:text-sm">
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                     </svg>
                     <span class="text-green-800">{{ session('success') }}</span>
                 </div>
-                <button onclick="this.parentElement.style.display='none'" class="text-green-600 hover:text-green-800">
+                <button onclick="this.parentElement.style.display='none'" class="text-green-600 hover:text-green-800 flex-shrink-0">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                     </svg>
@@ -21,13 +21,13 @@
         @endif
 
         <!-- Filter & Action Bar -->
-        <div class="mb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between">
-            <div class="text-sm">
+            <div class="mb-4 flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between w-full">
+            <div class="hidden sm:block text-xs sm:text-sm">
                 <span class="text-gray-600">Active Month:</span>
                 <span class="font-semibold text-gray-900">{{ $activeMonth?->name ?? 'No Active Month' }}</span>
             </div>
             @can('deposits.create')
-                <button type="button" onclick="openCreateModal()" class="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
+                <button type="button" onclick="openCreateModal()" class="px-4 py-2 bg-sky-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2 w-full sm:w-auto justify-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -39,37 +39,37 @@
         @can('deposits.view')
             @if ($deposits->count())
                 <!-- Data Table -->
-                <div class="bg-white rounded-lg border border-gray-200 shadow-xs overflow-hidden">
-                    <table class="w-full text-sm">
+                <div class="w-full bg-white rounded-lg border border-gray-200 shadow-xs overflow-x-auto">
+                    <table class="w-full min-w-full text-xs sm:text-sm">
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Date</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-700 text-xs">Member</th>
-                                <th class="px-4 py-3 text-right font-semibold text-gray-700 text-xs">Amount</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs">Date</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs">Member</th>
+                                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right font-semibold text-gray-700 text-xs">Amount</th>
                                 @canany(['deposits.update', 'deposits.delete'])
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
                                 @endcanany
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @foreach ($deposits as $deposit)
                                 <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-4 py-2 text-gray-600 text-xs">{{ $deposit->date->format('M d') }}</td>
-                                    <td class="px-4 py-2 text-gray-900 font-medium">{{ $deposit->user->name }}</td>
-                                    <td class="px-4 py-2 text-right font-semibold text-gray-900">৳ {{ number_format($deposit->amount, 2) }}</td>
+                                    <td class="px-2 sm:px-4 py-1.5 sm:py-2 text-gray-600 text-xs">{{ $deposit->date->format('M d') }}</td>
+                                    <td class="px-2 sm:px-4 py-1.5 sm:py-2 text-gray-900 font-medium text-xs sm:text-sm">{{ $deposit->user->name }}</td>
+                                    <td class="px-2 sm:px-4 py-1.5 sm:py-2 text-right font-semibold text-gray-900 text-xs sm:text-sm">৳ {{ number_format($deposit->amount, 2) }}</td>
                                     @canany(['deposits.update', 'deposits.delete'])
-                                        <td class="px-4 py-2 text-center">
+                                        <td class="px-2 sm:px-4 py-1.5 sm:py-2 text-center">
                                             <div class="flex items-center justify-center gap-1">
                                                 @can('update', $deposit)
-                                                    <button type="button" onclick="openEditModal({{ $deposit->id }})" class="p-1.5 text-sky-600 hover:bg-sky-100 rounded transition-colors" title="Edit">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <button type="button" onclick="openEditModal({{ $deposit->id }})" class="p-1 sm:p-1.5 text-sky-600 hover:bg-sky-100 rounded transition-colors" title="Edit">
+                                                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                         </svg>
                                                     </button>
                                                 @endcan
                                                 @can('delete', $deposit)
-                                                    <button type="button" onclick="openDeleteModal({{ $deposit->id }}, '{{ $deposit->user->name }}', '৳ ' + {{ $deposit->amount }})" class="p-1.5 text-red-600 hover:bg-red-100 rounded transition-colors" title="Delete">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <button type="button" onclick="openDeleteModal({{ $deposit->id }}, '{{ $deposit->user->name }}', '৳ ' + {{ $deposit->amount }})" class="p-1 sm:p-1.5 text-red-600 hover:bg-red-100 rounded transition-colors" title="Delete">
+                                                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                         </svg>
                                                     </button>

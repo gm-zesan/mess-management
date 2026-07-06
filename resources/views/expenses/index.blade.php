@@ -1,33 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full px-4 py-8">
-        <div class="max-w-7xl mx-auto">
+    <div class="w-full px-2 sm:px-4 py-4 sm:py-8">
+        <div class="w-full lg:max-w-7xl mx-auto">
 
             @can('expenses.view')
                 <!-- DataTable Header -->
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-x-[4rem]">
-                        <div class="flex items-center">
-                            <span class="text-sm text-gray-700">Show</span>
-                            <select id="length-select" class="border-0 py-0 bg-transparent text-sm text-gray-900 font-medium cursor-pointer" style="padding-right:20px;">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
+                        <div class="hidden sm:flex items-center gap-2">
+                            <span class="text-xs sm:text-sm text-gray-700">Show</span>
+                            <select id="length-select" class="border-0 py-0 bg-transparent text-xs sm:text-sm text-gray-900 font-medium cursor-pointer" style="padding-right:20px;">
                                 <option value="15">15</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                             </select>
-                            <span class="text-sm text-gray-700">entries</span>
+                            <span class="text-xs sm:text-sm text-gray-700">entries</span>
                         </div>
-                        <div class="relative w-80">
-                            <input type="text" id="search-input" placeholder="Search" class="w-full px-4 py-2 border-0 border-b border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-sky-500">
-                            <svg class="w-5 h-5 text-gray-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="relative w-full sm:w-80">
+                            <input type="text" id="search-input" placeholder="Search" class="w-full px-3 sm:px-4 py-2 border-0 border-b border-gray-300 rounded text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-sky-500">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
                     </div>
                     
                     @can('expenses.create')
-                        <button onclick="openCreateModal()" class="px-4 py-2 bg-sky-500 text-white text-sm font-medium rounded hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
+                        <button onclick="openCreateModal()" class="px-4 py-2 bg-sky-500 text-white text-xs sm:text-sm font-medium rounded hover:bg-sky-700 transition-colors inline-flex items-center gap-2 w-full sm:w-auto justify-center">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
                             </svg>
@@ -37,18 +37,18 @@
                 </div>
 
                 <!-- DataTable -->
-                <div class="overflow-hidden">
-                    <table id="expenses-table" class="w-full">
+                <div class="w-full overflow-x-auto">
+                    <table id="expenses-table" class="w-full min-w-full">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Date</th>
-                                <th>Member</th>
-                                <th>Category</th>
-                                <th>Amount</th>
-                                <th>Description</th>
+                                <th class="text-left">Name</th>
+                                <th class="text-left">Date</th>
+                                <th class="text-left">Member</th>
+                                <th class="text-left">Category</th>
+                                <th class="text-right">Amount</th>
+                                <th class="text-left">Description</th>
                                 @canany(['expenses.update','expenses.delete'])
-                                    <th>Actions</th>
+                                    <th class="text-center">Actions</th>
                                 @endcanany
                             </tr>
                         </thead>
@@ -58,11 +58,11 @@
                     </table>
                 </div>
             @else
-                <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                    <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <div class="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 2.476a6 6 0 018.367 8.414zm1.414-5.27a8 8 0 11-11.313-11.313 8 8 0 0111.313 11.313z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="text-sm text-red-800">You don't have permission to view expenses.</span>
+                    <span class="text-xs sm:text-sm text-red-800">You don't have permission to view expenses.</span>
                 </div>
             @endcan
 

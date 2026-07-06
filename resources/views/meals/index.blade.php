@@ -1,84 +1,78 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full px-4 py-8">
-        <div class="max-w-7xl mx-auto">
+    <div class="w-full px-2 sm:px-4 py-4 sm:py-8">
+        <div class="w-full lg:max-w-7xl mx-auto">
             <!-- Table Controls (search + length) -->
-            <div class="mb-4 flex items-center justify-between">
-                <div class="flex items-center gap-x-[4rem]">
-                    <div class="flex items-center">
-                        <span class="text-sm text-gray-700">Show</span>
-                        <select id="length-select" class="border-0 py-0 bg-transparent text-sm text-gray-900 font-medium cursor-pointer">
+            <div class="mb-4 flex flex-col lg:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full lg:w-auto">
+                    <div class="hidden xl:flex items-center gap-2">
+                        <span class="text-xs sm:text-sm text-gray-700">Show</span>
+                        <select id="length-select" class="border-0 py-0 bg-transparent text-xs sm:text-sm text-gray-900 font-medium cursor-pointer">
                             <option value="15">15</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
-                        <span class="text-sm text-gray-700">entries</span>
+                        <span class="text-xs sm:text-sm text-gray-700">entries</span>
                     </div>
 
-                    <div class="relative w-80">
-                        <input type="text" id="search-input" placeholder="Search" class="w-full px-4 py-2 border-0 border-b border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-sky-500">
-                        <svg class="w-5 h-5 text-gray-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="relative w-full lg:w-80">
+                        <input type="text" id="search-input" placeholder="Search" class="w-full px-3 sm:px-4 py-2 border-0 border-b border-gray-300 rounded text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-sky-500">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between">
-                        <div class="flex-1 flex gap-2 w-full sm:w-auto">
+                    <div class="flex flex-col gap-2 w-full lg:w-auto">
+                        <div class="flex gap-2 w-full sm:w-auto">
                             <input 
                                 type="date" 
                                 id="filter-date"
-                                class="px-3 py-2 border-0 border-b border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                class="px-2 sm:px-3 py-2 border-0 border-b border-gray-300 rounded text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-full sm:w-auto"
                                 placeholder="Filter by date">
-                            <select id="filter-member" class="px-3 py-2 border-0 border-b border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent">
+                            <select id="filter-member" class="px-2 sm:px-3 py-2 border-0 border-b border-gray-300 rounded text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-full sm:w-auto">
                                 <option value="">All Members</option>
                                 @foreach ($members as $member)
                                     <option value="{{ $member->id }}">{{ $member->name }}</option>
                                 @endforeach
                             </select>
-                            <button id="filter-btn" class="px-3 py-2 bg-sky-600 text-white text-sm font-medium rounded hover:bg-sky-700 transition-colors">
+                            <button id="filter-btn" class="px-3 py-2 bg-sky-600 text-white text-xs sm:text-sm font-medium rounded hover:bg-sky-700 transition-colors whitespace-nowrap">
                                 Filter
                             </button>
-                            <button id="reset-btn" class="px-3 py-2 bg-gray-200 text-gray-900 text-sm font-medium rounded hover:bg-gray-300 transition-colors">
+                            <button id="reset-btn" class="px-3 py-2 bg-gray-200 text-gray-900 text-xs sm:text-sm font-medium rounded hover:bg-gray-300 transition-colors whitespace-nowrap">
                                 Reset
                             </button>
                         </div>
                     </div>
-
-
-                    
                 </div>
 
-
                 @can('meals.create')
-                        <a href="{{ route('meals.create') }}" class="px-4 py-2 bg-sky-600 text-white text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Add Meal
-                        </a>
-                    @endcan
-
-                
+                    <a href="{{ route('meals.create') }}" class="px-4 py-2 bg-sky-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-sky-700 transition-colors inline-flex items-center gap-2 whitespace-nowrap w-full lg:w-auto justify-center lg:justify-start">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add Meal
+                    </a>
+                @endcan
             </div>
 
             
             <!-- Filter Bar -->
             @can('meals.view')
                 <!-- DataTable -->
-                <div class="overflow-x-auto">
-                    <table id="meals-table" class="w-full">
+                <div class="w-full overflow-x-auto">
+                    <table id="meals-table" class="w-full min-w-full">
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th>Member</th>
-                                <th>Date</th>
-                                <th>B</th>
-                                <th>L</th>
-                                <th>D</th>
-                                <th>Total</th>
+                                <th class="text-left">Member</th>
+                                <th class="text-left">Date</th>
+                                <th class="text-center">B</th>
+                                <th class="text-center">L</th>
+                                <th class="text-center">D</th>
+                                <th class="text-center">Total</th>
                                 @canany(['meals.update','meals.delete'])
-                                    <th class="px-4 py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
+                                    <th class="px-2 sm:px-4 py-2 sm:py-3 text-center font-semibold text-gray-700 text-xs">Actions</th>
                                 @endcanany
                             </tr>
                         </thead>
@@ -88,11 +82,11 @@
                     </table>
                 </div>
             @else
-                <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                    <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <div class="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 2.476a6 6 0 018.367 8.414zm1.414-5.27a8 8 0 11-11.313-11.313 8 8 0 0111.313 11.313z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="text-sm text-red-800">You don't have permission to view meals.</span>
+                    <span class="text-xs sm:text-sm text-red-800">You don't have permission to view meals.</span>
                 </div>
             @endcan
 

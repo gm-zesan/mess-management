@@ -48,11 +48,10 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="w-full px-4">
-                <div class="bg-gray-100 sm:px-4 lg:px-8 py-4 mb-6 rounded-3xl border border-gray-200 overflow-y-auto" style="height: calc(100vh - 80px);">
+            <main class="w-full md:px-2 overflow-x-hidden">
+                <div class="w-full bg-gray-100 px-2 sm:px-4 lg:px-8 py-3 sm:py-4 mb-6 md:rounded-3xl border border-gray-200" style="height: calc(100vh - 70px); overflow-y-auto; overflow-x: hidden;">
                     @yield('content')
                 </div>
-                
             </main>
         </div>
 
